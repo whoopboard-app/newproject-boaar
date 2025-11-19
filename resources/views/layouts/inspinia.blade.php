@@ -126,7 +126,7 @@
 
                     <!-- Subscribe List -->
                     <li class="side-nav-item">
-                        <a href="#" class="side-nav-link">
+                        <a href="{{ route('subscribers.index') }}" class="side-nav-link {{ request()->routeIs('subscribers.*') ? 'active' : '' }}">
                             <span class="menu-icon"><i class="ti ti-list"></i></span>
                             <span class="menu-text">Subscribe List</span>
                         </a>
@@ -136,7 +136,7 @@
 
                     <!-- Segmentations -->
                     <li class="side-nav-item">
-                        <a href="#" class="side-nav-link">
+                        <a href="{{ route('user-segment.index') }}" class="side-nav-link {{ request()->routeIs('user-segment.*') ? 'active' : '' }}">
                             <span class="menu-icon"><i class="ti ti-layout-grid"></i></span>
                             <span class="menu-text">Segmentations</span>
                         </a>

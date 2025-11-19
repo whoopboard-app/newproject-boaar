@@ -6,15 +6,22 @@ use App\Http\Controllers\AppSettingsController;
 use App\Http\Controllers\KnowledgeBoardController;
 use App\Http\Controllers\BoardCategoryController;
 use App\Http\Controllers\BoardArticleController;
+use App\Http\Controllers\UserSegmentController;
+use App\Http\Controllers\SubscriberController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+// Public Subscriber Routes (No Authentication Required)
+Route::post('/subscribe', [SubscriberController::class, 'subscribe'])->name('subscriber.subscribe');
+Route::get('/verify/{token}', [SubscriberController::class, 'verify'])->name('subscriber.verify');
+Route::get('/unsubscribe/{token}', [SubscriberController::class, 'unsubscribe'])->name('subscriber.unsubscribe');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -62,6 +69,25 @@ Route::middleware('auth')->group(function () {
     Route::get('/knowledge-board/{knowledgeBoard}/article/{article}/edit', [BoardArticleController::class, 'edit'])->name('board-article.edit');
     Route::put('/knowledge-board/{knowledgeBoard}/article/{article}', [BoardArticleController::class, 'update'])->name('board-article.update');
     Route::delete('/knowledge-board/{knowledgeBoard}/article/{article}', [BoardArticleController::class, 'destroy'])->name('board-article.destroy');
+
+    // User Segment Management
+    Route::get('/user-segment', [UserSegmentController::class, 'index'])->name('user-segment.index');
+    Route::get('/user-segment/create', [UserSegmentController::class, 'create'])->name('user-segment.create');
+    Route::post('/user-segment', [UserSegmentController::class, 'store'])->name('user-segment.store');
+    Route::get('/user-segment/{userSegment}', [UserSegmentController::class, 'show'])->name('user-segment.show');
+    Route::get('/user-segment/{userSegment}/edit', [UserSegmentController::class, 'edit'])->name('user-segment.edit');
+    Route::put('/user-segment/{userSegment}', [UserSegmentController::class, 'update'])->name('user-segment.update');
+    Route::delete('/user-segment/{userSegment}', [UserSegmentController::class, 'destroy'])->name('user-segment.destroy');
+
+    // Subscriber Management (Admin)
+    Route::get('/subscribers', [SubscriberController::class, 'index'])->name('subscribers.index');
+    Route::get('/subscribers/create', [SubscriberController::class, 'create'])->name('subscribers.create');
+    Route::post('/subscribers', [SubscriberController::class, 'store'])->name('subscribers.store');
+    Route::get('/subscribers/{subscriber}/edit', [SubscriberController::class, 'edit'])->name('subscribers.edit');
+    Route::put('/subscribers/{subscriber}', [SubscriberController::class, 'update'])->name('subscribers.update');
+    Route::delete('/subscribers/{subscriber}', [SubscriberController::class, 'destroy'])->name('subscribers.destroy');
+    Route::post('/subscribers/{subscriber}/resend', [SubscriberController::class, 'resendVerification'])->name('subscribers.resend');
+    Route::post('/subscribers/import', [SubscriberController::class, 'importCsv'])->name('subscribers.import');
 
     // App Settings
     Route::get('/settings', [AppSettingsController::class, 'index'])->name('settings.index');
