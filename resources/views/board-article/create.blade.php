@@ -1,6 +1,6 @@
 @extends('layouts.inspinia')
 
-@section('title', 'Add Article - ' . $knowledgeBoard->name)
+@section('title', ($article ? 'Edit Article' : 'Add Article') . ' - ' . $knowledgeBoard->name)
 
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
@@ -54,32 +54,23 @@
 <div class="row">
     <div class="col-12">
         <div class="page-title-box">
-            <h4 class="page-title">Add Article</h4>
-            <p class="text-muted fs-14 mb-0">Create a new article for {{ $knowledgeBoard->name }}</p>
+            <h4 class="page-title">{{ $article ? 'Edit Article' : 'Add Article' }}</h4>
+            <p class="text-muted fs-14 mb-0">{{ $article ? 'Update the article for' : 'Create a new article for' }} {{ $knowledgeBoard->name }}</p>
         </div>
     </div>
 </div>
 
-@if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="ti ti-circle-check me-2"></i>{{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
-
-@if(session('error'))
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="ti ti-alert-circle me-2"></i>{{ session('error') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
+<div id="sessionAlerts"></div>
 
 <div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <form action="{{ route('board-article.store', $knowledgeBoard) }}" method="POST" id="articleForm" enctype="multipart/form-data">
+                <form action="{{ $article ? route('board-article.update', [$knowledgeBoard, $article]) : route('board-article.store', $knowledgeBoard) }}" method="POST" id="articleForm" enctype="multipart/form-data">
                     @csrf
+                    @if($article)
+                        @method('PUT')
+                    @endif
 
                     <!-- Board Name (Pre-populated, readonly) -->
                     <div class="mb-3">
@@ -91,7 +82,7 @@
                     <!-- Article Title -->
                     <div class="mb-3">
                         <label for="article_title" class="form-label">Article Title <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('article_title') is-invalid @enderror" id="article_title" name="article_title" placeholder="Enter article title" value="{{ old('article_title') }}" required>
+                        <input type="text" class="form-control @error('article_title') is-invalid @enderror" id="article_title" name="article_title" placeholder="Enter article title" value="{{ old('article_title', $article->article_title ?? '') }}" required>
                         @error('article_title')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -104,15 +95,15 @@
                             <option value="">Select Category</option>
                             @foreach($boardCategories as $parent)
                                 <optgroup label="{{ $parent->category_name }}">
-                                    <option value="{{ $parent->id }}" {{ old('board_category_id') == $parent->id ? 'selected' : '' }}>
+                                    <option value="{{ $parent->id }}" {{ old('board_category_id', $article->board_category_id ?? '') == $parent->id ? 'selected' : '' }}>
                                         {{ $parent->category_name }} (Parent)
                                     </option>
                                     @foreach($parent->childCategories as $child)
-                                        <option value="{{ $child->id }}" {{ old('board_category_id') == $child->id ? 'selected' : '' }}>
+                                        <option value="{{ $child->id }}" {{ old('board_category_id', $article->board_category_id ?? '') == $child->id ? 'selected' : '' }}>
                                             &nbsp;&nbsp;&nbsp;↳ {{ $child->category_name }} (Subcategory)
                                         </option>
                                         @foreach($child->childCategories as $subChild)
-                                            <option value="{{ $subChild->id }}" {{ old('board_category_id') == $subChild->id ? 'selected' : '' }}>
+                                            <option value="{{ $subChild->id }}" {{ old('board_category_id', $article->board_category_id ?? '') == $subChild->id ? 'selected' : '' }}>
                                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ {{ $subChild->category_name }} (Sub-subcategory)
                                             </option>
                                         @endforeach
@@ -128,7 +119,7 @@
                     <!-- Detailed Post -->
                     <div class="mb-3">
                         <label for="detailed_post" class="form-label">Detailed Post <span class="text-danger">*</span></label>
-                        <textarea class="form-control @error('detailed_post') is-invalid @enderror" id="detailed_post" name="detailed_post" rows="10" placeholder="Write your detailed article content here..." required>{{ old('detailed_post') }}</textarea>
+                        <textarea class="form-control @error('detailed_post') is-invalid @enderror" id="detailed_post" name="detailed_post" rows="10" placeholder="Write your detailed article content here..." required>{{ old('detailed_post', $article->detailed_post ?? '') }}</textarea>
                         @error('detailed_post')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -137,8 +128,11 @@
 
                     <!-- Cover Image -->
                     <div class="mb-3">
-                        <label for="cover_image" class="form-label">Cover Image <span class="text-danger">*</span></label>
-                        <input type="file" class="filepond @error('cover_image') is-invalid @enderror" id="cover_image" name="cover_image" accept="image/*" required>
+                        <label for="cover_image" class="form-label">Cover Image @if(!$article)<span class="text-danger">*</span>@endif</label>
+                        @if($article)
+                            <p class="text-muted small mb-2"><strong>Leave empty to keep existing image</strong></p>
+                        @endif
+                        <input type="file" class="filepond @error('cover_image') is-invalid @enderror" id="cover_image" name="cover_image" accept="image/*">
                         @error('cover_image')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -147,7 +141,7 @@
                     <!-- Tags -->
                     <div class="mb-3">
                         <label for="tags" class="form-label">Tags</label>
-                        <input type="text" class="form-control" id="tags" name="tags" placeholder="Add tags..." value="{{ old('tags') }}">
+                        <input type="text" class="form-control" id="tags" name="tags" placeholder="Add tags..." value="{{ old('tags', $article && $article->tags ? json_encode($article->tags) : '') }}">
                         <small class="text-muted">Press Enter to add multiple tags. Previously used tags will appear as suggestions.</small>
                     </div>
 
@@ -156,7 +150,15 @@
                         <label for="changelog_categories" class="form-label">Changelog Categories (Optional)</label>
                         <select class="form-select @error('changelog_categories') is-invalid @enderror" id="changelog_categories" name="changelog_categories[]" data-choices-multiple multiple>
                             @foreach($changelogCategories as $category)
-                                <option value="{{ $category->id }}" {{ (is_array(old('changelog_categories')) && in_array($category->id, old('changelog_categories'))) ? 'selected' : '' }}>
+                                @php
+                                    $isSelected = false;
+                                    if (old('changelog_categories')) {
+                                        $isSelected = in_array($category->id, old('changelog_categories'));
+                                    } elseif ($article && $article->changelogCategories) {
+                                        $isSelected = $article->changelogCategories->contains($category->id);
+                                    }
+                                @endphp
+                                <option value="{{ $category->id }}" {{ $isSelected ? 'selected' : '' }}>
                                     {{ $category->name }}
                                 </option>
                             @endforeach
@@ -173,7 +175,7 @@
                         <select class="form-select @error('author_id') is-invalid @enderror" id="author_id" name="author_id" data-choices required>
                             <option value="">Select Author</option>
                             @foreach($authors as $author)
-                                <option value="{{ $author->id }}" {{ old('author_id', auth()->id()) == $author->id ? 'selected' : '' }}>
+                                <option value="{{ $author->id }}" {{ old('author_id', $article->author_id ?? auth()->id()) == $author->id ? 'selected' : '' }}>
                                     {{ $author->name }} ({{ $author->email }})
                                 </option>
                             @endforeach
@@ -186,7 +188,7 @@
                     <!-- Display as Popular Article -->
                     <div class="mb-3">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="display_as_popular" name="display_as_popular" value="1" {{ old('display_as_popular') ? 'checked' : '' }}>
+                            <input class="form-check-input" type="checkbox" id="display_as_popular" name="display_as_popular" value="1" {{ old('display_as_popular', $article->display_as_popular ?? false) ? 'checked' : '' }}>
                             <label class="form-check-label" for="display_as_popular">
                                 Display as Popular Article
                             </label>
@@ -199,9 +201,9 @@
                         <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
                         <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" data-choices required>
                             <option value="">Select Status</option>
-                            <option value="published" {{ old('status') == 'published' ? 'selected' : '' }}>Published</option>
-                            <option value="unpublished" {{ old('status') == 'unpublished' ? 'selected' : '' }}>Unpublished</option>
-                            <option value="draft" {{ old('status', 'draft') == 'draft' ? 'selected' : '' }}>Draft</option>
+                            <option value="published" {{ old('status', $article->status ?? 'draft') == 'published' ? 'selected' : '' }}>Published</option>
+                            <option value="unpublished" {{ old('status', $article->status ?? 'draft') == 'unpublished' ? 'selected' : '' }}>Unpublished</option>
+                            <option value="draft" {{ old('status', $article->status ?? 'draft') == 'draft' ? 'selected' : '' }}>Draft</option>
                         </select>
                         @error('status')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -211,7 +213,7 @@
                     <!-- Submit Buttons -->
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">
-                            <i class="ti ti-check me-1"></i>Create Article
+                            <i class="ti ti-check me-1"></i>{{ $article ? 'Update Article' : 'Create Article' }}
                         </button>
                         <button type="reset" class="btn btn-secondary">
                             <i class="ti ti-refresh me-1"></i>Reset
@@ -233,6 +235,34 @@
 @include('components.filepond-scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Check for sessionStorage messages and display them
+    const successMessage = sessionStorage.getItem('successMessage');
+    const errorMessage = sessionStorage.getItem('errorMessage');
+    const alertContainer = document.getElementById('sessionAlerts');
+
+    if (successMessage) {
+        alertContainer.innerHTML = `
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="ti ti-circle-check me-2"></i>${successMessage}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+        sessionStorage.removeItem('successMessage');
+    }
+
+    if (errorMessage) {
+        alertContainer.innerHTML = `
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="ti ti-alert-circle me-2"></i>${errorMessage}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+        sessionStorage.removeItem('errorMessage');
+    }
+
+    // Determine if we're in edit mode
+    const isEdit = {{ $article ? 'true' : 'false' }};
+
     // Initialize Choices.js for single select dropdowns
     const singleChoices = document.querySelectorAll('[data-choices]:not([data-choices-multiple])');
     singleChoices.forEach(function(element) {
@@ -289,12 +319,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Initialize FilePond with same 16:9 aspect ratio as changelog
+    // Set required based on edit mode
     const pond = initFilePond('.filepond', {
         imageCropAspectRatio: '16:9',
         imageResizeTargetWidth: 1200,
         imageResizeTargetHeight: 675,
         imageResizeMode: 'cover',
-        imageResizeUpscale: false
+        imageResizeUpscale: false,
+        required: !isEdit
     });
 
     // Handle form submission with FilePond
@@ -303,7 +335,9 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
 
         const files = pond.getFiles();
-        if (files.length === 0) {
+
+        // Only require image if not in edit mode
+        if (!isEdit && files.length === 0) {
             alert('Please upload a cover image');
             return false;
         }
@@ -313,6 +347,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Add CSRF token
         formData.append('_token', document.querySelector('input[name="_token"]').value);
+
+        // Add _method for PUT request if editing
+        if (isEdit) {
+            formData.append('_method', 'PUT');
+        }
 
         // Add text inputs
         formData.append('article_title', document.getElementById('article_title').value);
@@ -336,9 +375,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Add the file from FilePond
-        const file = files[0].file;
-        formData.append('cover_image', file);
+        // Add the file from FilePond if present
+        if (files.length > 0) {
+            const file = files[0].file;
+            formData.append('cover_image', file);
+        }
 
         // Submit via fetch
         fetch(form.action, {
@@ -350,15 +391,25 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => {
             if (response.ok) {
-                window.location.href = response.url;
+                return response.json();
             } else {
-                return response.text().then(text => {
-                    throw new Error('Upload failed');
+                return response.json().then(data => {
+                    throw new Error(data.message || 'Upload failed');
                 });
             }
         })
+        .then(data => {
+            // Store success message in sessionStorage
+            if (data.success) {
+                sessionStorage.setItem('successMessage', data.success);
+            }
+            // Redirect to the board show page
+            if (data.redirect) {
+                window.location.href = data.redirect;
+            }
+        })
         .catch(error => {
-            alert('Error creating article. Please try again.');
+            alert(isEdit ? 'Error updating article. Please try again.' : 'Error creating article. Please try again.');
             console.error('Error:', error);
         });
     });

@@ -96,15 +96,19 @@
                                 </td>
                                 <td>
                                     <div class="d-flex gap-1">
-                                        <button class="btn btn-sm btn-soft-primary" title="View">
+                                        <a href="{{ route('board-article.show', [$knowledgeBoard, $article]) }}" class="btn btn-sm btn-soft-primary" title="View">
                                             <i class="ti ti-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-soft-info" title="Edit">
+                                        </a>
+                                        <a href="{{ route('board-article.edit', [$knowledgeBoard, $article]) }}" class="btn btn-sm btn-soft-info" title="Edit">
                                             <i class="ti ti-edit"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-soft-danger" title="Delete">
-                                            <i class="ti ti-trash"></i>
-                                        </button>
+                                        </a>
+                                        <form action="{{ route('board-article.destroy', [$knowledgeBoard, $article]) }}" method="POST" class="d-inline delete-article-form">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-soft-danger" title="Delete">
+                                                <i class="ti ti-trash"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>

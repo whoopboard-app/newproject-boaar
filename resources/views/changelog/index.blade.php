@@ -136,15 +136,19 @@
                                         </td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                <button type="button" class="btn btn-sm btn-soft-info" title="View">
+                                                <a href="{{ route('changelog.show', $changelog) }}" class="btn btn-sm btn-soft-info" title="View">
                                                     <i class="ti ti-eye"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-sm btn-soft-primary" title="Edit">
+                                                </a>
+                                                <a href="{{ route('changelog.edit', $changelog) }}" class="btn btn-sm btn-soft-primary" title="Edit">
                                                     <i class="ti ti-edit"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-sm btn-soft-danger" title="Delete">
-                                                    <i class="ti ti-trash"></i>
-                                                </button>
+                                                </a>
+                                                <form action="{{ route('changelog.destroy', $changelog) }}" method="POST" class="d-inline delete-form">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-soft-danger" title="Delete">
+                                                        <i class="ti ti-trash"></i>
+                                                    </button>
+                                                </form>
                                             </div>
                                         </td>
                                     </tr>
@@ -171,6 +175,58 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Auto-dismiss all alerts after 3 seconds
+    const alerts = document.querySelectorAll('.alert:not(.alert-dismissible)');
+    const dismissibleAlerts = document.querySelectorAll('.alert.alert-dismissible');
+
+    dismissibleAlerts.forEach(function(alert) {
+        setTimeout(function() {
+            alert.classList.remove('show');
+            setTimeout(function() {
+                alert.remove();
+            }, 150);
+        }, 3000);
+    });
+
+    // Check for success message in sessionStorage
+    const successMessage = sessionStorage.getItem('changelog_success');
+    if (successMessage) {
+        // Create and show success alert
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-success alert-dismissible fade show';
+        alertDiv.setAttribute('role', 'alert');
+        alertDiv.innerHTML = `
+            <i class="ti ti-circle-check me-2"></i>${successMessage}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+
+        // Insert at the top of the page content
+        const firstRow = document.querySelector('.row');
+        firstRow.parentNode.insertBefore(alertDiv, firstRow.nextSibling);
+
+        // Clear the message from sessionStorage
+        sessionStorage.removeItem('changelog_success');
+
+        // Auto-dismiss after 3 seconds
+        setTimeout(function() {
+            alertDiv.classList.remove('show');
+            setTimeout(function() {
+                alertDiv.remove();
+            }, 150); // Wait for fade out animation
+        }, 3000);
+    }
+
+    // Delete confirmation
+    const deleteForms = document.querySelectorAll('.delete-form');
+    deleteForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (confirm('Are you sure you want to delete this changelog? This action cannot be undone.')) {
+                this.submit();
+            }
+        });
+    });
+
     // Custom table search functionality
     const tableContainer = document.querySelector('[data-table]');
 

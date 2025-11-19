@@ -1,6 +1,6 @@
 @extends('layouts.inspinia')
 
-@section('title', 'Add Changelog')
+@section('title', $changelog ? 'Edit Changelog' : 'Add Changelog')
 
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
@@ -58,7 +58,7 @@
 <div class="row">
     <div class="col-12">
         <div class="page-title-box">
-            <h4 class="page-title">Add Changelog</h4>
+            <h4 class="page-title">{{ $changelog ? 'Edit Changelog' : 'Add Changelog' }}</h4>
         </div>
     </div>
 </div>
@@ -81,13 +81,16 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <form action="{{ route('changelog.store') }}" method="POST" enctype="multipart/form-data" id="changelogForm">
+                <form action="{{ $changelog ? route('changelog.update', $changelog) : route('changelog.store') }}" method="POST" enctype="multipart/form-data" id="changelogForm">
                     @csrf
+                    @if($changelog)
+                        @method('PUT')
+                    @endif
 
                     <!-- Changelog Title -->
                     <div class="mb-3">
                         <label for="title" class="form-label">Changelog Title <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" placeholder="Enter changelog title" value="{{ old('title') }}" required>
+                        <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" placeholder="Enter changelog title" value="{{ old('title', $changelog->title ?? '') }}" required>
                         @error('title')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -96,18 +99,18 @@
 
                     <!-- Cover Image -->
                     <div class="mb-3">
-                        <label for="cover_image" class="form-label">Cover Image <span class="text-danger">*</span></label>
-                        <input type="file" class="filepond" id="cover_image" name="cover_image" accept="image/*">
+                        <label for="cover_image" class="form-label">Cover Image @if(!$changelog)<span class="text-danger">*</span>@endif</label>
+                        <input type="file" class="filepond" id="cover_image" name="cover_image" accept="image/*" data-existing-image="{{ $changelog && $changelog->cover_image ? asset('storage/' . $changelog->cover_image) : '' }}">
                         @error('cover_image')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
-                        <small class="text-muted">Upload a cover image for the changelog (Max: 2MB, Formats: JPEG, PNG, JPG, GIF)</small>
+                        <small class="text-muted">Upload a cover image for the changelog (Max: 2MB, Formats: JPEG, PNG, JPG, GIF)@if($changelog) - <strong>Leave empty to keep existing image</strong>@endif</small>
                     </div>
 
                     <!-- Short Description -->
                     <div class="mb-3">
                         <label for="short_description" class="form-label">Short Description <span class="text-danger">*</span></label>
-                        <textarea class="form-control @error('short_description') is-invalid @enderror" id="short_description" name="short_description" rows="3" maxlength="500" placeholder="Enter at least 200 characters..." required>{{ old('short_description') }}</textarea>
+                        <textarea class="form-control @error('short_description') is-invalid @enderror" id="short_description" name="short_description" rows="3" maxlength="500" placeholder="Enter at least 200 characters..." required>{{ old('short_description', $changelog->short_description ?? '') }}</textarea>
                         @error('short_description')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -121,7 +124,7 @@
                     <!-- Full Description -->
                     <div class="mb-3">
                         <label for="description" class="form-label">Enter Descriptions <span class="text-danger">*</span></label>
-                        <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="8" placeholder="Enter full description..." required>{{ old('description') }}</textarea>
+                        <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="8" placeholder="Enter full description..." required>{{ old('description', $changelog->description ?? '') }}</textarea>
                         @error('description')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -134,7 +137,7 @@
                         <select class="form-select @error('category') is-invalid @enderror" id="category" name="category" data-choices required>
                             <option value="">Select Category</option>
                             @foreach($categories as $category)
-                                <option value="{{ $category->id }}" {{ old('category') == $category->id ? 'selected' : '' }}>
+                                <option value="{{ $category->id }}" {{ old('category', $changelog->category_id ?? '') == $category->id ? 'selected' : '' }}>
                                     {{ $category->name }}
                                 </option>
                             @endforeach
@@ -147,14 +150,14 @@
                     <!-- Tags -->
                     <div class="mb-3">
                         <label for="tags" class="form-label">Tags</label>
-                        <input type="text" class="form-control" id="tags" name="tags" placeholder="Add tags..." value="{{ old('tags') }}">
+                        <input type="text" class="form-control" id="tags" name="tags" placeholder="Add tags..." value="{{ old('tags', $changelog && $changelog->tags ? json_encode($changelog->tags) : '') }}">
                         <small class="text-muted">Press Enter to add multiple tags. Previously used tags will appear as suggestions.</small>
                     </div>
 
                     <!-- Author Name -->
                     <div class="mb-3">
                         <label for="author_name" class="form-label">Author Name <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('author_name') is-invalid @enderror" id="author_name" name="author_name" placeholder="Enter author name" value="{{ old('author_name', Auth::user()->name) }}" required>
+                        <input type="text" class="form-control @error('author_name') is-invalid @enderror" id="author_name" name="author_name" placeholder="Enter author name" value="{{ old('author_name', $changelog->author_name ?? Auth::user()->name) }}" required>
                         @error('author_name')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -163,7 +166,7 @@
                     <!-- Published Date -->
                     <div class="mb-3">
                         <label for="published_date" class="form-label">Published Date <span class="text-danger">*</span></label>
-                        <input type="date" class="form-control @error('published_date') is-invalid @enderror" id="published_date" name="published_date" value="{{ old('published_date', date('Y-m-d')) }}" required>
+                        <input type="date" class="form-control @error('published_date') is-invalid @enderror" id="published_date" name="published_date" value="{{ old('published_date', $changelog ? $changelog->published_date->format('Y-m-d') : date('Y-m-d')) }}" required>
                         @error('published_date')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -175,9 +178,9 @@
                         <label for="status" class="form-label">Changelog Status <span class="text-danger">*</span></label>
                         <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" data-choices required>
                             <option value="">Select Status</option>
-                            <option value="published" {{ old('status', 'published') == 'published' ? 'selected' : '' }}>Published</option>
-                            <option value="draft" {{ old('status') == 'draft' ? 'selected' : '' }}>Draft</option>
-                            <option value="scheduled" style="display: none;" {{ old('status') == 'scheduled' ? 'selected' : '' }}>Scheduled for Published</option>
+                            <option value="published" {{ old('status', $changelog->status ?? 'published') == 'published' ? 'selected' : '' }}>Published</option>
+                            <option value="draft" {{ old('status', $changelog->status ?? '') == 'draft' ? 'selected' : '' }}>Draft</option>
+                            <option value="scheduled" style="display: none;" {{ old('status', $changelog->status ?? '') == 'scheduled' ? 'selected' : '' }}>Scheduled for Published</option>
                         </select>
                         @error('status')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -188,12 +191,12 @@
                     <!-- Submit Buttons -->
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">
-                            <i class="ti ti-check me-1"></i>Save Changelog
+                            <i class="ti ti-check me-1"></i>{{ $changelog ? 'Update Changelog' : 'Save Changelog' }}
                         </button>
                         <button type="reset" class="btn btn-secondary">
                             <i class="ti ti-refresh me-1"></i>Reset
                         </button>
-                        <a href="{{ route('dashboard') }}" class="btn btn-light">
+                        <a href="{{ $changelog ? route('changelog.index') : route('dashboard') }}" class="btn btn-light">
                             <i class="ti ti-x me-1"></i>Cancel
                         </a>
                     </div>
@@ -210,14 +213,18 @@
 <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.polyfills.min.js"></script>
 @include('components.filepond-scripts')
 <script>
+
 document.addEventListener('DOMContentLoaded', function() {
+    const isEdit = {{ $changelog ? 'true' : 'false' }};
+
     // Initialize FilePond with custom 16:9 aspect ratio for changelog
     const pond = initFilePond('input[type="file"].filepond', {
         imageCropAspectRatio: '16:9',
         imageResizeTargetWidth: 1200,
         imageResizeTargetHeight: 675,
         imageResizeMode: 'cover',
-        imageResizeUpscale: false
+        imageResizeUpscale: false,
+        required: !isEdit  // Not required when editing
     });
 
     // Handle form submission - ensure FilePond processes the file
@@ -229,9 +236,9 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         let hasError = false;
 
-        // Check if FilePond has a file
+        // Check if FilePond has a file (only required for new changelogs)
         const files = pond.getFiles();
-        if (files.length === 0) {
+        if (files.length === 0 && !isEdit) {
             alert('Please upload a cover image');
             return false;
         }
@@ -258,6 +265,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Add all text inputs
         formData.append('_token', document.querySelector('input[name="_token"]').value);
+
+        // Add _method for PUT when editing
+        if (isEdit) {
+            formData.append('_method', 'PUT');
+        }
+
         formData.append('title', document.getElementById('title').value);
         formData.append('short_description', shortDescTextarea.value);
         formData.append('description', document.getElementById('description').value);
@@ -267,9 +280,11 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('published_date', document.getElementById('published_date').value);
         formData.append('status', document.getElementById('status').value);
 
-        // Add the file from FilePond
-        const file = files[0].file;
-        formData.append('cover_image', file);
+        // Add the file from FilePond (only if a new file is selected)
+        if (files.length > 0) {
+            const file = files[0].file;
+            formData.append('cover_image', file);
+        }
 
         // Submit via fetch
         fetch(form.action, {
@@ -281,15 +296,22 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => {
             if (response.ok) {
-                window.location.href = response.url;
+                // Store success message in sessionStorage
+                const successMessage = isEdit ? 'Changelog updated successfully!' : 'Changelog created successfully!';
+                sessionStorage.setItem('changelog_success', successMessage);
+
+                // Redirect to listing page
+                window.location.href = '{{ route("changelog.index") }}';
             } else {
                 return response.text().then(text => {
-                    throw new Error('Upload failed');
+                    console.error('Server response:', text);
+                    alert('Failed to save changelog. Please try again.');
+                    throw new Error('Upload failed: ' + response.status);
                 });
             }
         })
         .catch(error => {
-            alert('Error uploading changelog. Please try again.');
+            alert('Error uploading changelog. Please check the console for details.');
             console.error('Error:', error);
         });
     });

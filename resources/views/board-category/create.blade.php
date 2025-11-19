@@ -1,6 +1,6 @@
 @extends('layouts.inspinia')
 
-@section('title', 'Add Category - ' . $knowledgeBoard->name)
+@section('title', ($category ? 'Edit Category' : 'Add Category') . ' - ' . $knowledgeBoard->name)
 
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
@@ -36,8 +36,8 @@
 <div class="row">
     <div class="col-12">
         <div class="page-title-box">
-            <h4 class="page-title">Add Category</h4>
-            <p class="text-muted fs-14 mb-0">Create a new category for {{ $knowledgeBoard->name }}</p>
+            <h4 class="page-title">{{ $category ? 'Edit Category' : 'Add Category' }}</h4>
+            <p class="text-muted fs-14 mb-0">{{ $category ? 'Update category for' : 'Create a new category for' }} {{ $knowledgeBoard->name }}</p>
         </div>
     </div>
 </div>
@@ -60,8 +60,11 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <form action="{{ route('board-category.store', $knowledgeBoard) }}" method="POST" id="categoryForm">
+                <form action="{{ $category ? route('board-category.update', [$knowledgeBoard, $category]) : route('board-category.store', $knowledgeBoard) }}" method="POST" id="categoryForm">
                     @csrf
+                    @if($category)
+                        @method('PUT')
+                    @endif
 
                     <!-- Board Name (Pre-populated, editable) -->
                     <div class="mb-3">
@@ -73,7 +76,7 @@
                     <!-- Category Name -->
                     <div class="mb-3">
                         <label for="category_name" class="form-label">Category Name <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('category_name') is-invalid @enderror" id="category_name" name="category_name" placeholder="Enter category name" value="{{ old('category_name') }}" required>
+                        <input type="text" class="form-control @error('category_name') is-invalid @enderror" id="category_name" name="category_name" placeholder="Enter category name" value="{{ old('category_name', $category->category_name ?? '') }}" required>
                         @error('category_name')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -82,7 +85,7 @@
                     <!-- Category Icon (Optional) -->
                     <div class="mb-3">
                         <label for="category_icon" class="form-label">Category Icon (Optional)</label>
-                        <input type="text" class="form-control @error('category_icon') is-invalid @enderror" id="category_icon" name="category_icon" placeholder="e.g., ti ti-folder" value="{{ old('category_icon') }}">
+                        <input type="text" class="form-control @error('category_icon') is-invalid @enderror" id="category_icon" name="category_icon" placeholder="e.g., ti ti-folder" value="{{ old('category_icon', $category->category_icon ?? '') }}">
                         @error('category_icon')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -92,7 +95,7 @@
                     <!-- Short Description -->
                     <div class="mb-3">
                         <label for="short_description" class="form-label">Short Description</label>
-                        <textarea class="form-control @error('short_description') is-invalid @enderror" id="short_description" name="short_description" rows="3" placeholder="Enter a brief description...">{{ old('short_description') }}</textarea>
+                        <textarea class="form-control @error('short_description') is-invalid @enderror" id="short_description" name="short_description" rows="3" placeholder="Enter a brief description...">{{ old('short_description', $category->short_description ?? '') }}</textarea>
                         @error('short_description')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -103,13 +106,13 @@
                         <label class="form-label">Is this a parent category? <span class="text-danger">*</span></label>
                         <div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="is_parent" id="is_parent_yes" value="1" {{ old('is_parent', '1') == '1' ? 'checked' : '' }} required>
+                                <input class="form-check-input" type="radio" name="is_parent" id="is_parent_yes" value="1" {{ old('is_parent', $category->is_parent ?? '1') == '1' ? 'checked' : '' }} required>
                                 <label class="form-check-label" for="is_parent_yes">
                                     Yes (Parent Category)
                                 </label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="is_parent" id="is_parent_no" value="0" {{ old('is_parent') == '0' ? 'checked' : '' }}>
+                                <input class="form-check-input" type="radio" name="is_parent" id="is_parent_no" value="0" {{ old('is_parent', $category->is_parent ?? '1') == '0' ? 'checked' : '' }}>
                                 <label class="form-check-label" for="is_parent_no">
                                     No (Sub Category)
                                 </label>
@@ -124,15 +127,15 @@
                             <option value="">Select Parent Category</option>
                             @foreach($parentCategories as $parent)
                                 <optgroup label="{{ $parent->category_name }}">
-                                    <option value="{{ $parent->id }}" {{ old('parent_category_id') == $parent->id ? 'selected' : '' }}>
+                                    <option value="{{ $parent->id }}" {{ old('parent_category_id', $category->parent_category_id ?? '') == $parent->id ? 'selected' : '' }}>
                                         {{ $parent->category_name }} (Parent)
                                     </option>
                                     @foreach($parent->childCategories as $child)
-                                        <option value="{{ $child->id }}" {{ old('parent_category_id') == $child->id ? 'selected' : '' }}>
+                                        <option value="{{ $child->id }}" {{ old('parent_category_id', $category->parent_category_id ?? '') == $child->id ? 'selected' : '' }}>
                                             &nbsp;&nbsp;&nbsp;↳ {{ $child->category_name }} (Subcategory)
                                         </option>
                                         @foreach($child->childCategories as $subChild)
-                                            <option value="{{ $subChild->id }}" {{ old('parent_category_id') == $subChild->id ? 'selected' : '' }}>
+                                            <option value="{{ $subChild->id }}" {{ old('parent_category_id', $category->parent_category_id ?? '') == $subChild->id ? 'selected' : '' }}>
                                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ {{ $subChild->category_name }} (Sub-subcategory)
                                             </option>
                                         @endforeach
@@ -149,7 +152,7 @@
                     <!-- Order -->
                     <div class="mb-3">
                         <label for="order" class="form-label">Order of Listing</label>
-                        <input type="number" class="form-control @error('order') is-invalid @enderror" id="order" name="order" placeholder="Auto-incremented" value="{{ old('order') }}">
+                        <input type="number" class="form-control @error('order') is-invalid @enderror" id="order" name="order" placeholder="Auto-incremented" value="{{ old('order', $category->order ?? '') }}">
                         @error('order')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -161,8 +164,8 @@
                         <label for="status" class="form-label">Status of Category <span class="text-danger">*</span></label>
                         <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" data-choices required>
                             <option value="">Select Status</option>
-                            <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>Active</option>
-                            <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                            <option value="active" {{ old('status', $category->status ?? 'active') == 'active' ? 'selected' : '' }}>Active</option>
+                            <option value="inactive" {{ old('status', $category->status ?? 'active') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                         </select>
                         @error('status')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -172,7 +175,7 @@
                     <!-- Submit Buttons -->
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">
-                            <i class="ti ti-check me-1"></i>Create Category
+                            <i class="ti ti-check me-1"></i>{{ $category ? 'Update Category' : 'Create Category' }}
                         </button>
                         <button type="reset" class="btn btn-secondary">
                             <i class="ti ti-refresh me-1"></i>Reset

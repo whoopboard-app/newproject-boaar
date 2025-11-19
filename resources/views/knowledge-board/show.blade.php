@@ -337,6 +337,56 @@
 
 @push('scripts')
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-dismiss all alerts after 3 seconds
+    const dismissibleAlerts = document.querySelectorAll('.alert.alert-dismissible');
+    dismissibleAlerts.forEach(function(alert) {
+        setTimeout(function() {
+            alert.classList.remove('show');
+            setTimeout(function() {
+                alert.remove();
+            }, 150);
+        }, 3000);
+    });
+
+    // Check for success messages in sessionStorage (for category/article operations)
+    const categorySuccess = sessionStorage.getItem('category_success');
+    const articleSuccess = sessionStorage.getItem('article_success');
+
+    if (categorySuccess) {
+        showAlert(categorySuccess, 'success');
+        sessionStorage.removeItem('category_success');
+    }
+
+    if (articleSuccess) {
+        showAlert(articleSuccess, 'success');
+        sessionStorage.removeItem('article_success');
+    }
+});
+
+// Helper function to show alerts
+function showAlert(message, type = 'success') {
+    const alertDiv = document.createElement('div');
+    const iconClass = type === 'success' ? 'ti-circle-check' : 'ti-alert-circle';
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+
+    alertDiv.className = `alert ${alertClass} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+    alertDiv.style.zIndex = '9999';
+    alertDiv.innerHTML = `
+        <i class="ti ${iconClass} me-2"></i>${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    document.body.appendChild(alertDiv);
+
+    // Auto remove after 3 seconds
+    setTimeout(function() {
+        alertDiv.classList.remove('show');
+        setTimeout(function() {
+            alertDiv.remove();
+        }, 150);
+    }, 3000);
+}
+
 // Function to copy public URL to clipboard
 function copyPublicUrl(url) {
     navigator.clipboard.writeText(url).then(function() {
@@ -416,6 +466,28 @@ document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         closeLightbox();
     }
+});
+
+// Handle article delete confirmation
+const deleteArticleForms = document.querySelectorAll('.delete-article-form');
+deleteArticleForms.forEach(form => {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (confirm('Are you sure you want to delete this article? This action cannot be undone.')) {
+            this.submit();
+        }
+    });
+});
+
+// Handle category delete confirmation
+const deleteCategoryForms = document.querySelectorAll('.delete-category-form');
+deleteCategoryForms.forEach(form => {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (confirm('Are you sure you want to delete this category? This action cannot be undone.')) {
+            this.submit();
+        }
+    });
 });
 </script>
 @endpush

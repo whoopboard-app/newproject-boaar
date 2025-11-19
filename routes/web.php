@@ -36,6 +36,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/changelog', [ChangelogController::class, 'index'])->name('changelog.index');
     Route::get('/changelog/create', [ChangelogController::class, 'create'])->name('changelog.create');
     Route::post('/changelog', [ChangelogController::class, 'store'])->name('changelog.store');
+    Route::get('/changelog/{changelog}', [ChangelogController::class, 'show'])->name('changelog.show');
+    Route::get('/changelog/{changelog}/edit', [ChangelogController::class, 'edit'])->name('changelog.edit');
+    Route::put('/changelog/{changelog}', [ChangelogController::class, 'update'])->name('changelog.update');
+    Route::delete('/changelog/{changelog}', [ChangelogController::class, 'destroy'])->name('changelog.destroy');
 
     // Knowledge Board Management
     Route::get('/knowledge-board', [KnowledgeBoardController::class, 'index'])->name('knowledge-board.index');
@@ -46,10 +50,18 @@ Route::middleware('auth')->group(function () {
     // Board Category Management
     Route::get('/knowledge-board/{knowledgeBoard}/category/create', [BoardCategoryController::class, 'create'])->name('board-category.create');
     Route::post('/knowledge-board/{knowledgeBoard}/category', [BoardCategoryController::class, 'store'])->name('board-category.store');
+    Route::get('/knowledge-board/{knowledgeBoard}/category/{category}', [BoardCategoryController::class, 'show'])->name('board-category.show');
+    Route::get('/knowledge-board/{knowledgeBoard}/category/{category}/edit', [BoardCategoryController::class, 'edit'])->name('board-category.edit');
+    Route::put('/knowledge-board/{knowledgeBoard}/category/{category}', [BoardCategoryController::class, 'update'])->name('board-category.update');
+    Route::delete('/knowledge-board/{knowledgeBoard}/category/{category}', [BoardCategoryController::class, 'destroy'])->name('board-category.destroy');
 
     // Board Article Management
     Route::get('/knowledge-board/{knowledgeBoard}/article/create', [BoardArticleController::class, 'create'])->name('board-article.create');
     Route::post('/knowledge-board/{knowledgeBoard}/article', [BoardArticleController::class, 'store'])->name('board-article.store');
+    Route::get('/knowledge-board/{knowledgeBoard}/article/{article}', [BoardArticleController::class, 'show'])->name('board-article.show');
+    Route::get('/knowledge-board/{knowledgeBoard}/article/{article}/edit', [BoardArticleController::class, 'edit'])->name('board-article.edit');
+    Route::put('/knowledge-board/{knowledgeBoard}/article/{article}', [BoardArticleController::class, 'update'])->name('board-article.update');
+    Route::delete('/knowledge-board/{knowledgeBoard}/article/{article}', [BoardArticleController::class, 'destroy'])->name('board-article.destroy');
 
     // App Settings
     Route::get('/settings', [AppSettingsController::class, 'index'])->name('settings.index');

@@ -27,12 +27,16 @@
                                 @endif
                             </div>
                             <div class="category-actions">
-                                <button class="btn btn-sm btn-soft-primary" title="Edit">
+                                <a href="{{ route('board-category.edit', [$knowledgeBoard, $parent]) }}" class="btn btn-sm btn-soft-primary" title="Edit">
                                     <i class="ti ti-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-soft-danger" title="Delete">
-                                    <i class="ti ti-trash"></i>
-                                </button>
+                                </a>
+                                <form action="{{ route('board-category.destroy', [$knowledgeBoard, $parent]) }}" method="POST" class="d-inline delete-category-form">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-soft-danger" title="Delete">
+                                        <i class="ti ti-trash"></i>
+                                    </button>
+                                </form>
                             </div>
                         </div>
 
@@ -53,12 +57,16 @@
                                                 @endif
                                             </div>
                                             <div class="category-actions">
-                                                <button class="btn btn-sm btn-soft-primary" title="Edit">
+                                                <a href="{{ route('board-category.edit', [$knowledgeBoard, $child]) }}" class="btn btn-sm btn-soft-primary" title="Edit">
                                                     <i class="ti ti-edit"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-soft-danger" title="Delete">
-                                                    <i class="ti ti-trash"></i>
-                                                </button>
+                                                </a>
+                                                <form action="{{ route('board-category.destroy', [$knowledgeBoard, $child]) }}" method="POST" class="d-inline delete-category-form">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-soft-danger" title="Delete">
+                                                        <i class="ti ti-trash"></i>
+                                                    </button>
+                                                </form>
                                             </div>
                                         </div>
 
@@ -79,12 +87,16 @@
                                                                 @endif
                                                             </div>
                                                             <div class="category-actions">
-                                                                <button class="btn btn-sm btn-soft-primary" title="Edit">
+                                                                <a href="{{ route('board-category.edit', [$knowledgeBoard, $subChild]) }}" class="btn btn-sm btn-soft-primary" title="Edit">
                                                                     <i class="ti ti-edit"></i>
-                                                                </button>
-                                                                <button class="btn btn-sm btn-soft-danger" title="Delete">
-                                                                    <i class="ti ti-trash"></i>
-                                                                </button>
+                                                                </a>
+                                                                <form action="{{ route('board-category.destroy', [$knowledgeBoard, $subChild]) }}" method="POST" class="d-inline delete-category-form">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="btn btn-sm btn-soft-danger" title="Delete">
+                                                                        <i class="ti ti-trash"></i>
+                                                                    </button>
+                                                                </form>
                                                             </div>
                                                         </div>
                                                     </li>
