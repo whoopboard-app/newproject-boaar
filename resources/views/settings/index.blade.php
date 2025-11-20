@@ -213,5 +213,38 @@
             </div>
         </div>
     </div>
+
+    <!-- RoadMap Card -->
+    <div class="col-lg-4 col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="avatar-lg">
+                        <span class="avatar-title rounded-circle bg-primary-subtle">
+                            <i class="ti ti-route fs-2 text-primary"></i>
+                        </span>
+                    </div>
+                </div>
+                <h5 class="card-title mb-2">RoadMap</h5>
+                <p class="text-muted fs-14 mb-3">
+                    Manage roadmap statuses, customize colors, and define your product development workflow.
+                </p>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('roadmap.index') }}" class="btn btn-sm btn-primary">
+                        <i class="ti ti-eye me-1"></i>View
+                    </a>
+                    <a href="{{ route('roadmap.index') }}" class="btn btn-sm btn-outline-primary">
+                        <i class="ti ti-settings me-1"></i>Manage
+                    </a>
+                </div>
+            </div>
+            <div class="card-footer border-top">
+                <div class="d-flex align-items-center text-muted">
+                    <i class="ti ti-list-check me-2"></i>
+                    <small>Manage status workflow</small>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection

@@ -8,6 +8,8 @@ use App\Http\Controllers\BoardCategoryController;
 use App\Http\Controllers\BoardArticleController;
 use App\Http\Controllers\UserSegmentController;
 use App\Http\Controllers\SubscriberController;
+use App\Http\Controllers\PersonaController;
+use App\Http\Controllers\RoadmapController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -79,6 +81,15 @@ Route::middleware('auth')->group(function () {
     Route::put('/user-segment/{userSegment}', [UserSegmentController::class, 'update'])->name('user-segment.update');
     Route::delete('/user-segment/{userSegment}', [UserSegmentController::class, 'destroy'])->name('user-segment.destroy');
 
+    // Persona Management
+    Route::get('/personas', [PersonaController::class, 'index'])->name('personas.index');
+    Route::get('/personas/create', [PersonaController::class, 'create'])->name('personas.create');
+    Route::post('/personas', [PersonaController::class, 'store'])->name('personas.store');
+    Route::get('/personas/{persona}', [PersonaController::class, 'show'])->name('personas.show');
+    Route::get('/personas/{persona}/edit', [PersonaController::class, 'edit'])->name('personas.edit');
+    Route::put('/personas/{persona}', [PersonaController::class, 'update'])->name('personas.update');
+    Route::delete('/personas/{persona}', [PersonaController::class, 'destroy'])->name('personas.destroy');
+
     // Subscriber Management (Admin)
     Route::get('/subscribers', [SubscriberController::class, 'index'])->name('subscribers.index');
     Route::get('/subscribers/create', [SubscriberController::class, 'create'])->name('subscribers.create');
@@ -91,6 +102,14 @@ Route::middleware('auth')->group(function () {
 
     // App Settings
     Route::get('/settings', [AppSettingsController::class, 'index'])->name('settings.index');
+
+    // Roadmap Management
+    Route::get('/roadmap', [RoadmapController::class, 'index'])->name('roadmap.index');
+    Route::post('/roadmap', [RoadmapController::class, 'store'])->name('roadmap.store');
+    Route::put('/roadmap/{roadmap}', [RoadmapController::class, 'update'])->name('roadmap.update');
+    Route::delete('/roadmap/{roadmap}', [RoadmapController::class, 'destroy'])->name('roadmap.destroy');
+    Route::post('/roadmap/reorder', [RoadmapController::class, 'reorder'])->name('roadmap.reorder');
+    Route::post('/roadmap/bulk-update', [RoadmapController::class, 'bulkUpdate'])->name('roadmap.bulkUpdate');
 });
 
 require __DIR__.'/auth.php';

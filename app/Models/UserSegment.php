@@ -40,4 +40,12 @@ class UserSegment extends Model
     {
         return $this->belongsToMany(Subscriber::class, 'subscriber_user_segment');
     }
+
+    /**
+     * Relationship: User Segment has many Personas
+     */
+    public function personas()
+    {
+        return $this->belongsToMany(Persona::class, 'persona_user_segment');
+    }
 }
