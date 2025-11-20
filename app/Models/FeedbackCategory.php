@@ -6,7 +6,7 @@ use App\Traits\BelongsToUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Roadmap extends Model
+class FeedbackCategory extends Model
 {
     use HasFactory, BelongsToUser;
 
@@ -24,7 +24,7 @@ class Roadmap extends Model
     ];
 
     /**
-     * Scope to get only active statuses
+     * Scope a query to only include active categories.
      */
     public function scopeActive($query)
     {
@@ -32,7 +32,7 @@ class Roadmap extends Model
     }
 
     /**
-     * Scope to order by sort_order
+     * Scope a query to order categories by sort order.
      */
     public function scopeOrdered($query)
     {

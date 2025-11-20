@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToUser;
 use Illuminate\Database\Eloquent\Model;
 
 class UserSegment extends Model
 {
+    use BelongsToUser;
+
     protected $fillable = [
+        'user_id',
         'name',
         'status',
         'description',

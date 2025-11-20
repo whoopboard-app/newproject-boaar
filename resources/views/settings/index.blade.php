@@ -14,8 +14,8 @@
 
 <div class="row">
     <!-- My Profile Card -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card">
+    <div class="col-lg-3 col-md-6 mb-3 d-flex">
+        <div class="card h-100 w-100">
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <div class="avatar-lg">
@@ -47,8 +47,8 @@
     </div>
 
     <!-- Invite Team Member Card -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card">
+    <div class="col-lg-3 col-md-6 mb-3 d-flex">
+        <div class="card h-100 w-100">
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <div class="avatar-lg">
@@ -80,8 +80,8 @@
     </div>
 
     <!-- Categories Card -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card">
+    <div class="col-lg-3 col-md-6 mb-3 d-flex">
+        <div class="card h-100 w-100">
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <div class="avatar-lg">
@@ -111,13 +111,10 @@
             </div>
         </div>
     </div>
-</div>
 
-<!-- Additional Settings Row -->
-<div class="row mt-3">
     <!-- General Settings Card -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card">
+    <div class="col-lg-3 col-md-6 mb-3 d-flex">
+        <div class="card h-100 w-100">
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <div class="avatar-lg">
@@ -147,10 +144,14 @@
             </div>
         </div>
     </div>
+</div>
+
+<!-- Additional Settings Row -->
+<div class="row mt-3">
 
     <!-- Notifications Settings Card -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card">
+    <div class="col-lg-3 col-md-6 mb-3 d-flex">
+        <div class="card h-100 w-100">
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <div class="avatar-lg">
@@ -182,8 +183,8 @@
     </div>
 
     <!-- Security Settings Card -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card">
+    <div class="col-lg-3 col-md-6 mb-3 d-flex">
+        <div class="card h-100 w-100">
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <div class="avatar-lg">
@@ -215,8 +216,8 @@
     </div>
 
     <!-- RoadMap Card -->
-    <div class="col-lg-4 col-md-6">
-        <div class="card">
+    <div class="col-lg-3 col-md-6 mb-3 d-flex">
+        <div class="card h-100 w-100">
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <div class="avatar-lg">
@@ -242,6 +243,72 @@
                 <div class="d-flex align-items-center text-muted">
                     <i class="ti ti-list-check me-2"></i>
                     <small>Manage status workflow</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Category Card -->
+    <div class="col-lg-3 col-md-6 mb-3 d-flex">
+        <div class="card h-100 w-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="avatar-lg">
+                        <span class="avatar-title rounded-circle bg-info-subtle">
+                            <i class="ti ti-message-2 fs-2 text-info"></i>
+                        </span>
+                    </div>
+                </div>
+                <h5 class="card-title mb-2">Feedback Category</h5>
+                <p class="text-muted fs-14 mb-3">
+                    Manage feedback categories with auto-generated colors and organize user feedback efficiently.
+                </p>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('feedback-category.index') }}" class="btn btn-sm btn-info">
+                        <i class="ti ti-eye me-1"></i>View
+                    </a>
+                    <a href="{{ route('feedback-category.index') }}" class="btn btn-sm btn-outline-info">
+                        <i class="ti ti-settings me-1"></i>Manage
+                    </a>
+                </div>
+            </div>
+            <div class="card-footer border-top">
+                <div class="d-flex align-items-center text-muted">
+                    <i class="ti ti-category me-2"></i>
+                    <small>Organize feedback types</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Card -->
+    <div class="col-lg-3 col-md-6 mb-3 d-flex">
+        <div class="card h-100 w-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="avatar-lg">
+                        <span class="avatar-title rounded-circle bg-success-subtle">
+                            <i class="ti ti-messages fs-2 text-success"></i>
+                        </span>
+                    </div>
+                </div>
+                <h5 class="card-title mb-2">Feedback</h5>
+                <p class="text-muted fs-14 mb-3">
+                    Manage user feedback and ideas with categories, statuses, comments, and persona mapping.
+                </p>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('feedback.index') }}" class="btn btn-sm btn-success">
+                        <i class="ti ti-eye me-1"></i>View
+                    </a>
+                    <a href="{{ route('feedback.create') }}" class="btn btn-sm btn-outline-success">
+                        <i class="ti ti-plus me-1"></i>Add New
+                    </a>
+                </div>
+            </div>
+            <div class="card-footer border-top">
+                <div class="d-flex align-items-center text-muted">
+                    <i class="ti ti-bulb me-2"></i>
+                    <small>Collect user ideas</small>
                 </div>
             </div>
         </div>

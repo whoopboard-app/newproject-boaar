@@ -10,6 +10,8 @@ use App\Http\Controllers\UserSegmentController;
 use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\RoadmapController;
+use App\Http\Controllers\FeedbackCategoryController;
+use App\Http\Controllers\FeedbackController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -110,6 +112,25 @@ Route::middleware('auth')->group(function () {
     Route::delete('/roadmap/{roadmap}', [RoadmapController::class, 'destroy'])->name('roadmap.destroy');
     Route::post('/roadmap/reorder', [RoadmapController::class, 'reorder'])->name('roadmap.reorder');
     Route::post('/roadmap/bulk-update', [RoadmapController::class, 'bulkUpdate'])->name('roadmap.bulkUpdate');
+
+    // Feedback Category Management
+    Route::get('/feedback-category', [FeedbackCategoryController::class, 'index'])->name('feedback-category.index');
+    Route::post('/feedback-category', [FeedbackCategoryController::class, 'store'])->name('feedback-category.store');
+    Route::put('/feedback-category/{feedbackCategory}', [FeedbackCategoryController::class, 'update'])->name('feedback-category.update');
+    Route::delete('/feedback-category/{feedbackCategory}', [FeedbackCategoryController::class, 'destroy'])->name('feedback-category.destroy');
+    Route::post('/feedback-category/reorder', [FeedbackCategoryController::class, 'reorder'])->name('feedback-category.reorder');
+    Route::post('/feedback-category/bulk-update', [FeedbackCategoryController::class, 'bulkUpdate'])->name('feedback-category.bulkUpdate');
+
+    // Feedback Management
+    Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
+    Route::get('/feedback/create', [FeedbackController::class, 'create'])->name('feedback.create');
+    Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+    Route::get('/feedback/{feedback}', [FeedbackController::class, 'show'])->name('feedback.show');
+    Route::get('/feedback/{feedback}/edit', [FeedbackController::class, 'edit'])->name('feedback.edit');
+    Route::put('/feedback/{feedback}', [FeedbackController::class, 'update'])->name('feedback.update');
+    Route::delete('/feedback/{feedback}', [FeedbackController::class, 'destroy'])->name('feedback.destroy');
+    Route::post('/feedback/{feedback}/comment', [FeedbackController::class, 'storeComment'])->name('feedback.comment.store');
+    Route::delete('/feedback/{feedback}/comment/{comment}', [FeedbackController::class, 'destroyComment'])->name('feedback.comment.destroy');
 });
 
 require __DIR__.'/auth.php';

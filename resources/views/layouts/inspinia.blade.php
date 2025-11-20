@@ -78,7 +78,7 @@
 
                     <!-- Feedback -->
                     <li class="side-nav-item">
-                        <a href="#" class="side-nav-link">
+                        <a href="{{ route('feedback.index') }}" class="side-nav-link {{ request()->routeIs('feedback.*') ? 'active' : '' }}">
                             <span class="menu-icon"><i class="ti ti-message-dots"></i></span>
                             <span class="menu-text">Feedback</span>
                         </a>
@@ -86,7 +86,7 @@
 
                     <!-- Roadmap -->
                     <li class="side-nav-item">
-                        <a href="#" class="side-nav-link">
+                        <a href="{{ route('roadmap.index') }}" class="side-nav-link {{ request()->routeIs('roadmap.*') ? 'active' : '' }}">
                             <span class="menu-icon"><i class="ti ti-map-pin"></i></span>
                             <span class="menu-text">Roadmap</span>
                         </a>
