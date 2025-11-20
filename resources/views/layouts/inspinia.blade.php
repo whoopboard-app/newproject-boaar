@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-sidenav-size="sm-hover">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-sidenav-size="default" data-menu-color="gray">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -21,6 +21,130 @@
 
     <!-- Icons css -->
     <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css">
+
+    <!-- Custom Sidebar and Topbar Gray Background -->
+    <style>
+        /* Gray sidebar background */
+        .sidenav-menu {
+            background-color: #f5f5f5 !important;
+        }
+
+        /* Sidebar text and icons - black */
+        .sidenav-menu .side-nav-link,
+        .sidenav-menu .menu-text,
+        .sidenav-menu .side-nav-title {
+            color: #000000 !important;
+        }
+
+        .sidenav-menu .menu-icon i {
+            color: #000000 !important;
+        }
+
+        /* Active menu item */
+        .sidenav-menu .side-nav-link.active {
+            background-color: #e0e0e0 !important;
+            color: #000000 !important;
+        }
+
+        /* Hover effect */
+        .sidenav-menu .side-nav-link:hover {
+            background-color: #e8e8e8 !important;
+            color: #000000 !important;
+        }
+
+        /* Logo area background */
+        .sidenav-menu .logo {
+            background-color: #f5f5f5 !important;
+        }
+
+        /* Topbar white background */
+        .app-topbar {
+            background-color: #ffffff !important;
+            border-bottom: 1px solid #e0e0e0 !important;
+            position: relative !important;
+        }
+
+        .topbar-menu {
+            background-color: #ffffff !important;
+        }
+
+        /* Topbar buttons and icons - black */
+        .app-topbar .btn-topbar,
+        .app-topbar .btn-topbar i,
+        .app-topbar .sidenav-toggle-button,
+        .app-topbar .sidenav-toggle-button i {
+            color: #000000 !important;
+            background-color: transparent !important;
+            border: none !important;
+        }
+
+        /* Topbar button hover effect */
+        .app-topbar .btn-topbar:hover,
+        .app-topbar .sidenav-toggle-button:hover {
+            background-color: #e8e8e8 !important;
+            color: #000000 !important;
+        }
+
+        /* Logo area in topbar */
+        .app-topbar .logo-topbar {
+            background-color: #f5f5f5 !important;
+        }
+
+        /* Notification badge */
+        .app-topbar .badge {
+            background-color: #dc3545 !important;
+        }
+
+        /* Content page white background */
+        .content-page {
+            background-color: #ffffff !important;
+            padding-top: 2% !important;
+            padding-left: 5% !important;
+            padding-right: 5% !important;
+        }
+
+        /* Footer full width */
+        .footer {
+            margin-left: -5% !important;
+            margin-right: -5% !important;
+            margin-top: 10% !important;
+            width: calc(100% + 10%) !important;
+        }
+
+        /* Form elements border color */
+        .form-control,
+        .form-select,
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        input[type="tel"],
+        input[type="url"],
+        input[type="date"],
+        input[type="time"],
+        input[type="datetime-local"],
+        textarea,
+        select {
+            border-color: #B9B9B9 !important;
+        }
+
+        /* Form elements focus state */
+        .form-control:focus,
+        .form-select:focus,
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="number"]:focus,
+        input[type="tel"]:focus,
+        input[type="url"]:focus,
+        input[type="date"]:focus,
+        input[type="time"]:focus,
+        input[type="datetime-local"]:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #B9B9B9 !important;
+        }
+    </style>
 
     @stack('styles')
 </head>

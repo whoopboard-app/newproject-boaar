@@ -48,6 +48,79 @@
         line-height: 1.8;
         font-size: 1rem;
     }
+
+    /* Quill Editor Content Styling */
+    .ql-editor-content {
+        font-family: inherit;
+        line-height: 1.8;
+    }
+
+    .ql-editor-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin: 1rem 0;
+    }
+
+    .ql-editor-content h1 {
+        font-size: 2em;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .ql-editor-content h2 {
+        font-size: 1.5em;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .ql-editor-content h3 {
+        font-size: 1.17em;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .ql-editor-content p {
+        margin-bottom: 1rem;
+    }
+
+    .ql-editor-content ul,
+    .ql-editor-content ol {
+        margin-bottom: 1rem;
+        padding-left: 2rem;
+    }
+
+    .ql-editor-content blockquote {
+        border-left: 4px solid #dee2e6;
+        padding-left: 1rem;
+        margin: 1rem 0;
+        color: #6c757d;
+        font-style: italic;
+    }
+
+    .ql-editor-content pre {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 4px;
+        overflow-x: auto;
+        margin: 1rem 0;
+    }
+
+    .ql-editor-content code {
+        background-color: #f8f9fa;
+        padding: 0.2rem 0.4rem;
+        border-radius: 3px;
+        font-size: 0.9em;
+    }
+
+    .ql-editor-content a {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .ql-editor-content a:hover {
+        text-decoration: underline;
+    }
 </style>
 @endpush
 
@@ -115,8 +188,8 @@
                 <!-- Full Description -->
                 <div class="changelog-content">
                     <h5 class="mb-3">Description</h5>
-                    <div>
-                        {!! nl2br(e($changelog->description)) !!}
+                    <div class="ql-editor-content">
+                        {!! $changelog->description !!}
                     </div>
                 </div>
             </div>

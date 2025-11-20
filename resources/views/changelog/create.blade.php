@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
 <link href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css">
 @include('components.filepond-styles')
+@include('components.quill-styles')
 <style>
     .choices__inner {
         min-height: 39.51px !important;
@@ -99,45 +100,46 @@
 
                     <!-- Cover Image -->
                     <div class="mb-3">
-                        <label for="cover_image" class="form-label">Cover Image @if(!$changelog)<span class="text-danger">*</span>@endif</label>
+                        <label for="cover_image" class="form-label">Cover Image</label>
                         <input type="file" class="filepond" id="cover_image" name="cover_image" accept="image/*" data-existing-image="{{ $changelog && $changelog->cover_image ? asset('storage/' . $changelog->cover_image) : '' }}">
                         @error('cover_image')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
-                        <small class="text-muted">Upload a cover image for the changelog (Max: 2MB, Formats: JPEG, PNG, JPG, GIF)@if($changelog) - <strong>Leave empty to keep existing image</strong>@endif</small>
+                        <small class="text-muted">Upload a cover image for the changelog (Optional, Max: 2MB, Formats: JPEG, PNG, JPG, GIF)@if($changelog) - <strong>Leave empty to keep existing image</strong>@endif</small>
                     </div>
 
                     <!-- Short Description -->
                     <div class="mb-3">
                         <label for="short_description" class="form-label">Short Description <span class="text-danger">*</span></label>
-                        <textarea class="form-control @error('short_description') is-invalid @enderror" id="short_description" name="short_description" rows="3" maxlength="500" placeholder="Enter at least 200 characters..." required>{{ old('short_description', $changelog->short_description ?? '') }}</textarea>
+                        <textarea class="form-control @error('short_description') is-invalid @enderror" id="short_description" name="short_description" rows="3" maxlength="200" placeholder="Enter short description..." required>{{ old('short_description', $changelog->short_description ?? '') }}</textarea>
                         @error('short_description')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                         <div class="d-flex justify-content-between">
-                            <small class="text-muted">Minimum 200 characters</small>
-                            <small class="text-muted"><span id="char-count">0</span> / 500 characters</small>
+                            <small class="text-muted">Maximum 200 characters</small>
+                            <small class="text-muted"><span id="char-count">0</span> / 200 characters</small>
                         </div>
-                        <div id="short-desc-error" class="invalid-feedback d-none">Please enter at least 200 characters</div>
                     </div>
 
                     <!-- Full Description -->
                     <div class="mb-3">
                         <label for="description" class="form-label">Enter Descriptions <span class="text-danger">*</span></label>
-                        <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="8" placeholder="Enter full description..." required>{{ old('description', $changelog->description ?? '') }}</textarea>
+                        <div class="quill-editor-wrapper @error('description') is-invalid @enderror">
+                            <div id="quill-editor"></div>
+                        </div>
+                        <input type="hidden" id="description" name="description" value="{{ old('description', $changelog->description ?? '') }}">
                         @error('description')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
-                        <small class="text-muted">Provide detailed information about the changelog</small>
+                        <small class="text-muted">Provide detailed information about the changelog using the rich text editor</small>
                     </div>
 
                     <!-- Category -->
                     <div class="mb-3">
                         <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
-                        <select class="form-select @error('category') is-invalid @enderror" id="category" name="category" data-choices required>
-                            <option value="">Select Category</option>
+                        <select class="form-select @error('category') is-invalid @enderror" id="category" name="category[]" data-choices multiple required>
                             @foreach($categories as $category)
-                                <option value="{{ $category->id }}" {{ old('category', $changelog->category_id ?? '') == $category->id ? 'selected' : '' }}>
+                                <option value="{{ $category->id }}" {{ in_array($category->id, old('category', $changelog && $changelog->category_id ? [$changelog->category_id] : [])) ? 'selected' : '' }}>
                                     {{ $category->name }}
                                 </option>
                             @endforeach
@@ -145,6 +147,7 @@
                         @error('category')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                        <small class="text-muted">You can select multiple categories</small>
                     </div>
 
                     <!-- Tags -->
@@ -212,10 +215,23 @@
 <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
 <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.polyfills.min.js"></script>
 @include('components.filepond-scripts')
+@include('components.quill-scripts')
 <script>
 
 document.addEventListener('DOMContentLoaded', function() {
     const isEdit = {{ $changelog ? 'true' : 'false' }};
+
+    // Initialize Quill editor
+    const descriptionInput = document.getElementById('description');
+    const quillEditor = initQuill('#quill-editor', {
+        placeholder: 'Enter detailed description...',
+        initialContent: descriptionInput.value
+    });
+
+    // Sync Quill content to hidden input on text change
+    quillEditor.on('text-change', function() {
+        descriptionInput.value = quillEditor.root.innerHTML;
+    });
 
     // Initialize FilePond with custom 16:9 aspect ratio for changelog
     const pond = initFilePond('input[type="file"].filepond', {
@@ -224,41 +240,18 @@ document.addEventListener('DOMContentLoaded', function() {
         imageResizeTargetHeight: 675,
         imageResizeMode: 'cover',
         imageResizeUpscale: false,
-        required: !isEdit  // Not required when editing
+        required: false  // Optional field
     });
 
     // Handle form submission - ensure FilePond processes the file
     const form = document.querySelector('#changelogForm');
     const shortDescTextarea = document.getElementById('short_description');
-    const shortDescError = document.getElementById('short-desc-error');
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();
-        let hasError = false;
 
-        // Check if FilePond has a file (only required for new changelogs)
+        // Check if FilePond has a file (optional field, no validation needed)
         const files = pond.getFiles();
-        if (files.length === 0 && !isEdit) {
-            alert('Please upload a cover image');
-            return false;
-        }
-
-        // Check short description length
-        if (shortDescTextarea.value.length < 200) {
-            shortDescTextarea.classList.add('is-invalid');
-            shortDescError.classList.remove('d-none');
-            shortDescError.classList.add('d-block');
-            shortDescTextarea.focus();
-            hasError = true;
-        } else {
-            shortDescTextarea.classList.remove('is-invalid');
-            shortDescError.classList.remove('d-block');
-            shortDescError.classList.add('d-none');
-        }
-
-        if (hasError) {
-            return false;
-        }
 
         // Create FormData and append all form fields
         const formData = new FormData();
@@ -273,8 +266,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
         formData.append('title', document.getElementById('title').value);
         formData.append('short_description', shortDescTextarea.value);
-        formData.append('description', document.getElementById('description').value);
-        formData.append('category', document.getElementById('category').value);
+
+        // Get description from Quill editor
+        const descriptionHtml = quillEditor.root.innerHTML;
+        formData.append('description', descriptionHtml);
+
+        // Handle multiple categories
+        const categorySelect = document.getElementById('category');
+        const selectedCategories = Array.from(categorySelect.selectedOptions).map(option => option.value);
+        selectedCategories.forEach(categoryId => {
+            formData.append('category[]', categoryId);
+        });
+
         formData.append('tags', document.getElementById('tags').value);
         formData.append('author_name', document.getElementById('author_name').value);
         formData.append('published_date', document.getElementById('published_date').value);
@@ -316,25 +319,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Remove error when user types
-    shortDescTextarea.addEventListener('input', function() {
-        if (this.value.length >= 200) {
-            this.classList.remove('is-invalid');
-            shortDescError.classList.remove('d-block');
-            shortDescError.classList.add('d-none');
-        }
-    });
-
     // Initialize Choices.js for all dropdowns
     const choicesElements = document.querySelectorAll('[data-choices]');
     const choicesInstances = {};
 
     choicesElements.forEach(function(element) {
+        const isMultiple = element.hasAttribute('multiple');
         choicesInstances[element.id] = new Choices(element, {
             searchEnabled: true,
             itemSelectText: '',
             shouldSort: false,
-            removeItemButton: false
+            removeItemButton: isMultiple  // Show remove button for multiselect
         });
     });
 
@@ -378,12 +373,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateCharCount() {
         charCount.textContent = shortDesc.value.length;
 
-        if (shortDesc.value.length < 200) {
+        if (shortDesc.value.length > 200) {
             charCount.parentElement.classList.add('text-danger');
-            charCount.parentElement.classList.remove('text-success');
+            charCount.parentElement.classList.remove('text-muted');
         } else {
-            charCount.parentElement.classList.add('text-success');
             charCount.parentElement.classList.remove('text-danger');
+            charCount.parentElement.classList.add('text-muted');
         }
     }
 

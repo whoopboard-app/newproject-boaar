@@ -56,10 +56,11 @@ class ChangelogController extends Controller
         }
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'cover_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'short_description' => 'required|string|min:200|max:500',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'short_description' => 'required|string|max:200',
             'description' => 'required|string',
-            'category' => 'required|exists:categories,id',
+            'category' => 'required|array',
+            'category.*' => 'exists:categories,id',
             'tags' => 'nullable|string',
             'author_name' => 'required|string|max:255',
             'published_date' => 'required|date',
@@ -89,7 +90,7 @@ class ChangelogController extends Controller
                 'cover_image' => $coverImagePath,
                 'short_description' => $validated['short_description'],
                 'description' => $validated['description'],
-                'category_id' => $validated['category'],
+                'category_id' => $validated['category'][0], // Use first selected category
                 'tags' => $tags,
                 'author_name' => $validated['author_name'],
                 'published_date' => $validated['published_date'],
@@ -115,9 +116,10 @@ class ChangelogController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'short_description' => 'required|string|min:200|max:500',
+            'short_description' => 'required|string|max:200',
             'description' => 'required|string',
-            'category' => 'required|exists:categories,id',
+            'category' => 'required|array',
+            'category.*' => 'exists:categories,id',
             'tags' => 'nullable|string',
             'author_name' => 'required|string|max:255',
             'published_date' => 'required|date',
@@ -151,7 +153,7 @@ class ChangelogController extends Controller
                 'cover_image' => $coverImagePath,
                 'short_description' => $validated['short_description'],
                 'description' => $validated['description'],
-                'category_id' => $validated['category'],
+                'category_id' => $validated['category'][0], // Use first selected category
                 'tags' => $tags,
                 'author_name' => $validated['author_name'],
                 'published_date' => $validated['published_date'],
