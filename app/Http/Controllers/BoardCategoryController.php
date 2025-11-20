@@ -5,11 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\BoardCategory;
 use App\Models\KnowledgeBoard;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BoardCategoryController extends Controller
 {
     public function create(KnowledgeBoard $knowledgeBoard)
     {
+        // Only Owner, Admin, and Moderator can create categories
+        if (!Auth::user()->canManageChangelogAndKnowledge()) {
+            return redirect()->route('knowledge-board.show', $knowledgeBoard)
+                ->with('error', 'You do not have permission to create categories.');
+        }
         $parentCategories = BoardCategory::where('knowledge_board_id', $knowledgeBoard->id)
             ->where('is_parent', true)
             ->with(['childCategories' => function($query) {
@@ -30,6 +36,12 @@ class BoardCategoryController extends Controller
 
     public function edit(KnowledgeBoard $knowledgeBoard, BoardCategory $category)
     {
+        // Only Owner, Admin, and Moderator can edit categories
+        if (!Auth::user()->canEdit()) {
+            return redirect()->route('knowledge-board.show', $knowledgeBoard)
+                ->with('error', 'You do not have permission to edit categories.');
+        }
+
         $parentCategories = BoardCategory::where('knowledge_board_id', $knowledgeBoard->id)
             ->where('is_parent', true)
             ->where('id', '!=', $category->id)
@@ -44,6 +56,12 @@ class BoardCategoryController extends Controller
 
     public function store(Request $request, KnowledgeBoard $knowledgeBoard)
     {
+        // Only Owner, Admin, and Moderator can create categories
+        if (!Auth::user()->canManageChangelogAndKnowledge()) {
+            return redirect()->route('knowledge-board.show', $knowledgeBoard)
+                ->with('error', 'You do not have permission to create categories.');
+        }
+
         $validated = $request->validate([
             'category_name' => 'required|string|max:255',
             'category_icon' => 'nullable|string|max:255',
@@ -77,6 +95,12 @@ class BoardCategoryController extends Controller
 
     public function update(Request $request, KnowledgeBoard $knowledgeBoard, BoardCategory $category)
     {
+        // Only Owner, Admin, and Moderator can edit categories
+        if (!Auth::user()->canEdit()) {
+            return redirect()->route('knowledge-board.show', $knowledgeBoard)
+                ->with('error', 'You do not have permission to edit categories.');
+        }
+
         $validated = $request->validate([
             'category_name' => 'required|string|max:255',
             'category_icon' => 'nullable|string|max:255',
@@ -109,6 +133,12 @@ class BoardCategoryController extends Controller
 
     public function destroy(KnowledgeBoard $knowledgeBoard, BoardCategory $category)
     {
+        // Only Owner and Admin can delete categories (not Moderator)
+        if (!Auth::user()->canDelete()) {
+            return redirect()->route('knowledge-board.show', $knowledgeBoard)
+                ->with('error', 'You do not have permission to delete categories.');
+        }
+
         try {
             $category->delete();
 

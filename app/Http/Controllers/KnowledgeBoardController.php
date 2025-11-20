@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\KnowledgeBoard;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class KnowledgeBoardController extends Controller
@@ -17,6 +18,12 @@ class KnowledgeBoardController extends Controller
 
     public function create()
     {
+        // Only Owner, Admin, and Moderator can create knowledge board
+        if (!Auth::user()->canManageChangelogAndKnowledge()) {
+            return redirect()->route('knowledge-board.index')
+                ->with('error', 'You do not have permission to create knowledge boards.');
+        }
+
         $teamMembers = User::all();
         return view('knowledge-board.create', compact('teamMembers'));
     }
@@ -45,6 +52,11 @@ class KnowledgeBoardController extends Controller
 
     public function store(Request $request)
     {
+        // Only Owner, Admin, and Moderator can create knowledge board
+        if (!Auth::user()->canManageChangelogAndKnowledge()) {
+            return redirect()->route('knowledge-board.index')
+                ->with('error', 'You do not have permission to create knowledge boards.');
+        }
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'short_description' => 'required|string',

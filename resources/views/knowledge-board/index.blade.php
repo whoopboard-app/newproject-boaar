@@ -30,12 +30,21 @@
                 <h4 class="page-title">Knowledge Board</h4>
                 <p class="text-muted fs-14 mb-0">Manage your knowledge boards and documentation</p>
             </div>
+            @if(Auth::user()->canManageChangelogAndKnowledge())
             <a href="{{ route('knowledge-board.create') }}" class="btn btn-primary">
                 <i class="ti ti-plus me-1"></i>Create New Board
             </a>
+            @endif
         </div>
     </div>
 </div>
+
+@if(Auth::user()->isReadOnly())
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <i class="ti ti-info-circle me-2"></i>You are in <strong>read-only mode</strong>. You can view but not modify knowledge boards.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
 
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -157,12 +166,16 @@
                                                 <a href="{{ route('knowledge-board.show', $board) }}" class="btn btn-sm btn-soft-info" title="View">
                                                     <i class="ti ti-eye"></i>
                                                 </a>
+                                                @if(Auth::user()->canEdit())
                                                 <button type="button" class="btn btn-sm btn-soft-primary" title="Edit">
                                                     <i class="ti ti-edit"></i>
                                                 </button>
+                                                @endif
+                                                @if(Auth::user()->canDelete())
                                                 <button type="button" class="btn btn-sm btn-soft-danger" title="Delete">
                                                     <i class="ti ti-trash"></i>
                                                 </button>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>
@@ -174,9 +187,80 @@
                     <div class="text-center py-5">
                         <i class="ti ti-book-off fs-1 text-muted mb-3"></i>
                         <h5 class="text-muted">No Knowledge Boards Found</h5>
+                        @if(Auth::user()->canManageChangelogAndKnowledge())
                         <p class="text-muted mb-4">Start by creating your first knowledge board.</p>
                         <a href="{{ route('knowledge-board.create') }}" class="btn btn-primary">
                             <i class="ti ti-plus me-1"></i>Create New Board
+                        </a>
+                        @else
+                        <p class="text-muted mb-4">There are no knowledge boards to display.</p>
+                        @endif
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Copy public URL functionality
+    window.copyPublicUrl = function(url) {
+        navigator.clipboard.writeText(url).then(function() {
+            // Show success message
+            alert('URL copied to clipboard!');
+        }, function(err) {
+            console.error('Could not copy text: ', err);
+        });
+    };
+
+    // Custom table search functionality
+    const tableContainer = document.querySelector('[data-table]');
+
+    if (tableContainer) {
+        const searchInput = tableContainer.querySelector('[data-table-search]');
+        const table = tableContainer.querySelector('table');
+
+        if (searchInput && table) {
+            const tbody = table.querySelector('tbody');
+            const rows = tbody.querySelectorAll('tr');
+
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+
+                    if (text.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Show "no results" message if all rows are hidden
+                const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
+
+                let noResultsRow = tbody.querySelector('.no-results-row');
+
+                if (visibleRows.length === 0 && searchTerm !== '') {
+                    if (!noResultsRow) {
+                        noResultsRow = document.createElement('tr');
+                        noResultsRow.className = 'no-results-row';
+                        noResultsRow.innerHTML = '<td colspan="8" class="text-center py-4"><i class="ti ti-search-off fs-1 text-muted mb-2 d-block"></i><h6 class="text-muted">No results found</h6><p class="text-muted mb-0">Try adjusting your search terms</p></td>';
+                        tbody.appendChild(noResultsRow);
+                    }
+                } else if (noResultsRow) {
+                    noResultsRow.remove();
+                }
+            });
+        }
+    }
+});
+</script>
+@endpush
                         </a>
                     </div>
                 @endif

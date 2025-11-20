@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-use App\Traits\BelongsToUser;
+use App\Traits\BelongsToTeam;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Roadmap extends Model
 {
-    use HasFactory, BelongsToUser;
+    use HasFactory, BelongsToTeam;
 
     protected $fillable = [
-        'user_id',
+        'team_id',
         'name',
         'color',
         'is_active',

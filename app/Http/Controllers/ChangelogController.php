@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Changelog;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ChangelogController extends Controller
@@ -17,6 +18,12 @@ class ChangelogController extends Controller
 
     public function create()
     {
+        // Only Owner, Admin, and Moderator can create changelog
+        if (!Auth::user()->canManageChangelogAndKnowledge()) {
+            return redirect()->route('changelog.index')
+                ->with('error', 'You do not have permission to create changelogs.');
+        }
+
         $categories = Category::where('status', 'active')->get();
         $changelog = null;
         return view('changelog.create', compact('categories', 'changelog'));
@@ -30,12 +37,23 @@ class ChangelogController extends Controller
 
     public function edit(Changelog $changelog)
     {
+        // Only Owner, Admin, and Moderator can edit changelog
+        if (!Auth::user()->canEdit()) {
+            return redirect()->route('changelog.index')
+                ->with('error', 'You do not have permission to edit changelogs.');
+        }
+
         $categories = Category::where('status', 'active')->get();
         return view('changelog.create', compact('categories', 'changelog'));
     }
 
     public function store(Request $request)
     {
+        // Only Owner, Admin, and Moderator can create changelog
+        if (!Auth::user()->canManageChangelogAndKnowledge()) {
+            return redirect()->route('changelog.index')
+                ->with('error', 'You do not have permission to create changelogs.');
+        }
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'cover_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -88,6 +106,12 @@ class ChangelogController extends Controller
 
     public function update(Request $request, Changelog $changelog)
     {
+        // Only Owner, Admin, and Moderator can edit changelog
+        if (!Auth::user()->canEdit()) {
+            return redirect()->route('changelog.index')
+                ->with('error', 'You do not have permission to edit changelogs.');
+        }
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -145,6 +169,12 @@ class ChangelogController extends Controller
 
     public function destroy(Changelog $changelog)
     {
+        // Only Owner and Admin can delete changelog (not Moderator)
+        if (!Auth::user()->canDelete()) {
+            return redirect()->route('changelog.index')
+                ->with('error', 'You do not have permission to delete changelogs.');
+        }
+
         try {
             // Delete cover image
             if ($changelog->cover_image) {

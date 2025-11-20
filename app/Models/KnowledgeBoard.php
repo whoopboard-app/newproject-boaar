@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-use App\Traits\BelongsToUser;
+use App\Traits\BelongsToTeam;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class KnowledgeBoard extends Model
 {
-    use BelongsToUser;
+    use BelongsToTeam;
 
     protected $fillable = [
-        'user_id',
+        'team_id',
         'name',
         'short_description',
         'cover_page',

@@ -8,6 +8,7 @@ use App\Models\FeedbackComment;
 use App\Models\Persona;
 use App\Models\Roadmap;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class FeedbackController extends Controller
 {
@@ -28,6 +29,11 @@ class FeedbackController extends Controller
      */
     public function create()
     {
+        // Owner, Admin, Moderator, and Idea Submitter can create feedback
+        if (!Auth::user()->canManageFeedback()) {
+            return redirect()->route('feedback.index')
+                ->with('error', 'You do not have permission to create feedback.');
+        }
         $categories = FeedbackCategory::active()->ordered()->get();
         $statuses = Roadmap::active()->ordered()->get();
         $personas = Persona::all();
@@ -47,6 +53,12 @@ class FeedbackController extends Controller
      */
     public function store(Request $request)
     {
+        // Owner, Admin, Moderator, and Idea Submitter can create feedback
+        if (!Auth::user()->canManageFeedback()) {
+            return redirect()->route('feedback.index')
+                ->with('error', 'You do not have permission to create feedback.');
+        }
+
         $validated = $request->validate([
             'idea' => 'required|string',
             'feedback_category_id' => 'nullable|exists:feedback_categories,id',
@@ -90,6 +102,12 @@ class FeedbackController extends Controller
      */
     public function edit(Feedback $feedback)
     {
+        // Owner, Admin, Moderator, and Idea Submitter can edit feedback
+        if (!Auth::user()->canManageFeedback()) {
+            return redirect()->route('feedback.index')
+                ->with('error', 'You do not have permission to edit feedback.');
+        }
+
         $categories = FeedbackCategory::active()->ordered()->get();
         $statuses = Roadmap::active()->ordered()->get();
         $personas = Persona::all();
@@ -112,6 +130,12 @@ class FeedbackController extends Controller
      */
     public function update(Request $request, Feedback $feedback)
     {
+        // Owner, Admin, Moderator, and Idea Submitter can edit feedback
+        if (!Auth::user()->canManageFeedback()) {
+            return redirect()->route('feedback.index')
+                ->with('error', 'You do not have permission to edit feedback.');
+        }
+
         $validated = $request->validate([
             'idea' => 'required|string',
             'feedback_category_id' => 'nullable|exists:feedback_categories,id',
@@ -145,6 +169,12 @@ class FeedbackController extends Controller
      */
     public function destroy(Feedback $feedback)
     {
+        // Only Owner and Admin can delete feedback (not Moderator or Idea Submitter)
+        if (!Auth::user()->canDelete()) {
+            return redirect()->route('feedback.index')
+                ->with('error', 'You do not have permission to delete feedback.');
+        }
+
         $feedback->delete();
 
         return redirect()->route('feedback.index')

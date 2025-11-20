@@ -160,13 +160,15 @@
 
                     <li class="side-nav-title mt-2">Settings</li>
 
-                    <!-- App Settings -->
+                    <!-- App Settings (Hidden for Idea Submitter and Viewer) -->
+                    @if(Auth::user()->canAccessAppSettings())
                     <li class="side-nav-item">
                         <a href="{{ route('settings.index') }}" class="side-nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
                             <span class="menu-icon"><i class="ti ti-settings"></i></span>
                             <span class="menu-text">App Settings</span>
                         </a>
                     </li>
+                    @endif
                     <!-- View Your Website -->
                     <li class="side-nav-item">
                         <a href="#" class="side-nav-link" target="_blank">
@@ -408,7 +410,7 @@
                             <!-- User Info Header -->
                             <div class="dropdown-header pb-2">
                                 <h6 class="mb-0">{{ Auth::user()->name }}</h6>
-                                <small class="text-muted">Administrator</small>
+                                <small class="text-muted">{{ ucfirst(str_replace('_', ' ', Auth::user()->roleInTeam() ?? 'Member')) }}</small>
                             </div>
                             <div class="dropdown-divider"></div>
                             <!-- Profile Menu Items -->

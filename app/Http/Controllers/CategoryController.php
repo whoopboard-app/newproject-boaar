@@ -29,7 +29,6 @@ class CategoryController extends Controller
             'category_name.unique' => 'This category name already exists.',
             'status.required' => 'Status is required.',
         ]);
-
         try {
             Category::create([
                 'name' => $validated['category_name'],

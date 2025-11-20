@@ -8,12 +8,18 @@ use App\Models\BoardCategory;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class BoardArticleController extends Controller
 {
     public function create(KnowledgeBoard $knowledgeBoard)
     {
+        // Only Owner, Admin, and Moderator can create articles
+        if (!Auth::user()->canManageChangelogAndKnowledge()) {
+            return redirect()->route('knowledge-board.show', $knowledgeBoard)
+                ->with('error', 'You do not have permission to create articles.');
+        }
         // Get all categories for this board (hierarchical)
         $boardCategories = BoardCategory::where('knowledge_board_id', $knowledgeBoard->id)
             ->where('is_parent', true)
@@ -48,6 +54,12 @@ class BoardArticleController extends Controller
 
     public function edit(KnowledgeBoard $knowledgeBoard, BoardArticle $article)
     {
+        // Only Owner, Admin, and Moderator can edit articles
+        if (!Auth::user()->canEdit()) {
+            return redirect()->route('knowledge-board.show', $knowledgeBoard)
+                ->with('error', 'You do not have permission to edit articles.');
+        }
+
         // Get all categories for this board (hierarchical)
         $boardCategories = BoardCategory::where('knowledge_board_id', $knowledgeBoard->id)
             ->where('is_parent', true)
@@ -77,6 +89,12 @@ class BoardArticleController extends Controller
 
     public function store(Request $request, KnowledgeBoard $knowledgeBoard)
     {
+        // Only Owner, Admin, and Moderator can create articles
+        if (!Auth::user()->canManageChangelogAndKnowledge()) {
+            return redirect()->route('knowledge-board.show', $knowledgeBoard)
+                ->with('error', 'You do not have permission to create articles.');
+        }
+
         $validated = $request->validate([
             'article_title' => 'required|string|max:255',
             'board_category_id' => 'required|exists:board_categories,id',
@@ -137,6 +155,12 @@ class BoardArticleController extends Controller
 
     public function update(Request $request, KnowledgeBoard $knowledgeBoard, BoardArticle $article)
     {
+        // Only Owner, Admin, and Moderator can edit articles
+        if (!Auth::user()->canEdit()) {
+            return redirect()->route('knowledge-board.show', $knowledgeBoard)
+                ->with('error', 'You do not have permission to edit articles.');
+        }
+
         $validated = $request->validate([
             'article_title' => 'required|string|max:255',
             'board_category_id' => 'required|exists:board_categories,id',
@@ -202,6 +226,12 @@ class BoardArticleController extends Controller
 
     public function destroy(KnowledgeBoard $knowledgeBoard, BoardArticle $article)
     {
+        // Only Owner and Admin can delete articles (not Moderator)
+        if (!Auth::user()->canDelete()) {
+            return redirect()->route('knowledge-board.show', $knowledgeBoard)
+                ->with('error', 'You do not have permission to delete articles.');
+        }
+
         try {
             // Delete cover image
             if ($article->cover_image) {

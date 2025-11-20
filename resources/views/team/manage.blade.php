@@ -2,453 +2,262 @@
 
 @section('title', 'Team Management')
 
-@push('styles')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
-<style>
-    /* Match Choices.js height and styling with Bootstrap form-control */
-    .choices__inner {
-        min-height: 39.51px !important;
-        height: 39.51px !important;
-        padding: 0.375rem 0.75rem !important;
-        background-color: #fff !important;
-        border: 1px solid #dee2e6 !important;
-        border-radius: 0.25rem !important;
-        font-size: 1rem !important;
-        line-height: 1.5 !important;
-        display: flex !important;
-        align-items: center !important;
-    }
-
-    .choices__list--single {
-        padding: 0 !important;
-        display: flex !important;
-        align-items: center !important;
-    }
-
-    .choices[data-type*=select-one] .choices__inner {
-        padding-bottom: 0.375rem !important;
-        padding-top: 0.375rem !important;
-    }
-
-    .choices__list--dropdown .choices__item--selectable {
-        padding: 0.5rem 1rem !important;
-    }
-
-    .choices__item--selectable {
-        line-height: 1.5 !important;
-    }
-</style>
-@endpush
-
 @section('content')
 <div class="row">
     <div class="col-12">
-        <div class="page-title-box">
-            <h4 class="page-title">Team Management</h4>
-            <p class="text-muted fs-14">Invite and manage team members for your workspace</p>
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <div>
+                <h2 class="mb-0">{{ $team->name }}</h2>
+                <p class="text-muted fs-14 mb-0">Manage your team members and invitations</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{{ route('dashboard') }}" class="btn btn-secondary">
+                    <i class="ti ti-arrow-left me-1"></i> Back to Dashboard
+                </a>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Invite New Member Section -->
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="ti ti-circle-check me-2"></i>{{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="ti ti-alert-circle me-2"></i>{{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
 <div class="row">
-    <div class="col-lg-12">
+    <!-- Invite New Member -->
+    <div class="col-lg-12 mb-4">
         <div class="card">
             <div class="card-header">
                 <h5 class="card-title mb-0">
-                    <i class="ti ti-user-plus me-2"></i>Invite New Team Member
+                    <i class="ti ti-user-plus me-2"></i>Invite Team Member
                 </h5>
             </div>
             <div class="card-body">
-                <form>
+                <form method="POST" action="{{ route('team.invitation.invite') }}">
+                    @csrf
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control" id="email" name="email" placeholder="Enter email address" required>
-                                <div class="form-text">We'll send an invitation to this email address</div>
-                            </div>
+                        <div class="col-md-5 mb-3 mb-md-0">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                   id="email" name="email" value="{{ old('email') }}"
+                                   placeholder="Enter email address" required>
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label for="role" class="form-label">Role <span class="text-danger">*</span></label>
-                                <select class="form-select" id="role" name="role" data-choices required>
-                                    <option value="member" selected>Member</option>
-                                    <option value="admin">Admin</option>
-                                    <option value="viewer">Viewer</option>
-                                    <option value="owner">Owner</option>
-                                </select>
-                                <div class="form-text">Choose appropriate role for this member</div>
-                            </div>
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <label for="role" class="form-label">Role</label>
+                            <select class="form-select @error('role') is-invalid @enderror"
+                                    id="role" name="role" required>
+                                <option value="">Select role</option>
+                                <option value="admin">Admin - Full Access</option>
+                                <option value="moderator">Moderator - Can Edit (No Delete)</option>
+                                <option value="idea_submitter">Idea Submitter - Can Create Feedback</option>
+                                <option value="viewer">Viewer - Read Only</option>
+                            </select>
+                            @error('role')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
-                        <div class="col-md-2 d-flex align-items-end">
-                            <div class="mb-3 w-100">
-                                <button type="submit" class="btn btn-primary w-100">
-                                    <i class="ti ti-send me-1"></i>Send Invite
-                                </button>
-                            </div>
+                        <div class="col-md-3">
+                            <label class="form-label d-none d-md-block">&nbsp;</label>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="ti ti-send me-1"></i> Send Invite
+                            </button>
                         </div>
                     </div>
                 </form>
 
                 <!-- Role Information -->
-                <div class="alert alert-info mt-3">
+                <div class="alert alert-info mt-3 mb-0">
                     <h6 class="alert-heading mb-2"><i class="ti ti-info-circle me-1"></i>Role Permissions</h6>
                     <ul class="mb-0 ps-3">
-                        <li><strong>Owner:</strong> Full access to all workspace settings, billing, and team management</li>
-                        <li><strong>Admin:</strong> Can manage team members, projects, and workspace settings</li>
-                        <li><strong>Member:</strong> Can create and edit projects, limited settings access</li>
-                        <li><strong>Viewer:</strong> Read-only access to projects and resources</li>
+                        <li><strong>Owner:</strong> Only the signup user - full access to everything</li>
+                        <li><strong>Admin:</strong> Full access to manage team members, projects, and settings</li>
+                        <li><strong>Moderator:</strong> Can edit logs, knowledge boards, and feedback (no delete option)</li>
+                        <li><strong>Idea Submitter:</strong> Can create feedback only (no delete option)</li>
+                        <li><strong>Viewer:</strong> Read-only access to all resources</li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Pending Invitations Section -->
-<div class="row mt-3">
-    <div class="col-lg-12">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">
-                    <i class="ti ti-clock me-2"></i>Pending Invitations
-                </h5>
-                <span class="badge badge-soft-warning">3 Pending</span>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover table-centered mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Invited By</th>
-                                <th>Sent Date</th>
-                                <th>Status</th>
-                                <th class="text-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-sm me-2">
-                                            <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                                                <i class="ti ti-mail"></i>
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0">john.doe@example.com</h6>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge badge-soft-primary">Admin</span>
-                                </td>
-                                <td>{{ Auth::user()->name }}</td>
-                                <td>2 days ago</td>
-                                <td>
-                                    <span class="badge bg-warning">
-                                        <i class="ti ti-clock me-1"></i>Pending
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-sm btn-soft-info" title="Resend Invitation">
-                                            <i class="ti ti-refresh"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-soft-danger" title="Cancel Invitation">
-                                            <i class="ti ti-x"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-sm me-2">
-                                            <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                                                <i class="ti ti-mail"></i>
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0">jane.smith@example.com</h6>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge badge-soft-success">Member</span>
-                                </td>
-                                <td>{{ Auth::user()->name }}</td>
-                                <td>5 days ago</td>
-                                <td>
-                                    <span class="badge bg-warning">
-                                        <i class="ti ti-clock me-1"></i>Pending
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-sm btn-soft-info" title="Resend Invitation">
-                                            <i class="ti ti-refresh"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-soft-danger" title="Cancel Invitation">
-                                            <i class="ti ti-x"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-sm me-2">
-                                            <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                                                <i class="ti ti-mail"></i>
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0">bob.wilson@example.com</h6>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge badge-soft-info">Viewer</span>
-                                </td>
-                                <td>{{ Auth::user()->name }}</td>
-                                <td>1 week ago</td>
-                                <td>
-                                    <span class="badge bg-warning">
-                                        <i class="ti ti-clock me-1"></i>Pending
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-sm btn-soft-info" title="Resend Invitation">
-                                            <i class="ti ti-refresh"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-soft-danger" title="Cancel Invitation">
-                                            <i class="ti ti-x"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Current Team Members Section -->
-<div class="row mt-3">
-    <div class="col-lg-12">
+    <!-- Team Members -->
+    <div class="col-lg-12 mb-4">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0">
                     <i class="ti ti-users me-2"></i>Team Members
                 </h5>
-                <span class="badge badge-soft-success">5 Active</span>
+                <span class="badge badge-soft-success">{{ $members->count() }} Members</span>
+            </div>
+            <div class="card-body">
+                @if($members->count() > 0)
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Joined</th>
+                                    <th class="text-end" style="width: 150px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($members as $member)
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="{{ $member->avatar_url }}"
+                                                     alt="{{ $member->name }}"
+                                                     class="rounded-circle me-2"
+                                                     style="width: 32px; height: 32px; object-fit: cover;">
+                                                <strong>{{ $member->name }}</strong>
+                                                @if($team->isOwner($member))
+                                                    <span class="badge bg-warning ms-2">Owner</span>
+                                                @endif
+                                            </div>
+                                        </td>
+                                        <td>{{ $member->email }}</td>
+                                        <td>
+                                            @if($team->isOwner($member))
+                                                <span class="badge bg-warning">Owner</span>
+                                            @else
+                                                <form method="POST" action="{{ route('team.member.update-role', $member) }}" class="d-inline role-update-form">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <select class="form-select form-select-sm d-inline-block w-auto role-select"
+                                                            name="role"
+                                                            {{ Auth::user()->roleInTeam() !== 'owner' && Auth::user()->roleInTeam() !== 'admin' ? 'disabled' : '' }}>
+                                                        <option value="admin" {{ $member->pivot->role === 'admin' ? 'selected' : '' }}>Admin</option>
+                                                        <option value="moderator" {{ $member->pivot->role === 'moderator' ? 'selected' : '' }}>Moderator</option>
+                                                        <option value="idea_submitter" {{ $member->pivot->role === 'idea_submitter' ? 'selected' : '' }}>Idea Submitter</option>
+                                                        <option value="viewer" {{ $member->pivot->role === 'viewer' ? 'selected' : '' }}>Viewer</option>
+                                                    </select>
+                                                </form>
+                                            @endif
+                                        </td>
+                                        <td>{{ $member->pivot->created_at->format('M j, Y') }}</td>
+                                        <td class="text-end">
+                                            @if(!$team->isOwner($member) && $member->id !== Auth::id())
+                                                @if(Auth::user()->roleInTeam() === 'owner' || Auth::user()->roleInTeam() === 'admin')
+                                                    <form method="POST" action="{{ route('team.member.remove', $member) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to remove this member?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-danger">
+                                                            <i class="ti ti-user-minus"></i> Remove
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="text-center py-4">
+                        <i class="ti ti-users fs-48 text-muted"></i>
+                        <p class="text-muted mt-2">No team members yet</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Invitations -->
+    @if($pendingInvitations->count() > 0)
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ti ti-mail me-2"></i>Pending Invitations
+                </h5>
+                <span class="badge badge-soft-warning">{{ $pendingInvitations->count() }} Pending</span>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover table-centered mb-0">
-                        <thead class="table-light">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
                             <tr>
-                                <th>Member</th>
                                 <th>Email</th>
                                 <th>Role</th>
-                                <th>Joined Date</th>
-                                <th>Status</th>
-                                <th class="text-center">Actions</th>
+                                <th>Invited By</th>
+                                <th>Sent</th>
+                                <th>Expires</th>
+                                <th class="text-end" style="width: 100px;">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-sm me-2">
-                                            <span class="avatar-title rounded-circle bg-primary text-white">
-                                                {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                            @foreach($pendingInvitations as $invitation)
+                                <tr>
+                                    <td>{{ $invitation->email }}</td>
+                                    <td>
+                                        <span class="badge bg-info">{{ ucfirst(str_replace('_', ' ', $invitation->role)) }}</span>
+                                    </td>
+                                    <td>{{ $invitation->inviter->name }}</td>
+                                    <td>{{ $invitation->created_at->format('M j, Y') }}</td>
+                                    <td>
+                                        @if($invitation->expires_at->isFuture())
+                                            <span class="text-success">
+                                                {{ $invitation->expires_at->diffForHumans() }}
                                             </span>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0">{{ Auth::user()->name }}</h6>
-                                            <small class="text-muted">You</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>{{ Auth::user()->email }}</td>
-                                <td>
-                                    <span class="badge badge-soft-danger">Owner</span>
-                                </td>
-                                <td>Jan 15, 2024</td>
-                                <td>
-                                    <span class="badge bg-success">
-                                        <i class="ti ti-circle-check me-1"></i>Active
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    <span class="text-muted">—</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-sm me-2">
-                                            <span class="avatar-title rounded-circle bg-success text-white">
-                                                AS
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0">Alice Johnson</h6>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>alice.johnson@example.com</td>
-                                <td>
-                                    <span class="badge badge-soft-primary">Admin</span>
-                                </td>
-                                <td>Feb 10, 2024</td>
-                                <td>
-                                    <span class="badge bg-success">
-                                        <i class="ti ti-circle-check me-1"></i>Active
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-sm btn-soft-primary" title="Edit Role">
-                                            <i class="ti ti-edit"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-soft-danger" title="Remove Member">
-                                            <i class="ti ti-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-sm me-2">
-                                            <span class="avatar-title rounded-circle bg-info text-white">
-                                                MB
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0">Michael Brown</h6>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>michael.brown@example.com</td>
-                                <td>
-                                    <span class="badge badge-soft-success">Member</span>
-                                </td>
-                                <td>Mar 05, 2024</td>
-                                <td>
-                                    <span class="badge bg-success">
-                                        <i class="ti ti-circle-check me-1"></i>Active
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-sm btn-soft-primary" title="Edit Role">
-                                            <i class="ti ti-edit"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-soft-danger" title="Remove Member">
-                                            <i class="ti ti-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-sm me-2">
-                                            <span class="avatar-title rounded-circle bg-warning text-white">
-                                                SD
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0">Sarah Davis</h6>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>sarah.davis@example.com</td>
-                                <td>
-                                    <span class="badge badge-soft-success">Member</span>
-                                </td>
-                                <td>Mar 20, 2024</td>
-                                <td>
-                                    <span class="badge bg-success">
-                                        <i class="ti ti-circle-check me-1"></i>Active
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-sm btn-soft-primary" title="Edit Role">
-                                            <i class="ti ti-edit"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-soft-danger" title="Remove Member">
-                                            <i class="ti ti-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-sm me-2">
-                                            <span class="avatar-title rounded-circle bg-secondary text-white">
-                                                TW
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0">Tom Wilson</h6>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>tom.wilson@example.com</td>
-                                <td>
-                                    <span class="badge badge-soft-info">Viewer</span>
-                                </td>
-                                <td>Apr 01, 2024</td>
-                                <td>
-                                    <span class="badge bg-success">
-                                        <i class="ti ti-circle-check me-1"></i>Active
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-sm btn-soft-primary" title="Edit Role">
-                                            <i class="ti ti-edit"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-soft-danger" title="Remove Member">
-                                            <i class="ti ti-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
+                                        @else
+                                            <span class="text-danger">Expired</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-end">
+                                        @if(Auth::user()->roleInTeam() === 'owner' || Auth::user()->roleInTeam() === 'admin')
+                                            <form method="POST" action="{{ route('team.invitation.cancel', $invitation) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this invitation?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="ti ti-x"></i> Cancel
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
+    @endif
 </div>
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 <script>
+    // Auto-submit role update form when role changes
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize all elements with data-choices attribute
-        var choicesElements = document.querySelectorAll('[data-choices]');
+        const roleSelects = document.querySelectorAll('.role-select');
 
-        choicesElements.forEach(function(element) {
-            new Choices(element, {
-                searchEnabled: true,
-                itemSelectText: '',
-                removeItemButton: false,
+        roleSelects.forEach(function(select) {
+            const originalValue = select.value;
+
+            select.addEventListener('change', function() {
+                if (confirm('Are you sure you want to change this member\'s role?')) {
+                    this.closest('.role-update-form').submit();
+                } else {
+                    // Revert to original value
+                    this.value = originalValue;
+                }
             });
         });
     });

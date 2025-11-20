@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
-use App\Traits\BelongsToUser;
+use App\Traits\BelongsToTeam;
 use Illuminate\Database\Eloquent\Model;
 
 class Changelog extends Model
 {
-    use BelongsToUser;
+    use BelongsToTeam;
 
     protected $fillable = [
-        'user_id',
+        'team_id',
         'title',
         'cover_image',
         'short_description',

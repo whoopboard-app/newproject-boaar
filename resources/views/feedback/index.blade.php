@@ -14,13 +14,22 @@
                 <a href="{{ route('settings.index') }}" class="btn btn-secondary">
                     <i class="ti ti-arrow-left me-1"></i> Back to Settings
                 </a>
+                @if(Auth::user()->canManageFeedback())
                 <a href="{{ route('feedback.create') }}" class="btn btn-primary">
                     <i class="ti ti-plus me-1"></i> Add New Feedback
                 </a>
+                @endif
             </div>
         </div>
     </div>
 </div>
+
+@if(Auth::user()->isReadOnly())
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <i class="ti ti-info-circle me-2"></i>You are in <strong>read-only mode</strong>. You can view but not modify feedback.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
 
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -97,9 +106,12 @@
                                             <a href="{{ route('feedback.show', $feedback) }}" class="btn btn-sm btn-soft-primary" title="View">
                                                 <i class="ti ti-eye"></i>
                                             </a>
+                                            @if(Auth::user()->canManageFeedback())
                                             <a href="{{ route('feedback.edit', $feedback) }}" class="btn btn-sm btn-soft-warning" title="Edit">
                                                 <i class="ti ti-edit"></i>
                                             </a>
+                                            @endif
+                                            @if(Auth::user()->canDelete())
                                             <form method="POST" action="{{ route('feedback.destroy', $feedback) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this feedback?');">
                                                 @csrf
                                                 @method('DELETE')
@@ -107,6 +119,7 @@
                                                     <i class="ti ti-trash"></i>
                                                 </button>
                                             </form>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach

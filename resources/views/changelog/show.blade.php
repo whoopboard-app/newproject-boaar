@@ -63,13 +63,22 @@
                 <a href="{{ route('changelog.index') }}" class="btn btn-secondary">
                     <i class="ti ti-arrow-left me-1"></i>Back to List
                 </a>
+                @if(Auth::user()->canEdit())
                 <a href="{{ route('changelog.edit', $changelog) }}" class="btn btn-primary">
                     <i class="ti ti-edit me-1"></i>Edit
                 </a>
+                @endif
             </div>
         </div>
     </div>
 </div>
+
+@if(Auth::user()->isReadOnly())
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <i class="ti ti-info-circle me-2"></i>You are in <strong>read-only mode</strong>. You can view but not modify changelogs.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
 
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">

@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-use App\Traits\BelongsToUser;
+use App\Traits\BelongsToTeam;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Feedback extends Model
 {
-    use HasFactory, BelongsToUser;
+    use HasFactory, BelongsToTeam;
 
     protected $fillable = [
-        'user_id',
+        'team_id',
         'idea',
         'feedback_category_id',
         'value_description',

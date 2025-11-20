@@ -12,6 +12,7 @@ use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\RoadmapController;
 use App\Http\Controllers\FeedbackCategoryController;
 use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\TeamInvitationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -27,15 +28,21 @@ Route::post('/subscribe', [SubscriberController::class, 'subscribe'])->name('sub
 Route::get('/verify/{token}', [SubscriberController::class, 'verify'])->name('subscriber.verify');
 Route::get('/unsubscribe/{token}', [SubscriberController::class, 'unsubscribe'])->name('subscriber.unsubscribe');
 
+// Public Team Invitation Routes (No Authentication Required)
+Route::get('/invitation/{token}', [TeamInvitationController::class, 'accept'])->name('team.invitation.accept');
+Route::post('/invitation/{token}', [TeamInvitationController::class, 'acceptSignup'])->name('team.invitation.accept.signup');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Team Management
-    Route::get('/team', function () {
-        return view('team.manage');
-    })->name('team.manage');
+    Route::get('/team', [TeamInvitationController::class, 'index'])->name('team.manage');
+    Route::post('/team/invite', [TeamInvitationController::class, 'invite'])->name('team.invitation.invite');
+    Route::delete('/team/invitation/{invitation}', [TeamInvitationController::class, 'cancel'])->name('team.invitation.cancel');
+    Route::delete('/team/member/{user}', [TeamInvitationController::class, 'removeMember'])->name('team.member.remove');
+    Route::put('/team/member/{user}/role', [TeamInvitationController::class, 'updateRole'])->name('team.member.update-role');
 
     // Category Management
     Route::get('/categories', [App\Http\Controllers\CategoryController::class, 'index'])->name('categories.manage');

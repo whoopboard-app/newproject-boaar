@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Team;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -40,6 +42,19 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+        // Create a team for the new user
+        $team = Team::create([
+            'name' => $user->name . "'s Team",
+            'slug' => Str::slug($user->name . '-team-' . time()),
+            'owner_id' => $user->id,
+        ]);
+
+        // Set as current team
+        $user->update(['current_team_id' => $team->id]);
+
+        // Add user to team as owner
+        $team->members()->attach($user->id, ['role' => 'owner']);
 
         event(new Registered($user));
 

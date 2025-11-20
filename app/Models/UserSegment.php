@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
-use App\Traits\BelongsToUser;
+use App\Traits\BelongsToTeam;
 use Illuminate\Database\Eloquent\Model;
 
 class UserSegment extends Model
 {
-    use BelongsToUser;
+    use BelongsToTeam;
 
     protected $fillable = [
-        'user_id',
+        'team_id',
         'name',
         'status',
         'description',
