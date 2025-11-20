@@ -10,16 +10,11 @@
                 <h2 class="mb-0">Feedback Management</h2>
                 <p class="text-muted fs-14 mb-0">Manage user feedback and ideas</p>
             </div>
-            <div class="d-flex gap-2">
-                <a href="{{ route('settings.index') }}" class="btn btn-secondary">
-                    <i class="ti ti-arrow-left me-1"></i> Back to Settings
-                </a>
-                @if(Auth::user()->canManageFeedback())
-                <a href="{{ route('feedback.create') }}" class="btn btn-primary">
-                    <i class="ti ti-plus me-1"></i> Add New Feedback
-                </a>
-                @endif
-            </div>
+            @if(Auth::user()->canManageFeedback())
+            <a href="{{ route('feedback.create') }}" class="btn btn-primary">
+                <i class="ti ti-plus me-1"></i> Add New Feedback
+            </a>
+            @endif
         </div>
     </div>
 </div>

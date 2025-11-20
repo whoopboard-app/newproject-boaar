@@ -10,6 +10,8 @@ class Feedback extends Model
 {
     use HasFactory, BelongsToTeam;
 
+    protected $table = 'feedbacks';
+
     protected $fillable = [
         'team_id',
         'idea',

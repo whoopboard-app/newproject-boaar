@@ -7,8 +7,13 @@ use App\Models\FeedbackCategory;
 use App\Models\FeedbackComment;
 use App\Models\Persona;
 use App\Models\Roadmap;
+use App\Models\User;
+use App\Notifications\FeedbackLoginAccessNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Notification;
 
 class FeedbackController extends Controller
 {
@@ -80,11 +85,43 @@ class FeedbackController extends Controller
         }
 
         $validated['login_access_enabled'] = $request->has('login_access_enabled');
+        $validated['team_id'] = Auth::user()->current_team_id;
 
-        Feedback::create($validated);
+        $feedback = Feedback::create($validated);
+
+        // Send email if login access is enabled
+        if ($validated['login_access_enabled']) {
+            // Check if user already exists
+            $existingUser = User::where('email', $validated['email'])->first();
+
+            if (!$existingUser) {
+                // Generate temporary password
+                $temporaryPassword = Str::random(12);
+
+                // Create user account
+                $user = User::create([
+                    'name' => $validated['name'],
+                    'email' => $validated['email'],
+                    'password' => Hash::make($temporaryPassword),
+                    'current_team_id' => Auth::user()->current_team_id,
+                    'email_verified_at' => now(), // Auto-verify email
+                ]);
+
+                // Attach user to team with 'idea_submitter' role
+                $user->teams()->attach(Auth::user()->current_team_id, ['role' => 'idea_submitter']);
+
+                // Send notification with temporary password
+                Notification::route('mail', $validated['email'])
+                    ->notify(new FeedbackLoginAccessNotification($feedback, $temporaryPassword));
+            } else {
+                // User exists, just send notification without password
+                Notification::route('mail', $validated['email'])
+                    ->notify(new FeedbackLoginAccessNotification($feedback));
+            }
+        }
 
         return redirect()->route('feedback.index')
-            ->with('success', 'Feedback created successfully!');
+            ->with('success', 'Feedback created successfully!' . ($validated['login_access_enabled'] ? ' Login access email sent.' : ''));
     }
 
     /**

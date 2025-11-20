@@ -281,37 +281,5 @@
         </div>
     </div>
 
-    <!-- Feedback Card -->
-    <div class="col-lg-3 col-md-6 mb-3 d-flex">
-        <div class="card h-100 w-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="avatar-lg">
-                        <span class="avatar-title rounded-circle bg-success-subtle">
-                            <i class="ti ti-messages fs-2 text-success"></i>
-                        </span>
-                    </div>
-                </div>
-                <h5 class="card-title mb-2">Feedback</h5>
-                <p class="text-muted fs-14 mb-3">
-                    Manage user feedback and ideas with categories, statuses, comments, and persona mapping.
-                </p>
-                <div class="d-flex gap-2">
-                    <a href="{{ route('feedback.index') }}" class="btn btn-sm btn-success">
-                        <i class="ti ti-eye me-1"></i>View
-                    </a>
-                    <a href="{{ route('feedback.create') }}" class="btn btn-sm btn-outline-success">
-                        <i class="ti ti-plus me-1"></i>Add New
-                    </a>
-                </div>
-            </div>
-            <div class="card-footer border-top">
-                <div class="d-flex align-items-center text-muted">
-                    <i class="ti ti-bulb me-2"></i>
-                    <small>Collect user ideas</small>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 @endsection

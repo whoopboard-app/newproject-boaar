@@ -4,6 +4,7 @@
 
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+<link href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css" />
 <style>
     .choices__inner {
         min-height: 39.51px !important;
@@ -66,8 +67,21 @@
                         <div class="col-md-12">
                             <div class="mb-3">
                                 <label for="idea" class="form-label">Tell about your idea <span class="text-danger">*</span></label>
-                                <textarea class="form-control @error('idea') is-invalid @enderror" id="idea" name="idea" rows="4" placeholder="Describe your idea in detail..." required>{{ old('idea') }}</textarea>
+                                <input type="text" class="form-control @error('idea') is-invalid @enderror" id="idea" name="idea" placeholder="Describe your idea..." value="{{ old('idea') }}" required>
                                 @error('idea')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="tags" class="form-label">Tags</label>
+                                <input type="text" class="form-control @error('tags') is-invalid @enderror" id="tags" name="tags" placeholder="Add tags..." value="{{ old('tags') }}">
+                                @error('tags')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -162,19 +176,8 @@
                         </div>
                     </div>
 
-                    <!-- Tags and Persona -->
+                    <!-- Persona and Source in same row -->
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="tags" class="form-label">Tags</label>
-                                <input type="text" class="form-control @error('tags') is-invalid @enderror" id="tags" name="tags" placeholder="Enter tags separated by commas" value="{{ old('tags') }}">
-                                @error('tags')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                                <div class="form-text">Separate tags with commas (e.g., feature, enhancement, ui)</div>
-                            </div>
-                        </div>
-
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="persona_id" class="form-label">Select Persona</label>
@@ -191,11 +194,8 @@
                                 @enderror
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Source of Idea -->
-                    <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="source" class="form-label">Source of Idea <span class="text-danger">*</span></label>
                                 <select class="form-select @error('source') is-invalid @enderror" id="source" name="source" data-choices required>
@@ -235,6 +235,7 @@
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize all elements with data-choices attribute
@@ -247,6 +248,20 @@
                 removeItemButton: false,
             });
         });
+
+        // Initialize Tagify for tags input
+        var tagsInput = document.querySelector('input[name="tags"]');
+        if (tagsInput) {
+            var tagify = new Tagify(tagsInput, {
+                originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(','),
+                delimiters: ",",
+                maxTags: 10,
+                dropdown: {
+                    enabled: 0
+                },
+                placeholder: "Add tags...",
+            });
+        }
     });
 </script>
 @endpush
