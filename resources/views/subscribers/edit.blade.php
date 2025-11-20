@@ -130,23 +130,45 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Before form submission, convert segment names back to IDs
-    document.querySelector('form').addEventListener('submit', function(e) {
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
         const selectedSegmentNames = tagify.value.map(tag => tag.value);
         const selectedSegmentIds = allSegments
             .filter(s => selectedSegmentNames.includes(s.name))
             .map(s => s.value);
 
-        // Remove the tagify input
-        segmentInput.remove();
+        // Clear any existing hidden segment inputs
+        const existingInputs = form.querySelectorAll('input[name="segments[]"]');
+        existingInputs.forEach(input => input.remove());
+
+        // Remove the tagify input to prevent it from being submitted
+        const originalInput = form.querySelector('#segments');
+        if (originalInput) {
+            originalInput.removeAttribute('name');
+        }
 
         // Add hidden inputs for each selected segment ID
-        selectedSegmentIds.forEach(id => {
+        if (selectedSegmentIds.length > 0) {
+            selectedSegmentIds.forEach(id => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'segments[]';
+                input.value = id;
+                form.appendChild(input);
+            });
+        } else {
+            // If no segments selected, add empty array indicator
             const input = document.createElement('input');
             input.type = 'hidden';
-            input.name = 'segments[]';
-            input.value = id;
-            this.appendChild(input);
-        });
+            input.name = 'segments';
+            input.value = '';
+            form.appendChild(input);
+        }
+
+        // Now submit the form
+        form.submit();
     });
 });
 </script>

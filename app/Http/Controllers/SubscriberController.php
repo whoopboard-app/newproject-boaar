@@ -38,7 +38,7 @@ class SubscriberController extends Controller
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|unique:subscribers,email',
             'source' => 'required|in:upload,online_subscribe,admin',
-            'segments' => 'array',
+            'segments' => 'nullable|array',
             'segments.*' => 'exists:user_segments,id',
             'send_verification' => 'boolean',
         ]);
@@ -57,7 +57,7 @@ class SubscriberController extends Controller
         ]);
 
         // Attach segments
-        if ($request->has('segments')) {
+        if ($request->has('segments') && is_array($request->segments)) {
             $subscriber->segments()->attach($request->segments);
         }
 
@@ -81,7 +81,7 @@ class SubscriberController extends Controller
         $validator = Validator::make($request->all(), [
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|unique:subscribers,email',
-            'segments' => 'array',
+            'segments' => 'nullable|array',
             'segments.*' => 'exists:user_segments,id',
         ]);
 
@@ -99,7 +99,7 @@ class SubscriberController extends Controller
         ]);
 
         // Attach segments
-        if ($request->has('segments')) {
+        if ($request->has('segments') && is_array($request->segments)) {
             $subscriber->segments()->attach($request->segments);
         }
 
@@ -170,7 +170,7 @@ class SubscriberController extends Controller
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|unique:subscribers,email,' . $subscriber->id,
             'status' => 'required|in:subscribed,pending_verify,unsubscribed,inactive',
-            'segments' => 'array',
+            'segments' => 'nullable|array',
             'segments.*' => 'exists:user_segments,id',
         ]);
 
@@ -185,8 +185,11 @@ class SubscriberController extends Controller
         ]);
 
         // Sync segments
-        if ($request->has('segments')) {
+        if ($request->has('segments') && is_array($request->segments)) {
             $subscriber->segments()->sync($request->segments);
+        } else {
+            // If no segments provided, detach all
+            $subscriber->segments()->sync([]);
         }
 
         return redirect()->route('subscribers.index')
