@@ -15,6 +15,8 @@ use App\Http\Controllers\FeedbackCategoryController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\TeamInvitationController;
 use App\Http\Controllers\PublicController;
+use App\Http\Controllers\TestimonialController;
+use App\Http\Controllers\TestimonialTemplateController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -157,9 +159,31 @@ Route::middleware('auth')->group(function () {
     Route::delete('/roadmap-items/{roadmapItem}', [RoadmapItemController::class, 'destroy'])->name('roadmap-items.destroy');
     Route::post('/roadmap-items/{roadmapItem}/comment', [RoadmapItemController::class, 'addComment'])->name('roadmap-items.comment.store');
     Route::delete('/roadmap-items/comment/{comment}', [RoadmapItemController::class, 'deleteComment'])->name('roadmap-items.comment.destroy');
+
+    // Testimonials Management
+    Route::get('/testimonials', [TestimonialController::class, 'index'])->name('testimonials.index');
+    Route::get('/testimonials/create', [TestimonialController::class, 'create'])->name('testimonials.create');
+    Route::post('/testimonials', [TestimonialController::class, 'store'])->name('testimonials.store');
+    Route::get('/testimonials/{testimonial}', [TestimonialController::class, 'show'])->name('testimonials.show');
+    Route::get('/testimonials/{testimonial}/edit', [TestimonialController::class, 'edit'])->name('testimonials.edit');
+    Route::put('/testimonials/{testimonial}', [TestimonialController::class, 'update'])->name('testimonials.update');
+    Route::delete('/testimonials/{testimonial}', [TestimonialController::class, 'destroy'])->name('testimonials.destroy');
+
+    // Testimonial Templates Management
+    Route::get('/testimonial-templates/create', [TestimonialTemplateController::class, 'create'])->name('testimonial-templates.create');
+    Route::post('/testimonial-templates', [TestimonialTemplateController::class, 'store'])->name('testimonial-templates.store');
+    Route::post('/testimonial-templates/send-test-email', [TestimonialTemplateController::class, 'sendTestEmail'])->name('testimonial-templates.send-test-email');
+    Route::get('/testimonial-templates/{template}', [TestimonialTemplateController::class, 'show'])->name('testimonial-templates.show');
+    Route::get('/testimonial-templates/{template}/edit', [TestimonialTemplateController::class, 'edit'])->name('testimonial-templates.edit');
+    Route::put('/testimonial-templates/{template}', [TestimonialTemplateController::class, 'update'])->name('testimonial-templates.update');
+    Route::delete('/testimonial-templates/{template}', [TestimonialTemplateController::class, 'destroy'])->name('testimonial-templates.destroy');
 });
 
 require __DIR__.'/auth.php';
+
+// Public Testimonial Form Routes (No Authentication Required)
+Route::get('/testimonial/{uniqueUrl}', [TestimonialController::class, 'publicForm'])->name('testimonials.public.form');
+Route::post('/testimonial/{uniqueUrl}', [TestimonialController::class, 'publicStore'])->name('testimonials.public.store');
 
 // Public Pages - MUST BE LAST (Catch-all routes)
 Route::get('/{unique_url}/roadmap', [PublicController::class, 'roadmap'])->name('public.roadmap');

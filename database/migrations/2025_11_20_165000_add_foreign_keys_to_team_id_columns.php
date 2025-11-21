@@ -24,20 +24,21 @@ return new class extends Migration
             'feedback_categories',
         ];
 
-        foreach ($tables as $table) {
-            if (Schema::hasTable($table) && Schema::hasColumn($table, 'team_id')) {
+        foreach ($tables as $tableName) {
+            if (Schema::hasTable($tableName) && Schema::hasColumn($tableName, 'team_id')) {
                 // Check if foreign key already exists
-                $foreignKeys = DB::select(DB::raw("
+                $database = DB::getDatabaseName();
+                $foreignKeys = DB::select("
                     SELECT CONSTRAINT_NAME
                     FROM information_schema.KEY_COLUMN_USAGE
-                    WHERE TABLE_SCHEMA = DATABASE()
-                    AND TABLE_NAME = '{$table}'
+                    WHERE TABLE_SCHEMA = ?
+                    AND TABLE_NAME = ?
                     AND COLUMN_NAME = 'team_id'
                     AND REFERENCED_TABLE_NAME = 'teams'
-                "));
+                ", [$database, $tableName]);
 
                 if (empty($foreignKeys)) {
-                    Schema::table($table, function (Blueprint $table) {
+                    Schema::table($tableName, function (Blueprint $table) {
                         $table->foreign('team_id')->references('id')->on('teams')->onDelete('cascade');
                     });
                 }

@@ -226,7 +226,7 @@
 
                     <!-- Testimonials -->
                     <li class="side-nav-item">
-                        <a href="#" class="side-nav-link">
+                        <a href="{{ route('testimonials.index') }}" class="side-nav-link {{ request()->routeIs('testimonials.*') || request()->routeIs('testimonial-templates.*') ? 'active' : '' }}">
                             <span class="menu-icon"><i class="ti ti-star"></i></span>
                             <span class="menu-text">Testimonials</span>
                         </a>
