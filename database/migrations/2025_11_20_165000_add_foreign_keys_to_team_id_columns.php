@@ -61,12 +61,12 @@ return new class extends Migration
             'feedback_categories',
         ];
 
-        foreach ($tables as $table) {
-            if (Schema::hasTable($table)) {
-                Schema::table($table, function (Blueprint $table) use ($table) {
+        foreach ($tables as $tableName) {
+            if (Schema::hasTable($tableName)) {
+                Schema::table($tableName, function (Blueprint $table) use ($tableName) {
                     // Try to drop foreign key if it exists
                     try {
-                        $table->dropForeign(['{$table}_team_id_foreign']);
+                        $table->dropForeign([$tableName . '_team_id_foreign']);
                     } catch (\Exception $e) {
                         // Foreign key might not exist, ignore
                     }
