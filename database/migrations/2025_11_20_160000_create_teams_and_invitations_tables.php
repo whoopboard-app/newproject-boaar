@@ -52,7 +52,7 @@ return new class extends Migration
             $table->string('role'); // admin, moderator, idea_submitter, viewer
             $table->string('token')->unique();
             $table->timestamp('accepted_at')->nullable();
-            $table->timestamp('expires_at');
+            $table->timestamp('expires_at')->nullable();
             $table->timestamps();
         });
     }
