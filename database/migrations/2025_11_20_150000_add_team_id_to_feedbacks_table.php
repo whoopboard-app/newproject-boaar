@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::table('feedbacks', function (Blueprint $table) {
             if (!Schema::hasColumn('feedbacks', 'team_id')) {
-                $table->foreignId('team_id')->after('id')->constrained('teams')->cascadeOnDelete();
+                // Add team_id column without foreign key constraint
+                // Foreign key will be added later after teams table is created
+                $table->unsignedBigInteger('team_id')->after('id')->nullable();
             }
         });
     }
