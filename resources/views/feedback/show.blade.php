@@ -117,7 +117,7 @@
         <div class="card mt-3">
             <div class="card-header">
                 <h5 class="card-title mb-0">
-                    <i class="ti ti-message-circle me-2"></i>Comments ({{ $feedback->comments->count() }})
+                    <i class="ti ti-message-circle me-2"></i>Comments ({{ $feedback->comments()->count() }})
                 </h5>
             </div>
             <div class="card-body">
@@ -131,14 +131,6 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-                    <div class="mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="is_internal" name="is_internal" value="1">
-                            <label class="form-check-label" for="is_internal">
-                                Internal Comment (visible to team only)
-                            </label>
-                        </div>
-                    </div>
                     <button type="submit" class="btn btn-primary">
                         <i class="ti ti-send me-1"></i> Post Comment
                     </button>
@@ -148,7 +140,7 @@
 
                 <!-- Comments List -->
                 @forelse($feedback->comments as $comment)
-                    <div class="d-flex mb-3 {{ $comment->is_internal ? 'bg-light p-3 rounded' : '' }}">
+                    <div class="d-flex mb-3">
                         <div class="flex-shrink-0">
                             <div class="avatar-sm">
                                 <span class="avatar-title rounded-circle bg-primary">
@@ -159,12 +151,7 @@
                         <div class="flex-grow-1 ms-3">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <h6 class="mb-1">
-                                        {{ $comment->user ? $comment->user->name : ($comment->commenter_name ?? 'Anonymous') }}
-                                        @if($comment->is_internal)
-                                            <span class="badge bg-warning ms-2">Internal</span>
-                                        @endif
-                                    </h6>
+                                    <h6 class="mb-1">{{ $comment->user ? $comment->user->name : 'Anonymous' }}</h6>
                                     <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
                                 </div>
                                 @auth

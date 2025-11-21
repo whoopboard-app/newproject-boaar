@@ -16,6 +16,7 @@ class Roadmap extends Model
         'color',
         'is_active',
         'sort_order',
+        'workflow_type',
     ];
 
     protected $casts = [

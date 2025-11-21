@@ -125,13 +125,13 @@
                 </div>
                 <h5 class="card-title mb-2">General Settings</h5>
                 <p class="text-muted fs-14 mb-3">
-                    Configure application name, logo, timezone, language and other general settings.
+                    Configure application name, logo, website URL, unique URL and other general settings.
                 </p>
                 <div class="d-flex gap-2">
-                    <a href="#" class="btn btn-sm btn-info">
+                    <a href="{{ route('settings.general') }}" class="btn btn-sm btn-info">
                         <i class="ti ti-eye me-1"></i>View
                     </a>
-                    <a href="#" class="btn btn-sm btn-outline-info">
+                    <a href="{{ route('settings.general') }}" class="btn btn-sm btn-outline-info">
                         <i class="ti ti-settings me-1"></i>Configure
                     </a>
                 </div>

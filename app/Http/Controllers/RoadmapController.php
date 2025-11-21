@@ -13,8 +13,10 @@ class RoadmapController extends Controller
      */
     public function index()
     {
-        $statuses = Roadmap::ordered()->get();
-        return view('roadmap.index', compact('statuses'));
+        $roadmapWorkflowStatuses = Roadmap::where('workflow_type', 'roadmap workflow')->ordered()->get();
+        $feedbackWorkflowStatuses = Roadmap::where('workflow_type', 'feedback workflow')->ordered()->get();
+
+        return view('roadmap.index', compact('roadmapWorkflowStatuses', 'feedbackWorkflowStatuses'));
     }
 
     /**
@@ -109,12 +111,14 @@ class RoadmapController extends Controller
             'statuses.*.name' => 'required|string|max:40',
             'statuses.*.color' => 'required|string|max:7',
             'statuses.*.is_active' => 'required|boolean',
+            'statuses.*.workflow_type' => 'required|in:roadmap workflow,feedback workflow',
         ]);
 
         try {
             $sortOrder = 0;
             $processedIds = [];
             $processedNames = [];
+            $workflowType = $validated['statuses'][0]['workflow_type'] ?? null;
 
             foreach ($validated['statuses'] as $statusData) {
                 // Check for duplicate names
@@ -135,6 +139,7 @@ class RoadmapController extends Controller
                         'name' => $statusData['name'],
                         'color' => $statusData['color'],
                         'is_active' => $statusData['is_active'],
+                        'workflow_type' => $statusData['workflow_type'],
                         'sort_order' => $sortOrder++,
                     ]);
 
@@ -147,6 +152,7 @@ class RoadmapController extends Controller
                         'name' => $statusData['name'],
                         'color' => $statusData['color'],
                         'is_active' => $statusData['is_active'],
+                        'workflow_type' => $statusData['workflow_type'],
                         'sort_order' => $sortOrder++,
                     ]);
 
@@ -154,9 +160,11 @@ class RoadmapController extends Controller
                 }
             }
 
-            // Delete statuses that were not included in the update
-            if (!empty($processedIds)) {
-                Roadmap::whereNotIn('id', $processedIds)->delete();
+            // Delete statuses that were not included in the update (only for this workflow type)
+            if (!empty($processedIds) && $workflowType) {
+                Roadmap::where('workflow_type', $workflowType)
+                    ->whereNotIn('id', $processedIds)
+                    ->delete();
             }
 
             return response()->json([

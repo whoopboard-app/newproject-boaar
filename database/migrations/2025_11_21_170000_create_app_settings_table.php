@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('app_settings', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('team_id');
+            $table->string('logo')->nullable();
+            $table->string('product_name')->nullable();
+            $table->string('website_url')->nullable();
+            $table->string('unique_url')->nullable()->unique();
+            $table->string('subdomain_url')->nullable();
+            $table->timestamps();
+
+            $table->foreign('team_id')->references('id')->on('teams')->onDelete('cascade');
+            $table->unique('team_id'); // One settings record per team
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('app_settings');
+    }
+};

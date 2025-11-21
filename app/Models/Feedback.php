@@ -22,6 +22,7 @@ class Feedback extends Model
         'email',
         'login_access_enabled',
         'is_public',
+        'show_in_roadmap',
         'tags',
         'persona_id',
         'source',
@@ -31,6 +32,7 @@ class Feedback extends Model
         'tags' => 'array',
         'login_access_enabled' => 'boolean',
         'is_public' => 'boolean',
+        'show_in_roadmap' => 'boolean',
     ];
 
     /**

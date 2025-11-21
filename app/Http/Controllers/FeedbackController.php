@@ -34,7 +34,7 @@ class FeedbackController extends Controller
      */
     public function kanban()
     {
-        $roadmaps = Roadmap::active()->ordered()->get();
+        $roadmaps = Roadmap::where('workflow_type', 'feedback workflow')->active()->ordered()->get();
 
         // Get feedbacks for current team and eager load relationships
         $feedbacks = Feedback::with(['category', 'roadmap', 'persona'])
@@ -86,7 +86,7 @@ class FeedbackController extends Controller
                 ->with('error', 'You do not have permission to create feedback.');
         }
         $categories = FeedbackCategory::active()->ordered()->get();
-        $statuses = Roadmap::active()->ordered()->get();
+        $statuses = Roadmap::where('workflow_type', 'feedback workflow')->active()->ordered()->get();
         $personas = Persona::all();
         $sources = [
             'Admin Added',
@@ -119,6 +119,7 @@ class FeedbackController extends Controller
             'email' => 'required|email|max:255',
             'login_access_enabled' => 'boolean',
             'is_public' => 'required|boolean',
+            'show_in_roadmap' => 'boolean',
             'tags' => 'nullable|string',
             'persona_id' => 'nullable|exists:personas,id',
             'source' => 'required|in:Admin Added,User Submitted,Social Scraping,Project Management tool,Support System',
@@ -133,6 +134,7 @@ class FeedbackController extends Controller
 
         $validated['login_access_enabled'] = $request->has('login_access_enabled');
         $validated['is_public'] = $request->input('is_public', true);
+        $validated['show_in_roadmap'] = $request->has('show_in_roadmap');
         $validated['team_id'] = Auth::user()->current_team_id;
 
         $feedback = Feedback::create($validated);
@@ -194,7 +196,7 @@ class FeedbackController extends Controller
         }
 
         $categories = FeedbackCategory::active()->ordered()->get();
-        $statuses = Roadmap::active()->ordered()->get();
+        $statuses = Roadmap::where('workflow_type', 'feedback workflow')->active()->ordered()->get();
         $personas = Persona::all();
         $sources = [
             'Admin Added',
@@ -227,6 +229,7 @@ class FeedbackController extends Controller
             'email' => 'required|email|max:255',
             'login_access_enabled' => 'boolean',
             'is_public' => 'required|boolean',
+            'show_in_roadmap' => 'boolean',
             'tags' => 'nullable|string',
             'persona_id' => 'nullable|exists:personas,id',
             'source' => 'required|in:Admin Added,User Submitted,Social Scraping,Project Management tool,Support System',
@@ -241,6 +244,7 @@ class FeedbackController extends Controller
 
         $validated['login_access_enabled'] = $request->has('login_access_enabled');
         $validated['is_public'] = $request->input('is_public', true);
+        $validated['show_in_roadmap'] = $request->has('show_in_roadmap');
 
         $feedback->update($validated);
 
@@ -271,15 +275,15 @@ class FeedbackController extends Controller
     public function storeComment(Request $request, Feedback $feedback)
     {
         $validated = $request->validate([
-            'comment' => 'required|string',
-            'is_internal' => 'boolean',
+            'comment' => 'required|string|max:1000',
         ]);
 
-        $validated['feedback_id'] = $feedback->id;
-        $validated['user_id'] = auth()->id();
-        $validated['is_internal'] = $request->has('is_internal');
-
-        FeedbackComment::create($validated);
+        FeedbackComment::create([
+            'feedback_id' => $feedback->id,
+            'user_id' => auth()->id(),
+            'comment' => $validated['comment'],
+            'is_internal' => false,
+        ]);
 
         return redirect()->route('feedback.show', $feedback)
             ->with('success', 'Comment added successfully!');
@@ -290,8 +294,14 @@ class FeedbackController extends Controller
      */
     public function destroyComment(Feedback $feedback, FeedbackComment $comment)
     {
+        // Verify the comment belongs to this feedback
         if ($comment->feedback_id !== $feedback->id) {
             abort(404);
+        }
+
+        // Only allow the comment author to delete
+        if ($comment->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
         }
 
         $comment->delete();

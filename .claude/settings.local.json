@@ -6,7 +6,9 @@
       "Bash(migrate.bat)",
       "Bash(cmd.exe /c migrate.bat)",
       "Bash(dir \"C:\\wamp64\\www\\whoopboard\\resources\\views\\roadmap\" /b)",
-      "Bash(dir \"C:\\wamp64\\www\\whoopboard\\resources\\views\\feedback\" /b)"
+      "Bash(dir \"C:\\wamp64\\www\\whoopboard\\resources\\views\\feedback\" /b)",
+      "Bash(composer require:*)",
+      "Bash(C:wamp64binphpphp8.1.0php.exe C:ProgramDataComposerSetupbincomposer.phar require spatie/laravel-comments-livewire)"
     ],
     "deny": [],
     "ask": []

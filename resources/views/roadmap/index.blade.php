@@ -181,15 +181,10 @@
         <div class="card">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="card-title mb-0">Status List</h5>
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-info" onclick="openReorderModal()">
-                            <i class="ti ti-arrows-sort me-1"></i> Reorder
-                        </button>
-                        <button type="button" class="btn btn-primary" onclick="addNewStatus()">
-                            <i class="ti ti-plus me-1"></i> Add New Status
-                        </button>
-                    </div>
+                    <h5 class="card-title mb-0">Workflow Management</h5>
+                    <button type="button" class="btn btn-primary" onclick="openWorkflowSelector()">
+                        <i class="ti ti-plus me-1"></i> Add Workflow
+                    </button>
                 </div>
 
                 @if(session('success'))
@@ -199,56 +194,157 @@
                     </div>
                 @endif
 
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th style="width: 50px;">#</th>
-                                <th>Status Name</th>
-                                <th style="width: 150px;">Color</th>
-                                <th style="width: 120px;">Status</th>
-                                <th style="width: 180px;" class="text-end">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="status-list">
-                            @forelse($statuses as $index => $status)
-                                <tr data-id="{{ $status->id }}" data-name="{{ $status->name }}">
-                                    <td>{{ $index + 1 }}</td>
-                                    <td><strong>{{ $status->name }}</strong></td>
-                                    <td>
-                                        <span class="badge" style="background-color: {{ $status->color }}; color: white; padding: 8px 16px;">
-                                            {{ $status->name }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        @if($status->is_active)
-                                            <span class="badge bg-success">Active</span>
-                                        @else
-                                            <span class="badge bg-secondary">Inactive</span>
-                                        @endif
-                                    </td>
-                                    <td class="text-end">
-                                        <button type="button" class="btn btn-sm btn-primary" onclick="addNewStatus()" title="Edit">
-                                            <i class="ti ti-edit"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-info" onclick="openReorderModal()" title="Reorder">
-                                            <i class="ti ti-arrows-sort"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteStatus({{ $status->id }})" title="Delete">
-                                            <i class="ti ti-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            @empty
+                <!-- Roadmap Workflow Section -->
+                <div class="workflow-section mb-5">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0"><i class="ti ti-route me-2"></i>Roadmap Workflow</h6>
+                        @if($roadmapWorkflowStatuses->count() > 0)
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-sm btn-info" onclick="openReorderModal('roadmap workflow')">
+                                    <i class="ti ti-arrows-sort me-1"></i> Reorder
+                                </button>
+                                <button type="button" class="btn btn-sm btn-primary" onclick="editWorkflow('roadmap workflow')">
+                                    <i class="ti ti-edit me-1"></i> Edit Statuses
+                                </button>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
                                 <tr>
-                                    <td colspan="5" class="text-center py-4 text-muted">
-                                        No statuses yet. Add your first status!
-                                    </td>
+                                    <th style="width: 50px;">#</th>
+                                    <th>Status Name</th>
+                                    <th style="width: 150px;">Color</th>
+                                    <th style="width: 120px;">Status</th>
                                 </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody id="roadmap-workflow-list">
+                                @forelse($roadmapWorkflowStatuses as $index => $status)
+                                    <tr data-id="{{ $status->id }}" data-name="{{ $status->name }}" data-workflow="roadmap workflow">
+                                        <td>{{ $index + 1 }}</td>
+                                        <td><strong>{{ $status->name }}</strong></td>
+                                        <td>
+                                            <span class="badge" style="background-color: {{ $status->color }}; color: white; padding: 8px 16px;">
+                                                {{ $status->name }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @if($status->is_active)
+                                                <span class="badge bg-success">Active</span>
+                                            @else
+                                                <span class="badge bg-secondary">Inactive</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4 text-muted">
+                                            No statuses yet. Click "Add Workflow" to create this workflow.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+
+                <!-- Feedback Workflow Section -->
+                <div class="workflow-section">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0"><i class="ti ti-message-2 me-2"></i>Feedback Workflow</h6>
+                        @if($feedbackWorkflowStatuses->count() > 0)
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-sm btn-info" onclick="openReorderModal('feedback workflow')">
+                                    <i class="ti ti-arrows-sort me-1"></i> Reorder
+                                </button>
+                                <button type="button" class="btn btn-sm btn-primary" onclick="editWorkflow('feedback workflow')">
+                                    <i class="ti ti-edit me-1"></i> Edit Statuses
+                                </button>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">#</th>
+                                    <th>Status Name</th>
+                                    <th style="width: 150px;">Color</th>
+                                    <th style="width: 120px;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="feedback-workflow-list">
+                                @forelse($feedbackWorkflowStatuses as $index => $status)
+                                    <tr data-id="{{ $status->id }}" data-name="{{ $status->name }}" data-workflow="feedback workflow">
+                                        <td>{{ $index + 1 }}</td>
+                                        <td><strong>{{ $status->name }}</strong></td>
+                                        <td>
+                                            <span class="badge" style="background-color: {{ $status->color }}; color: white; padding: 8px 16px;">
+                                                {{ $status->name }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @if($status->is_active)
+                                                <span class="badge bg-success">Active</span>
+                                            @else
+                                                <span class="badge bg-secondary">Inactive</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4 text-muted">
+                                            No statuses yet. Click "Add Workflow" to create this workflow.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Workflow Selector Modal -->
+<div class="modal fade" id="workflowSelectorModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select Workflow Type</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="workflowTypeSelect" class="form-label">Workflow Type</label>
+                    <select class="form-select" id="workflowTypeSelect">
+                        <option value="">-- Select a workflow --</option>
+                        @if($roadmapWorkflowStatuses->count() == 0)
+                            <option value="roadmap workflow">Roadmap Workflow</option>
+                        @endif
+                        @if($feedbackWorkflowStatuses->count() == 0)
+                            <option value="feedback workflow">Feedback Workflow</option>
+                        @endif
+                    </select>
+                    <small class="text-muted">Only one workflow can be created for each type.</small>
+                </div>
+
+                @if($roadmapWorkflowStatuses->count() > 0 && $feedbackWorkflowStatuses->count() > 0)
+                    <div class="alert alert-info mb-0">
+                        <i class="ti ti-info-circle me-2"></i>
+                        Both workflow types have already been created. You can edit them using the "Edit Statuses" button.
+                    </div>
+                @endif
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="continueToStatusModal()">
+                    <i class="ti ti-arrow-right me-1"></i> Continue
+                </button>
             </div>
         </div>
     </div>
@@ -269,7 +365,7 @@
                         <!-- Open Status (Always First) -->
                         <div class="modal-status-row" data-type="open">
                             <div class="d-flex align-items-center gap-3 mb-3 p-3 border rounded">
-                                <input type="text" class="form-control" value="Open" maxlength="40" data-field="open-name" required>
+                                <input type="text" class="form-control" value="Open" maxlength="40" data-field="open-name" required style="max-width: 200px;">
 
                                 <div class="color-picker-wrapper">
                                     <div class="color-display" style="background-color: #22C55E;" data-field="open-color" onclick="toggleModalColorPalette(this)"></div>
@@ -303,7 +399,7 @@
                         <!-- Closed Status (Always Last) -->
                         <div class="modal-status-row" data-type="closed">
                             <div class="d-flex align-items-center gap-3 mb-3 p-3 border rounded">
-                                <input type="text" class="form-control" value="Closed" maxlength="40" data-field="closed-name" required>
+                                <input type="text" class="form-control" value="Closed" maxlength="40" data-field="closed-name" required style="max-width: 200px;">
 
                                 <div class="color-picker-wrapper">
                                     <div class="color-display" style="background-color: #6B7280;" data-field="closed-color" onclick="toggleModalColorPalette(this)"></div>
@@ -368,9 +464,42 @@ document.addEventListener('click', function(e) {
 });
 
 let customStatusCounter = 0;
+let currentWorkflowType = '';
 
-// Add new status - Load existing statuses into modal
-function addNewStatus() {
+// Open workflow selector modal
+function openWorkflowSelector() {
+    const modal = new bootstrap.Modal(document.getElementById('workflowSelectorModal'));
+    modal.show();
+}
+
+// Continue to status modal after workflow selection
+function continueToStatusModal() {
+    const workflowType = document.getElementById('workflowTypeSelect').value;
+
+    if (!workflowType) {
+        alert('Please select a workflow type');
+        return;
+    }
+
+    currentWorkflowType = workflowType;
+
+    // Close workflow selector modal
+    bootstrap.Modal.getInstance(document.getElementById('workflowSelectorModal')).hide();
+
+    // Open status management modal
+    setTimeout(() => {
+        loadWorkflowStatuses(workflowType);
+    }, 300);
+}
+
+// Edit existing workflow
+function editWorkflow(workflowType) {
+    currentWorkflowType = workflowType;
+    loadWorkflowStatuses(workflowType);
+}
+
+// Load statuses for a specific workflow
+function loadWorkflowStatuses(workflowType) {
     // Clear custom statuses container
     document.getElementById('customStatusesContainer').innerHTML = '';
     customStatusCounter = 0;
@@ -381,7 +510,10 @@ function addNewStatus() {
         .then(html => {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
-            const statusRows = doc.querySelectorAll('#status-list tr[data-id]');
+
+            // Select appropriate table based on workflow type
+            const listId = workflowType === 'roadmap workflow' ? 'roadmap-workflow-list' : 'feedback-workflow-list';
+            const statusRows = doc.querySelectorAll(`#${listId} tr[data-id]`);
 
             statusRows.forEach(row => {
                 const name = row.dataset.name;
@@ -422,7 +554,7 @@ function addCustomStatus(id = null, name = '', color = '#3B82F6', isActive = tru
     const statusHtml = `
         <div class="custom-status-row mb-3" data-id="${uniqueId}">
             <div class="d-flex align-items-center gap-3 p-3 border rounded">
-                <input type="text" class="form-control" value="${name}" placeholder="Status name" maxlength="40" required>
+                <input type="text" class="form-control" value="${name}" placeholder="Status name" maxlength="40" required style="max-width: 200px;">
 
                 <div class="color-picker-wrapper">
                     <div class="color-display" style="background-color: ${color};" onclick="toggleModalColorPalette(this)"></div>
@@ -480,6 +612,11 @@ function selectColorInModal(color, element) {
 
 // Save all statuses
 async function saveAllStatuses() {
+    if (!currentWorkflowType) {
+        alert('Workflow type not selected');
+        return;
+    }
+
     const openName = document.querySelector('[data-field="open-name"]').value;
     const openColor = rgbToHex(document.querySelector('[data-field="open-color"]').style.backgroundColor);
 
@@ -497,16 +634,17 @@ async function saveAllStatuses() {
                 id: row.dataset.id,
                 name: nameInput.value.trim(),
                 color: rgbToHex(colorDisplay.style.backgroundColor),
-                is_active: toggle.checked
+                is_active: toggle.checked,
+                workflow_type: currentWorkflowType
             });
         }
     });
 
     // Prepare all statuses
     const allStatuses = [
-        { name: openName, color: openColor, is_active: true, type: 'open' },
+        { name: openName, color: openColor, is_active: true, workflow_type: currentWorkflowType, type: 'open' },
         ...customStatuses,
-        { name: closedName, color: closedColor, is_active: true, type: 'closed' }
+        { name: closedName, color: closedColor, is_active: true, workflow_type: currentWorkflowType, type: 'closed' }
     ];
 
     try {
@@ -537,12 +675,14 @@ async function saveAllStatuses() {
 
 // Open reorder modal
 let reorderSortable = null;
-function openReorderModal() {
+function openReorderModal(workflowType) {
+    currentWorkflowType = workflowType;
     const reorderList = document.getElementById('reorderStatusList');
     reorderList.innerHTML = '';
 
-    // Get all statuses from the table
-    const statusRows = document.querySelectorAll('#status-list tr[data-id]');
+    // Get statuses for specific workflow
+    const listId = workflowType === 'roadmap workflow' ? 'roadmap-workflow-list' : 'feedback-workflow-list';
+    const statusRows = document.querySelectorAll(`#${listId} tr[data-id]`);
 
     statusRows.forEach((row, index) => {
         const id = row.dataset.id;
@@ -597,7 +737,8 @@ function saveReorder() {
     reorderItems.forEach((item, index) => {
         statuses.push({
             id: item.dataset.id,
-            sort_order: index
+            sort_order: index,
+            workflow_type: currentWorkflowType
         });
     });
 

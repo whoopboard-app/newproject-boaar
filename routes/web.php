@@ -13,6 +13,7 @@ use App\Http\Controllers\RoadmapController;
 use App\Http\Controllers\FeedbackCategoryController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\TeamInvitationController;
+use App\Http\Controllers\PublicController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -111,6 +112,8 @@ Route::middleware('auth')->group(function () {
 
     // App Settings
     Route::get('/settings', [AppSettingsController::class, 'index'])->name('settings.index');
+    Route::get('/settings/general', [AppSettingsController::class, 'general'])->name('settings.general');
+    Route::put('/settings/general', [AppSettingsController::class, 'updateGeneral'])->name('settings.general.update');
 
     // Roadmap Management
     Route::get('/roadmap', [RoadmapController::class, 'index'])->name('roadmap.index');
@@ -143,3 +146,9 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+// Public Pages - MUST BE LAST (Catch-all routes)
+Route::get('/{unique_url}/roadmap', [PublicController::class, 'roadmap'])->name('public.roadmap');
+Route::get('/{unique_url}/changelog', [PublicController::class, 'changelog'])->name('public.changelog');
+Route::get('/{unique_url}/changelog/{changelog}', [PublicController::class, 'showChangelog'])->name('public.changelog.show');
+Route::get('/{unique_url}', [PublicController::class, 'home'])->name('public.home');

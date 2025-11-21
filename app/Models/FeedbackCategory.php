@@ -24,6 +24,14 @@ class FeedbackCategory extends Model
     ];
 
     /**
+     * Get all feedbacks for this category.
+     */
+    public function feedbacks()
+    {
+        return $this->hasMany(Feedback::class, 'feedback_category_id');
+    }
+
+    /**
      * Scope a query to only include active categories.
      */
     public function scopeActive($query)

@@ -61,4 +61,12 @@ class Category extends Model
         // Return a random available color
         return $availableColors[array_rand($availableColors)];
     }
+
+    /**
+     * Get all changelogs for this category
+     */
+    public function changelogs()
+    {
+        return $this->hasMany(Changelog::class, 'category_id');
+    }
 }
