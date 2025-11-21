@@ -1,6 +1,6 @@
 @extends('layouts.inspinia')
 
-@section('title', 'Add New Feedback')
+@section('title', isset($feedback) ? 'Edit Feedback' : 'Add New Feedback')
 
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
@@ -45,11 +45,11 @@
     <div class="col-12">
         <div class="page-title-box d-flex align-items-center justify-content-between">
             <div>
-                <h2 class="mb-0">Add New Feedback</h2>
-                <p class="text-muted fs-14 mb-0">Submit a new feedback idea</p>
+                <h2 class="mb-0">{{ isset($feedback) ? 'Edit Feedback' : 'Add New Feedback' }}</h2>
+                <p class="text-muted fs-14 mb-0">{{ isset($feedback) ? 'Update feedback details' : 'Submit a new feedback idea' }}</p>
             </div>
-            <a href="{{ route('feedback.index') }}" class="btn btn-secondary">
-                <i class="ti ti-arrow-left me-1"></i> Back to List
+            <a href="{{ isset($feedback) ? route('feedback.show', $feedback) : route('feedback.index') }}" class="btn btn-secondary">
+                <i class="ti ti-arrow-left me-1"></i> Back
             </a>
         </div>
     </div>
@@ -59,15 +59,18 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <form method="POST" action="{{ route('feedback.store') }}">
+                <form method="POST" action="{{ isset($feedback) ? route('feedback.update', $feedback) : route('feedback.store') }}">
                     @csrf
+                    @if(isset($feedback))
+                        @method('PUT')
+                    @endif
 
                     <!-- Tell about your idea -->
                     <div class="row">
                         <div class="col-md-12">
                             <div class="mb-3">
                                 <label for="idea" class="form-label">Tell about your idea <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('idea') is-invalid @enderror" id="idea" name="idea" placeholder="Describe your idea..." value="{{ old('idea') }}" required>
+                                <input type="text" class="form-control @error('idea') is-invalid @enderror" id="idea" name="idea" placeholder="Describe your idea..." value="{{ old('idea', isset($feedback) ? $feedback->idea : '') }}" required>
                                 @error('idea')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -80,7 +83,7 @@
                         <div class="col-md-12">
                             <div class="mb-3">
                                 <label for="tags" class="form-label">Tags</label>
-                                <input type="text" class="form-control @error('tags') is-invalid @enderror" id="tags" name="tags" placeholder="Add tags..." value="{{ old('tags') }}">
+                                <input type="text" class="form-control @error('tags') is-invalid @enderror" id="tags" name="tags" placeholder="Add tags..." value="{{ old('tags', isset($feedback) && $feedback->tags ? implode(', ', $feedback->tags) : '') }}">
                                 @error('tags')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -96,7 +99,7 @@
                                 <select class="form-select @error('feedback_category_id') is-invalid @enderror" id="feedback_category_id" name="feedback_category_id" data-choices>
                                     <option value="">-- Select Category --</option>
                                     @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ old('feedback_category_id') == $category->id ? 'selected' : '' }}>
+                                        <option value="{{ $category->id }}" {{ old('feedback_category_id', isset($feedback) ? $feedback->feedback_category_id : '') == $category->id ? 'selected' : '' }}>
                                             {{ $category->name }}
                                         </option>
                                     @endforeach
@@ -114,7 +117,7 @@
                                 <select class="form-select @error('roadmap_id') is-invalid @enderror" id="roadmap_id" name="roadmap_id" data-choices>
                                     <option value="">-- Select Status --</option>
                                     @foreach($statuses as $status)
-                                        <option value="{{ $status->id }}" {{ old('roadmap_id') == $status->id ? 'selected' : '' }}>
+                                        <option value="{{ $status->id }}" {{ old('roadmap_id', isset($feedback) ? $feedback->roadmap_id : '') == $status->id ? 'selected' : '' }}>
                                             {{ $status->name }}
                                         </option>
                                     @endforeach
@@ -131,7 +134,7 @@
                         <div class="col-md-12">
                             <div class="mb-3">
                                 <label for="value_description" class="form-label">Why your idea will have more value to product</label>
-                                <textarea class="form-control @error('value_description') is-invalid @enderror" id="value_description" name="value_description" rows="3" placeholder="Explain the value this idea brings...">{{ old('value_description') }}</textarea>
+                                <textarea class="form-control @error('value_description') is-invalid @enderror" id="value_description" name="value_description" rows="3" placeholder="Explain the value this idea brings...">{{ old('value_description', isset($feedback) ? $feedback->value_description : '') }}</textarea>
                                 @error('value_description')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -144,7 +147,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" placeholder="Enter your name" value="{{ old('name') }}" required>
+                                <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" placeholder="Enter your name" value="{{ old('name', isset($feedback) ? $feedback->name : '') }}" required>
                                 @error('name')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -154,7 +157,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" placeholder="Enter your email" value="{{ old('email') }}" required>
+                                <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" placeholder="Enter your email" value="{{ old('email', isset($feedback) ? $feedback->email : '') }}" required>
                                 @error('email')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -162,16 +165,28 @@
                         </div>
                     </div>
 
-                    <!-- Login Access Checkbox -->
+                    <!-- Login Access Checkbox and Feedback Visibility -->
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="mb-3">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="login_access_enabled" name="login_access_enabled" value="1" {{ old('login_access_enabled') ? 'checked' : '' }}>
+                                    <input class="form-check-input" type="checkbox" id="login_access_enabled" name="login_access_enabled" value="1" {{ old('login_access_enabled', isset($feedback) ? $feedback->login_access_enabled : false) ? 'checked' : '' }}>
                                     <label class="form-check-label" for="login_access_enabled">
                                         Login access enabled for the user
                                     </label>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="is_public" class="form-label">Feedback Visibility to Public <span class="text-danger">*</span></label>
+                                <select class="form-select @error('is_public') is-invalid @enderror" id="is_public" name="is_public" data-choices required>
+                                    <option value="1" {{ old('is_public', isset($feedback) ? $feedback->is_public : '1') == '1' ? 'selected' : '' }}>Yes</option>
+                                    <option value="0" {{ old('is_public', isset($feedback) ? $feedback->is_public : '1') == '0' ? 'selected' : '' }}>No</option>
+                                </select>
+                                @error('is_public')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -184,7 +199,7 @@
                                 <select class="form-select @error('persona_id') is-invalid @enderror" id="persona_id" name="persona_id" data-choices>
                                     <option value="">-- Select Persona --</option>
                                     @foreach($personas as $persona)
-                                        <option value="{{ $persona->id }}" {{ old('persona_id') == $persona->id ? 'selected' : '' }}>
+                                        <option value="{{ $persona->id }}" {{ old('persona_id', isset($feedback) ? $feedback->persona_id : '') == $persona->id ? 'selected' : '' }}>
                                             {{ $persona->name }}
                                         </option>
                                     @endforeach
@@ -201,7 +216,7 @@
                                 <select class="form-select @error('source') is-invalid @enderror" id="source" name="source" data-choices required>
                                     <option value="">-- Select Source --</option>
                                     @foreach($sources as $source)
-                                        <option value="{{ $source }}" {{ old('source', 'Admin Added') == $source ? 'selected' : '' }}>
+                                        <option value="{{ $source }}" {{ old('source', isset($feedback) ? $feedback->source : 'Admin Added') == $source ? 'selected' : '' }}>
                                             {{ $source }}
                                         </option>
                                     @endforeach
@@ -218,9 +233,9 @@
                         <div class="col-md-12">
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="ti ti-check me-1"></i> Submit Feedback
+                                    <i class="ti ti-check me-1"></i> {{ isset($feedback) ? 'Update Feedback' : 'Submit Feedback' }}
                                 </button>
-                                <a href="{{ route('feedback.index') }}" class="btn btn-secondary">
+                                <a href="{{ isset($feedback) ? route('feedback.show', $feedback) : route('feedback.index') }}" class="btn btn-secondary">
                                     Cancel
                                 </a>
                             </div>
@@ -246,6 +261,7 @@
                 searchEnabled: true,
                 itemSelectText: '',
                 removeItemButton: false,
+                shouldSort: false,
             });
         });
 

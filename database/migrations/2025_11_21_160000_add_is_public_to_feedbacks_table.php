@@ -12,9 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('feedbacks', function (Blueprint $table) {
-            if (!Schema::hasColumn('feedbacks', 'team_id')) {
-                $table->foreignId('team_id')->after('id')->constrained('teams')->cascadeOnDelete();
-            }
+            $table->boolean('is_public')->default(true)->after('login_access_enabled');
         });
     }
 
@@ -24,12 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('feedbacks', function (Blueprint $table) {
-
-            // Drop foreign key if exists
-            if (Schema::hasColumn('feedbacks', 'team_id')) {
-                $table->dropForeign(['team_id']);
-                $table->dropColumn('team_id');
-            }
+            $table->dropColumn('is_public');
         });
     }
 };

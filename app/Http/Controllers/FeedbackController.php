@@ -30,6 +30,52 @@ class FeedbackController extends Controller
     }
 
     /**
+     * Display Kanban board view.
+     */
+    public function kanban()
+    {
+        $roadmaps = Roadmap::active()->ordered()->get();
+
+        // Get feedbacks for current team and eager load relationships
+        $feedbacks = Feedback::with(['category', 'roadmap', 'persona'])
+            ->whereIn('roadmap_id', $roadmaps->pluck('id'))
+            ->get()
+            ->groupBy('roadmap_id');
+
+        return view('feedback.kanban', compact('feedbacks', 'roadmaps'));
+    }
+
+    /**
+     * Update feedback status from Kanban board.
+     */
+    public function updateStatus(Request $request, Feedback $feedback)
+    {
+        $validated = $request->validate([
+            'roadmap_id' => 'required|exists:roadmaps,id',
+            'note' => 'nullable|string|max:500',
+        ]);
+
+        $oldStatus = $feedback->roadmap ? $feedback->roadmap->name : 'No Status';
+        $feedback->update(['roadmap_id' => $validated['roadmap_id']]);
+        $newStatus = $feedback->roadmap->name;
+
+        // Add comment if note is provided
+        if (!empty($validated['note'])) {
+            FeedbackComment::create([
+                'feedback_id' => $feedback->id,
+                'user_id' => auth()->id(),
+                'comment' => "Status changed from '{$oldStatus}' to '{$newStatus}': {$validated['note']}",
+                'is_internal' => true,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Feedback status updated successfully',
+        ]);
+    }
+
+    /**
      * Show the form for creating a new feedback.
      */
     public function create()
@@ -72,6 +118,7 @@ class FeedbackController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'login_access_enabled' => 'boolean',
+            'is_public' => 'required|boolean',
             'tags' => 'nullable|string',
             'persona_id' => 'nullable|exists:personas,id',
             'source' => 'required|in:Admin Added,User Submitted,Social Scraping,Project Management tool,Support System',
@@ -85,6 +132,7 @@ class FeedbackController extends Controller
         }
 
         $validated['login_access_enabled'] = $request->has('login_access_enabled');
+        $validated['is_public'] = $request->input('is_public', true);
         $validated['team_id'] = Auth::user()->current_team_id;
 
         $feedback = Feedback::create($validated);
@@ -156,10 +204,7 @@ class FeedbackController extends Controller
             'Support System'
         ];
 
-        // Convert tags array to comma-separated string for editing
-        $feedback->tags_string = $feedback->tags ? implode(', ', $feedback->tags) : '';
-
-        return view('feedback.edit', compact('feedback', 'categories', 'statuses', 'personas', 'sources'));
+        return view('feedback.create', compact('feedback', 'categories', 'statuses', 'personas', 'sources'));
     }
 
     /**
@@ -181,6 +226,7 @@ class FeedbackController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'login_access_enabled' => 'boolean',
+            'is_public' => 'required|boolean',
             'tags' => 'nullable|string',
             'persona_id' => 'nullable|exists:personas,id',
             'source' => 'required|in:Admin Added,User Submitted,Social Scraping,Project Management tool,Support System',
@@ -194,6 +240,7 @@ class FeedbackController extends Controller
         }
 
         $validated['login_access_enabled'] = $request->has('login_access_enabled');
+        $validated['is_public'] = $request->input('is_public', true);
 
         $feedback->update($validated);
 

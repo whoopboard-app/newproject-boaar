@@ -21,6 +21,7 @@ class Feedback extends Model
         'name',
         'email',
         'login_access_enabled',
+        'is_public',
         'tags',
         'persona_id',
         'source',
@@ -29,6 +30,7 @@ class Feedback extends Model
     protected $casts = [
         'tags' => 'array',
         'login_access_enabled' => 'boolean',
+        'is_public' => 'boolean',
     ];
 
     /**

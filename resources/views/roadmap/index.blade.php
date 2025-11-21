@@ -317,10 +317,10 @@
                                 </div>
 
                                 <label class="toggle-switch">
-                                    <input type="checkbox" disabled>
+                                    <input type="checkbox" checked disabled>
                                     <span class="toggle-slider"></span>
                                 </label>
-                                <small class="text-muted" style="width: 60px;">Inactive</small>
+                                <small class="text-muted" style="width: 60px;">Active</small>
                             </div>
                         </div>
                     </div>
@@ -506,7 +506,7 @@ async function saveAllStatuses() {
     const allStatuses = [
         { name: openName, color: openColor, is_active: true, type: 'open' },
         ...customStatuses,
-        { name: closedName, color: closedColor, is_active: false, type: 'closed' }
+        { name: closedName, color: closedColor, is_active: true, type: 'closed' }
     ];
 
     try {

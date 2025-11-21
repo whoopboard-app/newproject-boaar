@@ -130,6 +130,8 @@ Route::middleware('auth')->group(function () {
 
     // Feedback Management
     Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
+    Route::get('/feedback/kanban', [FeedbackController::class, 'kanban'])->name('feedback.kanban');
+    Route::post('/feedback/{feedback}/update-status', [FeedbackController::class, 'updateStatus'])->name('feedback.updateStatus');
     Route::get('/feedback/create', [FeedbackController::class, 'create'])->name('feedback.create');
     Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
     Route::get('/feedback/{feedback}', [FeedbackController::class, 'show'])->name('feedback.show');
