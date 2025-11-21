@@ -30,10 +30,13 @@ return new class extends Migration
                     $table->dropColumn('user_id');
                 });
 
-                Schema::table($table, function (Blueprint $table) {
-                    // Add team_id foreign key
-                    $table->foreignId('team_id')->after('id')->constrained('teams')->cascadeOnDelete();
-                });
+                // Only add team_id if it doesn't already exist
+                if (!Schema::hasColumn($table, 'team_id')) {
+                    Schema::table($table, function (Blueprint $table) {
+                        // Add team_id foreign key
+                        $table->foreignId('team_id')->after('id')->constrained('teams')->cascadeOnDelete();
+                    });
+                }
             }
         }
     }
