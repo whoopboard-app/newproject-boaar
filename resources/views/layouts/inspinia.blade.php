@@ -208,10 +208,18 @@
                         </a>
                     </li>
 
-                    <!-- Roadmap -->
+                   {{-- <!-- Roadmap Statuses -->
                     <li class="side-nav-item">
-                        <a href="{{ route('roadmap.index') }}" class="side-nav-link {{ request()->routeIs('roadmap.*') ? 'active' : '' }}">
+                        <a href="{{ route('roadmap.index') }}" class="side-nav-link {{ request()->routeIs('roadmap.index') || request()->routeIs('roadmap.create') || request()->routeIs('roadmap.edit') ? 'active' : '' }}">
                             <span class="menu-icon"><i class="ti ti-map-pin"></i></span>
+                            <span class="menu-text">Roadmap Statuses</span>
+                        </a>
+                    </li>--}}
+
+                    <!-- Roadmap Items -->
+                    <li class="side-nav-item">
+                        <a href="{{ route('roadmap-items.index') }}" class="side-nav-link {{ request()->routeIs('roadmap-items.*') ? 'active' : '' }}">
+                            <span class="menu-icon"><i class="ti ti-route"></i></span>
                             <span class="menu-text">Roadmap</span>
                         </a>
                     </li>

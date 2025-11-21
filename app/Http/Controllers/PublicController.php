@@ -6,6 +6,7 @@ use App\Models\AppSettings;
 use App\Models\Feedback;
 use App\Models\FeedbackCategory;
 use App\Models\Roadmap;
+use App\Models\RoadmapItem;
 use App\Models\Changelog;
 use Illuminate\Http\Request;
 
@@ -54,23 +55,22 @@ class PublicController extends Controller
         // Find the app settings by unique URL
         $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
 
-        // Get active roadmap statuses for this team
+        // Get active roadmap statuses for this team (only roadmap workflow)
         $roadmaps = Roadmap::where('team_id', $settings->team_id)
+            ->where('workflow_type', 'roadmap workflow')
             ->where('is_active', true)
             ->orderBy('sort_order')
             ->get();
 
-        // Get public feedbacks grouped by roadmap status
-        $feedbacks = Feedback::with(['category', 'roadmap'])
+        // Get roadmap items grouped by roadmap status
+        $roadmapItems = RoadmapItem::with(['feedback.category'])
             ->where('team_id', $settings->team_id)
-            ->where('is_public', true)
-            ->where('show_in_roadmap', true)
-            ->whereIn('roadmap_id', $roadmaps->pluck('id'))
+            ->whereIn('roadmap_status_id', $roadmaps->pluck('id'))
             ->orderBy('created_at', 'desc')
             ->get()
-            ->groupBy('roadmap_id');
+            ->groupBy('roadmap_status_id');
 
-        return view('public.roadmap', compact('settings', 'roadmaps', 'feedbacks'));
+        return view('public.roadmap', compact('settings', 'roadmaps', 'roadmapItems'));
     }
 
     /**

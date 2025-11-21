@@ -10,6 +10,7 @@ use App\Http\Controllers\UserSegmentController;
 use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\RoadmapController;
+use App\Http\Controllers\RoadmapItemController;
 use App\Http\Controllers\FeedbackCategoryController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\TeamInvitationController;
@@ -143,12 +144,26 @@ Route::middleware('auth')->group(function () {
     Route::delete('/feedback/{feedback}', [FeedbackController::class, 'destroy'])->name('feedback.destroy');
     Route::post('/feedback/{feedback}/comment', [FeedbackController::class, 'storeComment'])->name('feedback.comment.store');
     Route::delete('/feedback/{feedback}/comment/{comment}', [FeedbackController::class, 'destroyComment'])->name('feedback.comment.destroy');
+
+    // Roadmap Items Management
+    Route::get('/roadmap-items', [RoadmapItemController::class, 'index'])->name('roadmap-items.index');
+    Route::get('/roadmap-items/kanban', [RoadmapItemController::class, 'kanban'])->name('roadmap-items.kanban');
+    Route::post('/roadmap-items/{roadmapItem}/update-status', [RoadmapItemController::class, 'updateStatus'])->name('roadmap-items.updateStatus');
+    Route::get('/roadmap-items/create', [RoadmapItemController::class, 'create'])->name('roadmap-items.create');
+    Route::post('/roadmap-items', [RoadmapItemController::class, 'store'])->name('roadmap-items.store');
+    Route::get('/roadmap-items/{roadmapItem}', [RoadmapItemController::class, 'show'])->name('roadmap-items.show');
+    Route::get('/roadmap-items/{roadmapItem}/edit', [RoadmapItemController::class, 'edit'])->name('roadmap-items.edit');
+    Route::put('/roadmap-items/{roadmapItem}', [RoadmapItemController::class, 'update'])->name('roadmap-items.update');
+    Route::delete('/roadmap-items/{roadmapItem}', [RoadmapItemController::class, 'destroy'])->name('roadmap-items.destroy');
+    Route::post('/roadmap-items/{roadmapItem}/comment', [RoadmapItemController::class, 'addComment'])->name('roadmap-items.comment.store');
+    Route::delete('/roadmap-items/comment/{comment}', [RoadmapItemController::class, 'deleteComment'])->name('roadmap-items.comment.destroy');
 });
 
 require __DIR__.'/auth.php';
 
 // Public Pages - MUST BE LAST (Catch-all routes)
 Route::get('/{unique_url}/roadmap', [PublicController::class, 'roadmap'])->name('public.roadmap');
+Route::get('/{unique_url}/roadmap/{roadmapItem}', [PublicController::class, 'showRoadmapItem'])->name('public.roadmap.show');
 Route::get('/{unique_url}/changelog', [PublicController::class, 'changelog'])->name('public.changelog');
 Route::get('/{unique_url}/changelog/{changelog}', [PublicController::class, 'showChangelog'])->name('public.changelog.show');
 Route::get('/{unique_url}', [PublicController::class, 'home'])->name('public.home');

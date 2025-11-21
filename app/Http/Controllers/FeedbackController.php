@@ -7,6 +7,7 @@ use App\Models\FeedbackCategory;
 use App\Models\FeedbackComment;
 use App\Models\Persona;
 use App\Models\Roadmap;
+use App\Models\RoadmapItem;
 use App\Models\User;
 use App\Notifications\FeedbackLoginAccessNotification;
 use Illuminate\Http\Request;
@@ -170,6 +171,25 @@ class FeedbackController extends Controller
             }
         }
 
+        // Create RoadmapItem if show_in_roadmap is true
+        if ($validated['show_in_roadmap']) {
+            // Get the first "Open" status from roadmap workflow
+            $openStatus = Roadmap::where('workflow_type', 'roadmap workflow')
+                ->where('name', 'Open')
+                ->first();
+
+            if ($openStatus) {
+                RoadmapItem::create([
+                    'team_id' => Auth::user()->current_team_id,
+                    'feedback_id' => $feedback->id,
+                    'idea' => $validated['idea'],
+                    'notes' => $validated['value_description'] ?? null,
+                    'tags' => $validated['tags'],
+                    'roadmap_status_id' => $openStatus->id,
+                ]);
+            }
+        }
+
         return redirect()->route('feedback.index')
             ->with('success', 'Feedback created successfully!' . ($validated['login_access_enabled'] ? ' Login access email sent.' : ''));
     }
@@ -246,7 +266,35 @@ class FeedbackController extends Controller
         $validated['is_public'] = $request->input('is_public', true);
         $validated['show_in_roadmap'] = $request->has('show_in_roadmap');
 
+        // Check if show_in_roadmap changed from false to true
+        $wasNotInRoadmap = !$feedback->show_in_roadmap;
+        $nowInRoadmap = $validated['show_in_roadmap'];
+
         $feedback->update($validated);
+
+        // Create RoadmapItem if show_in_roadmap changed to true and doesn't already exist
+        if ($wasNotInRoadmap && $nowInRoadmap) {
+            // Check if RoadmapItem doesn't already exist
+            $existingRoadmapItem = RoadmapItem::where('feedback_id', $feedback->id)->first();
+
+            if (!$existingRoadmapItem) {
+                // Get the first "Open" status from roadmap workflow
+                $openStatus = Roadmap::where('workflow_type', 'roadmap workflow')
+                    ->where('name', 'Open')
+                    ->first();
+
+                if ($openStatus) {
+                    RoadmapItem::create([
+                        'team_id' => Auth::user()->current_team_id,
+                        'feedback_id' => $feedback->id,
+                        'idea' => $validated['idea'],
+                        'notes' => $validated['value_description'] ?? null,
+                        'tags' => $validated['tags'],
+                        'roadmap_status_id' => $openStatus->id,
+                    ]);
+                }
+            }
+        }
 
         return redirect()->route('feedback.show', $feedback)
             ->with('success', 'Feedback updated successfully!');

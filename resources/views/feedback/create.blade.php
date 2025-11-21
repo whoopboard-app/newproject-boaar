@@ -233,11 +233,11 @@
                         <div class="col-md-12">
                             <div class="mb-3">
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="show_in_roadmap" name="show_in_roadmap" value="1" {{ old('show_in_roadmap', isset($feedback) ? $feedback->show_in_roadmap : true) ? 'checked' : '' }}>
+                                    <input class="form-check-input" type="checkbox" id="show_in_roadmap" name="show_in_roadmap" value="1" {{ old('show_in_roadmap', isset($feedback) ? $feedback->show_in_roadmap : false) ? 'checked' : '' }}>
                                     <label class="form-check-label" for="show_in_roadmap">
                                         Enable this feedback in Roadmap
                                     </label>
-                                    <small class="text-muted d-block mt-1">When enabled, this feedback will be visible on the public roadmap page</small>
+                                    <small class="text-muted d-block mt-1">When enabled, this feedback will be copied to the Roadmap Items section with "Open" status</small>
                                 </div>
                             </div>
                         </div>
