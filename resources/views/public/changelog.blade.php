@@ -40,8 +40,8 @@
         }
 
         .logo-img {
-            width: 40px;
-            height: 40px;
+            width: 192px;
+            height: 75px;
             object-fit: contain;
             border-radius: 8px;
         }
@@ -306,7 +306,7 @@
 </head>
 <body>
     <!-- Header -->
-    <header class="public-header">
+    <header class="public-header pt-0">
         <div class="container">
             <div class="logo-section">
                 @if($settings->logo)

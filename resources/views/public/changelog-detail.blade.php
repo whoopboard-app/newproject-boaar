@@ -211,7 +211,7 @@
 </head>
 <body>
     <!-- Header -->
-    <header class="public-header">
+    <header class="public-header pt-0">
         <div class="container">
             <div class="logo-section">
                 @if($settings->logo)
