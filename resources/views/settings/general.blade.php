@@ -103,7 +103,7 @@
                         <div class="col-md-12">
                             <label for="unique_url" class="form-label">Unique URL <span class="badge bg-info ms-2">Auto-Generated</span></label>
                             <div class="input-group">
-                                <span class="input-group-text">{{ config('app.url') }}/</span>
+                                <span class="input-group-text">{{ request()->getSchemeAndHttpHost() }}/</span>
                                 <input type="text" class="form-control @error('unique_url') is-invalid @enderror" id="unique_url" name="unique_url" placeholder="your-unique-slug" value="{{ old('unique_url', $settings->unique_url ?? '') }}" pattern="[a-z0-9-]+" title="Only lowercase letters, numbers, and hyphens allowed" readonly>
                                 <button type="button" class="btn btn-outline-secondary" id="regenerate-url" title="Regenerate URL">
                                     <i class="ti ti-refresh"></i>
