@@ -1,6 +1,7 @@
-@extends('layouts.inspinia')
+@extends('layouts.clean')
 
 @section('title', 'Create Testimonial Template')
+@section('page-title', 'Create Testimonial Template')
 
 @push('styles')
 <link href="https://cdn.jsdelivr.net/npm/quill@2.0.0/dist/quill.snow.css" rel="stylesheet">
@@ -78,10 +79,20 @@
         background: #f8f9fa;
         border-radius: 8px;
         padding: 2rem;
-        position: sticky;
-        top: 20px;
-        max-height: calc(100vh - 100px);
-        overflow-y: auto;
+        min-height: 400px;
+    }
+
+    .preview-container {
+        transition: all 0.3s ease;
+        margin: 0 auto;
+        max-width: 100%;
+    }
+
+    .preview-container.mobile-mode {
+        max-width: 375px;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
     .preview-card {
@@ -115,42 +126,54 @@
     }
 
     .buttons-panel {
-        position: sticky;
+        position: fixed;
         bottom: 0;
+        left: 0;
+        right: 0;
         background: white;
-        padding: 1.5rem;
+        padding: 1.5rem 2rem;
         border-top: 1px solid #e9ecef;
-        margin: 0 -1.5rem -1.5rem;
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-end;
         gap: 1rem;
+        z-index: 999;
+        box-shadow: 0 -2px 4px rgba(0,0,0,0.05);
+    }
+
+    .left-column-wrapper {
+        position: fixed;
+        left: 0;
+        top: 90px;
+        bottom: 80px;
+        width: 40%;
+        overflow-y: auto;
+        background: white;
+        border-right: 1px solid #e9ecef;
+    }
+
+    .left-column-content {
+        padding: 1.5rem;
+    }
+
+    .right-column-wrapper {
+        position: fixed;
+        right: 0;
+        top: 90px;
+        bottom: 80px;
+        width: 60%;
+        padding: 0 2rem;
+        overflow-y: auto;
     }
 </style>
 @endpush
 
 @section('content')
-<div class="row">
-    <div class="col-12">
-        <div class="page-title-box d-flex align-items-center justify-content-between">
-            <div>
-                <h2 class="mb-0">Create Testimonial Template</h2>
-                <p class="text-muted fs-14 mb-0">Set up your testimonial collection form</p>
-            </div>
-            <a href="{{ route('testimonials.index', ['tab' => 'templates']) }}" class="btn btn-secondary">
-                <i class="ti ti-arrow-left me-1"></i> Back to Templates
-            </a>
-        </div>
-    </div>
-</div>
-
 <form action="{{ route('testimonial-templates.store') }}" method="POST" enctype="multipart/form-data" id="template-form">
     @csrf
 
-    <div class="row">
-        <!-- Left Column - Form -->
-        <div class="col-lg-7">
-            <div class="card">
-                <div class="card-body">
+    <!-- Left Column - Form -->
+    <div class="left-column-wrapper">
+        <div class="left-column-content">
                     <!-- Wizard Steps -->
                     <div class="wizard-steps">
                         <div class="wizard-step active" data-step="1">
@@ -464,32 +487,25 @@
                         </button>
                     </div>
                 </div>
+        </div>
+    </div>
 
-                <!-- Buttons Panel -->
-                <div class="buttons-panel">
-                    <div>
-                        <button type="button" class="btn btn-outline-secondary" onclick="window.location.href='{{ route('testimonials.index', ['tab' => 'templates']) }}'">
-                            <i class="ti ti-x me-1"></i> Cancel
+    <!-- Right Column - Preview -->
+    <div class="right-column-wrapper">
+            <div class="preview-panel">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="mb-0 text-muted">Live Preview</h6>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-secondary active" id="desktop-toggle" onclick="switchPreviewMode('desktop')">
+                            <i class="ti ti-device-desktop me-1"></i> Desktop
                         </button>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <input type="hidden" name="status" id="status-field" value="active">
-                        <button type="submit" class="btn btn-secondary" onclick="document.getElementById('status-field').value='inactive'">
-                            <i class="ti ti-device-floppy me-1"></i> Save as Draft
-                        </button>
-                        <button type="button" class="btn btn-primary" onclick="openTestModal()">
-                            <i class="ti ti-check me-1"></i> Publish Template
+                        <button type="button" class="btn btn-outline-secondary" id="mobile-toggle" onclick="switchPreviewMode('mobile')">
+                            <i class="ti ti-device-mobile me-1"></i> Mobile
                         </button>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Right Column - Preview -->
-        <div class="col-lg-5">
-            <div class="preview-panel">
-                <h6 class="mb-3 text-muted">Live Preview</h6>
-
+                <div class="preview-container" id="preview-container">
                 <!-- Email Preview (Step 1) -->
                 <div class="preview-card" id="email-preview" style="display: none;">
                     <div id="preview-logo-container" style="padding: 0 2rem 0; text-align: center; background: white; border-radius: 12px 12px 0 0; display: none;">
@@ -656,8 +672,22 @@
                         </button>
                     </div>
                 </div>
+                </div>
             </div>
-        </div>
+    </div>
+
+    <!-- Buttons Panel -->
+    <div class="buttons-panel">
+        <input type="hidden" name="status" id="status-field" value="active">
+        <button type="button" class="btn btn-outline-secondary" onclick="closeWindow()">
+            <i class="ti ti-x me-1"></i> Cancel
+        </button>
+        <button type="submit" class="btn btn-secondary" onclick="document.getElementById('status-field').value='inactive'">
+            <i class="ti ti-device-floppy me-1"></i> Save as Draft
+        </button>
+        <button type="button" class="btn btn-primary" onclick="openTestModal()">
+            <i class="ti ti-check me-1"></i> Publish Template
+        </button>
     </div>
 
     <!-- Test Template Modal -->
@@ -1095,6 +1125,22 @@
                 bgColor = document.getElementById('form_background_color').value;
             }
             previewPanel.style.background = bgColor;
+        }
+    }
+
+    function switchPreviewMode(mode) {
+        const previewContainer = document.getElementById('preview-container');
+        const desktopToggle = document.getElementById('desktop-toggle');
+        const mobileToggle = document.getElementById('mobile-toggle');
+
+        if (mode === 'mobile') {
+            previewContainer.classList.add('mobile-mode');
+            desktopToggle.classList.remove('active');
+            mobileToggle.classList.add('active');
+        } else {
+            previewContainer.classList.remove('mobile-mode');
+            desktopToggle.classList.add('active');
+            mobileToggle.classList.remove('active');
         }
     }
 
