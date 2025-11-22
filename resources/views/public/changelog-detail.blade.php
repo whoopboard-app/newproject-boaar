@@ -220,8 +220,8 @@
                     <div class="logo-img" style="background: var(--primary-color); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.25rem;">
                         {{ strtoupper(substr($settings->product_name ?? 'F', 0, 1)) }}
                     </div>
+                    <h1 class="product-name">{{ $settings->product_name ?? 'Feedback Board' }}</h1>
                 @endif
-                <h1 class="product-name">{{ $settings->product_name ?? 'Feedback Board' }}</h1>
             </div>
 
             <nav class="public-nav">
