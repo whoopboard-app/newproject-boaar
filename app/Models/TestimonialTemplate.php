@@ -19,6 +19,10 @@ class TestimonialTemplate extends Model
         'email_subject',
         'email_content',
         'email_logo',
+        'email_background_color',
+        'cta_button_color',
+        'cta_button_text',
+        'email_title',
         'promotional_offer',
         // Form Fields
         'field_full_name',
@@ -38,6 +42,9 @@ class TestimonialTemplate extends Model
         'thankyou_title',
         'thankyou_description',
         'thankyou_offer',
+        // Appearance
+        'page_background_color',
+        'form_background_color',
         // Legacy fields
         'welcome_message',
         'thank_you_message',

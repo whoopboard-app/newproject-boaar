@@ -28,9 +28,13 @@ class TestimonialTemplateController extends Controller
             'name' => 'required|string|max:255',
             // Email Invite
             'enable_email_invite' => 'nullable|boolean',
+            'email_title' => 'nullable|string',
             'email_subject' => 'nullable|string',
             'email_content' => 'nullable|string',
             'email_logo' => 'nullable|image|max:2048',
+            'email_background_color' => 'nullable|string|max:7',
+            'cta_button_color' => 'nullable|string|max:7',
+            'cta_button_text' => 'nullable|string',
             'promotional_offer' => 'nullable|string',
             // Form Fields
             'field_full_name' => 'nullable|boolean',
@@ -50,6 +54,9 @@ class TestimonialTemplateController extends Controller
             'thankyou_title' => 'nullable|string',
             'thankyou_description' => 'nullable|string',
             'thankyou_offer' => 'nullable|string',
+            // Appearance
+            'page_background_color' => 'nullable|string|max:7',
+            'form_background_color' => 'nullable|string|max:7',
             'status' => 'required|in:active,inactive',
         ]);
 
@@ -95,11 +102,17 @@ class TestimonialTemplateController extends Controller
         $validated = $request->validate([
             'email' => 'required|email',
             'name' => 'nullable|string',
+            'email_title' => 'nullable|string',
             'email_subject' => 'nullable|string',
             'email_content' => 'nullable|string',
             'email_logo' => 'nullable|string',
             'email_logo_data' => 'nullable|string',
+            'email_background_color' => 'nullable|string',
+            'cta_button_color' => 'nullable|string',
+            'cta_button_text' => 'nullable|string',
             'promotional_offer' => 'nullable|string',
+            'page_background_color' => 'nullable|string',
+            'form_background_color' => 'nullable|string',
             // Form field settings
             'field_full_name' => 'nullable|boolean',
             'field_first_name' => 'nullable|boolean',
@@ -119,11 +132,17 @@ class TestimonialTemplateController extends Controller
             // Create a temporary template object with the form data
             $template = new TestimonialTemplate();
             $template->name = $validated['name'] ?? 'Test Template';
+            $template->email_title = $validated['email_title'] ?? 'Your Feedback Matters!';
             $template->email_subject = $validated['email_subject'] ?? "We'd love to hear your feedback!";
             $template->email_content = $validated['email_content'] ?? '<p>Hi there!</p><p>We hope you\'re enjoying our product. We\'d love to hear about your experience!</p>';
             $template->email_logo = $validated['email_logo'] ?? null;
             $template->email_logo_data = $validated['email_logo_data'] ?? null;
+            $template->email_background_color = $validated['email_background_color'] ?? '#667eea';
+            $template->cta_button_color = $validated['cta_button_color'] ?? '#667eea';
+            $template->cta_button_text = $validated['cta_button_text'] ?? 'Share Your Feedback';
             $template->promotional_offer = $validated['promotional_offer'] ?? null;
+            $template->page_background_color = $validated['page_background_color'] ?? '#667eea';
+            $template->form_background_color = $validated['form_background_color'] ?? '#667eea';
             $template->unique_url = 'test-preview';
 
             // Form field settings

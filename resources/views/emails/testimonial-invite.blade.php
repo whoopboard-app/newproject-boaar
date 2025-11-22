@@ -9,7 +9,7 @@
             margin: 0;
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f5f5f5;
+            background-color: {{ $template->page_background_color ?? '#f5f5f5' }};
         }
         .email-container {
             max-width: 600px;
@@ -17,7 +17,7 @@
             background-color: #ffffff;
         }
         .email-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: {{ $template->email_background_color ?? '#667eea' }};
             padding: 40px 32px;
             text-align: center;
             border-radius: 12px 12px 0 0;
@@ -64,7 +64,7 @@
             margin: 32px 0;
         }
         .cta-button a {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: {{ $template->cta_button_color ?? '#667eea' }};
             color: #ffffff;
             padding: 14px 36px;
             text-decoration: none;
@@ -103,7 +103,7 @@
                 <img src="{{ $template->email_logo_data }}" alt="Logo">
             </div>
             @endif
-            <h1>Your Feedback Matters!</h1>
+            <h1>{{ $template->email_title ?? 'Your Feedback Matters!' }}</h1>
         </div>
 
         <div class="email-body">
@@ -127,7 +127,7 @@
 
             <div class="cta-button">
                 <a href="{{ route('testimonials.public.form', $template->unique_url) }}">
-                    Share Your Feedback
+                    {{ $template->cta_button_text ?? 'Share Your Feedback' }}
                 </a>
             </div>
 

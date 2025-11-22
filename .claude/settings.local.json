@@ -8,7 +8,9 @@
       "Bash(dir \"C:\\wamp64\\www\\whoopboard\\resources\\views\\roadmap\" /b)",
       "Bash(dir \"C:\\wamp64\\www\\whoopboard\\resources\\views\\feedback\" /b)",
       "Bash(composer require:*)",
-      "Bash(C:wamp64binphpphp8.1.0php.exe C:ProgramDataComposerSetupbincomposer.phar require spatie/laravel-comments-livewire)"
+      "Bash(C:wamp64binphpphp8.1.0php.exe C:ProgramDataComposerSetupbincomposer.phar require spatie/laravel-comments-livewire)",
+      "Bash(dir \"C:\\wamp64\\www\\whoopboard\\resources\\views\" /b)",
+      "Bash(\"C:\\wamp64\\bin\\php\\php8.1.0\\php.exe\" artisan make:migration add_page_background_color_to_testimonial_templates_table)"
     ],
     "deny": [],
     "ask": []

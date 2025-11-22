@@ -194,7 +194,28 @@
                             </div>
                         </div>
 
+                        <div class="mb-3">
+                            <label for="page_background_color" class="form-label">Page Background Color</label>
+                            <input type="color" class="form-control form-control-color" id="page_background_color" name="page_background_color" value="#667eea" title="Choose page background color">
+                            <small class="text-muted">This color will be used as the background for your testimonial collection form</small>
+                        </div>
+
                         <div id="email-fields" style="display: none;">
+                            <div class="mb-3">
+                                <label for="email_background_color" class="form-label">Email Header Background Color</label>
+                                <input type="color" class="form-control form-control-color" id="email_background_color" name="email_background_color" value="#667eea" title="Choose email header background color">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="cta_button_color" class="form-label">Button Background Color</label>
+                                <input type="color" class="form-control form-control-color" id="cta_button_color" name="cta_button_color" value="#667eea" title="Choose button background color">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email_title" class="form-label">Email Title</label>
+                                <input type="text" class="form-control" id="email_title" name="email_title" placeholder="Your Feedback Matters!" value="Your Feedback Matters!">
+                            </div>
+
                             <div class="mb-3">
                                 <label for="email_subject" class="form-label">Email Subject Line</label>
                                 <input type="text" class="form-control" id="email_subject" name="email_subject" placeholder="We'd love to hear your feedback!">
@@ -204,6 +225,11 @@
                                 <label for="email_content" class="form-label">Email Content</label>
                                 <div id="email-editor" style="height: 200px;"></div>
                                 <textarea name="email_content" id="email_content" style="display:none;"></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="cta_button_text" class="form-label">Call to Action Button Text</label>
+                                <input type="text" class="form-control" id="cta_button_text" name="cta_button_text" placeholder="Share Your Feedback" value="Share Your Feedback">
                             </div>
 
                             <div class="mb-3">
@@ -223,52 +249,129 @@
                         <h5 class="mb-3">Step 2: Enable Form Fields</h5>
                         <p class="text-muted">Select which fields to display in your testimonial form</p>
 
-                        <div class="form-toggle">
+                        <div class="mb-3">
+                            <label for="form_background_color" class="form-label">Form Page Background Color</label>
+                            <input type="color" class="form-control form-control-color" id="form_background_color" name="form_background_color" value="#667eea" title="Choose form page background color">
+                            <small class="text-muted">This color will be used as the background for your testimonial form page</small>
+                        </div>
+
+                        <div class="form-toggle mb-3">
                             <strong>Full Name</strong>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="field_full_name" name="field_full_name" value="1" onchange="toggleNameFields()">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="field_full_name" name="field_full_name" value="1" onchange="toggleNameFields()">
+                                </div>
+                                <div class="form-check" id="full_name_required_container" style="display: none;">
+                                    <input class="form-check-input" type="checkbox" id="required_full_name" name="required_full_name" value="1">
+                                    <label class="form-check-label" for="required_full_name">
+                                        <small>Required</small>
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="form-toggle">
+                        <div class="form-toggle mb-3">
                             <strong>First Name</strong>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="field_first_name" name="field_first_name" value="1">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="field_first_name" name="field_first_name" value="1" onchange="toggleRequiredOption('first_name')">
+                                </div>
+                                <div class="form-check" id="first_name_required_container" style="display: none;">
+                                    <input class="form-check-input" type="checkbox" id="required_first_name" name="required_first_name" value="1">
+                                    <label class="form-check-label" for="required_first_name">
+                                        <small>Required</small>
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="form-toggle">
+                        <div class="form-toggle mb-3">
                             <strong>Last Name</strong>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="field_last_name" name="field_last_name" value="1">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="field_last_name" name="field_last_name" value="1" onchange="toggleRequiredOption('last_name')">
+                                </div>
+                                <div class="form-check" id="last_name_required_container" style="display: none;">
+                                    <input class="form-check-input" type="checkbox" id="required_last_name" name="required_last_name" value="1">
+                                    <label class="form-check-label" for="required_last_name">
+                                        <small>Required</small>
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="form-toggle">
+                        <div class="form-toggle mb-3">
                             <strong>Email Address</strong>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="field_email" name="field_email" value="1" checked>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="field_email" name="field_email" value="1" checked onchange="toggleRequiredOption('email')">
+                                </div>
+                                <div class="form-check" id="email_required_container" style="display: none;">
+                                    <input class="form-check-input" type="checkbox" id="required_email" name="required_email" value="1">
+                                    <label class="form-check-label" for="required_email">
+                                        <small>Required</small>
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="form-toggle">
+                        <div class="form-toggle mb-3">
                             <strong>Company</strong>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="field_company" name="field_company" value="1">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="field_company" name="field_company" value="1" onchange="toggleRequiredOption('company')">
+                                </div>
+                                <div class="form-check" id="company_required_container" style="display: none;">
+                                    <input class="form-check-input" type="checkbox" id="required_company" name="required_company" value="1">
+                                    <label class="form-check-label" for="required_company">
+                                        <small>Required</small>
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="form-toggle">
+                        <div class="form-toggle mb-3">
                             <strong>Position/Title</strong>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="field_position" name="field_position" value="1">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="field_position" name="field_position" value="1" onchange="toggleRequiredOption('position')">
+                                </div>
+                                <div class="form-check" id="position_required_container" style="display: none;">
+                                    <input class="form-check-input" type="checkbox" id="required_position" name="required_position" value="1">
+                                    <label class="form-check-label" for="required_position">
+                                        <small>Required</small>
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="form-toggle">
+                        <div class="form-toggle mb-3">
                             <strong>Social Media URL</strong>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="field_social_url" name="field_social_url" value="1">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="field_social_url" name="field_social_url" value="1" onchange="toggleRequiredOption('social_url')">
+                                </div>
+                                <div class="form-check" id="social_url_required_container" style="display: none;">
+                                    <input class="form-check-input" type="checkbox" id="required_social_url" name="required_social_url" value="1">
+                                    <label class="form-check-label" for="required_social_url">
+                                        <small>Required</small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-toggle mb-3">
+                            <strong>Email Signature</strong>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="field_email_signature" name="field_email_signature" value="1" onchange="toggleRequiredOption('email_signature')">
+                                </div>
+                                <div class="form-check" id="email_signature_required_container" style="display: none;">
+                                    <input class="form-check-input" type="checkbox" id="required_email_signature" name="required_email_signature" value="1">
+                                    <label class="form-check-label" for="required_email_signature">
+                                        <small>Required</small>
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
@@ -389,11 +492,12 @@
 
                 <!-- Email Preview (Step 1) -->
                 <div class="preview-card" id="email-preview" style="display: none;">
-                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 2rem; border-radius: 12px 12px 0 0; text-align: center;">
-                        <div id="preview-logo-container" style="margin-bottom: 1rem; display: none;">
-                            <img id="preview-logo" src="" alt="Logo" style="max-width: 150px; max-height: 60px; object-fit: contain;">
-                        </div>
-                        <h3 style="color: white; margin: 0;">Your Feedback Matters!</h3>
+                    <div id="preview-logo-container" style="padding: 0 2rem 0; text-align: center; background: white; border-radius: 12px 12px 0 0; display: none;">
+                        <img id="preview-logo" src="" alt="Logo" style="max-width: 150px; max-height: 60px; object-fit: contain;">
+                    </div>
+
+                    <div id="preview-email-header" style="background: #667eea; padding: 2rem; text-align: center;">
+                        <h3 id="preview-email-title" style="color: white; margin: 0; background: none;">Your Feedback Matters!</h3>
                     </div>
 
                     <div style="padding: 2rem; background: white;">
@@ -417,7 +521,7 @@
                         </div>
 
                         <div style="text-align: center; margin-top: 2rem;">
-                            <a href="#" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 32px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: 600;">
+                            <a href="#" id="preview-cta-button" style="background: #667eea; color: white; padding: 12px 32px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: 600;">
                                 Share Your Feedback
                             </a>
                         </div>
@@ -513,6 +617,11 @@
                         <div class="mb-3" id="preview-field-social-url" style="display: none;">
                             <label class="form-label">Social Media URL</label>
                             <input type="url" class="form-control" placeholder="https://..." disabled>
+                        </div>
+
+                        <div class="mb-3" id="preview-field-email-signature" style="display: none;">
+                            <label class="form-label">Email Signature</label>
+                            <input type="text" class="form-control" placeholder="Enter your email signature" disabled>
                         </div>
 
                         <!-- Type Selector Preview -->
@@ -621,13 +730,21 @@
         });
 
         // Email preview live updates
+        document.getElementById('email_title').addEventListener('input', updateEmailPreview);
         document.getElementById('email_subject').addEventListener('input', updateEmailPreview);
+        document.getElementById('cta_button_text').addEventListener('input', updateEmailPreview);
+        document.getElementById('email_background_color').addEventListener('input', updateEmailPreview);
+        document.getElementById('cta_button_color').addEventListener('input', updateEmailPreview);
         document.getElementById('promotional_offer').addEventListener('input', updateEmailPreview);
 
         // Update email preview when Quill content changes
         quill.on('text-change', function() {
             updateEmailPreview();
         });
+
+        // Page background color live update
+        document.getElementById('page_background_color').addEventListener('input', updatePageBackgroundColor);
+        document.getElementById('form_background_color').addEventListener('input', updatePageBackgroundColor);
 
         // Form fields preview live updates
         document.getElementById('field_full_name').addEventListener('change', function() {
@@ -640,6 +757,17 @@
         document.getElementById('field_company').addEventListener('change', updateFormFieldsPreview);
         document.getElementById('field_position').addEventListener('change', updateFormFieldsPreview);
         document.getElementById('field_social_url').addEventListener('change', updateFormFieldsPreview);
+        document.getElementById('field_email_signature').addEventListener('change', updateFormFieldsPreview);
+
+        // Required fields preview live updates
+        document.getElementById('required_full_name').addEventListener('change', updateFormFieldsPreview);
+        document.getElementById('required_first_name').addEventListener('change', updateFormFieldsPreview);
+        document.getElementById('required_last_name').addEventListener('change', updateFormFieldsPreview);
+        document.getElementById('required_email').addEventListener('change', updateFormFieldsPreview);
+        document.getElementById('required_company').addEventListener('change', updateFormFieldsPreview);
+        document.getElementById('required_position').addEventListener('change', updateFormFieldsPreview);
+        document.getElementById('required_social_url').addEventListener('change', updateFormFieldsPreview);
+        document.getElementById('required_email_signature').addEventListener('change', updateFormFieldsPreview);
 
         // Testimonial type preview live updates
         document.getElementById('collect_text').addEventListener('change', updateTestimonialTypePreview);
@@ -670,6 +798,7 @@
         updateFormFieldsPreview(); // Initialize form fields preview
         updateTestimonialTypePreview(); // Initialize testimonial type preview
         updateThankYouPreview(); // Initialize thank you page preview
+        updatePageBackgroundColor(); // Initialize page background color preview
     });
 
     function nextStep() {
@@ -709,6 +838,9 @@
 
         // Update preview panel based on step
         updatePreviewPanel();
+
+        // Update background color based on current step
+        updatePageBackgroundColor();
     }
 
     function updatePreviewPanel() {
@@ -725,7 +857,8 @@
             'preview-field-email',
             'preview-field-company',
             'preview-field-position',
-            'preview-field-social-url'
+            'preview-field-social-url',
+            'preview-field-email-signature'
         ];
 
         if (currentStep === 1) {
@@ -773,16 +906,45 @@
         document.getElementById('thankyou-fields').style.display = enabled ? 'block' : 'none';
     }
 
+    function toggleRequiredOption(fieldName) {
+        const fieldCheckbox = document.getElementById('field_' + fieldName);
+        const requiredContainer = document.getElementById(fieldName + '_required_container');
+
+        if (fieldCheckbox && requiredContainer) {
+            requiredContainer.style.display = fieldCheckbox.checked ? 'block' : 'none';
+            if (!fieldCheckbox.checked) {
+                // Uncheck required checkbox when field is disabled
+                const requiredCheckbox = document.getElementById('required_' + fieldName);
+                if (requiredCheckbox) {
+                    requiredCheckbox.checked = false;
+                }
+            }
+        }
+
+        // Update preview for email_signature
+        if (fieldName === 'email_signature') {
+            updateFormFieldsPreview();
+        }
+    }
+
     function toggleNameFields() {
         const fullNameEnabled = document.getElementById('field_full_name').checked;
+        const fullNameRequiredContainer = document.getElementById('full_name_required_container');
+        const firstNameRequiredContainer = document.getElementById('first_name_required_container');
+        const lastNameRequiredContainer = document.getElementById('last_name_required_container');
+
         if (fullNameEnabled) {
             document.getElementById('field_first_name').checked = false;
             document.getElementById('field_last_name').checked = false;
             document.getElementById('field_first_name').disabled = true;
             document.getElementById('field_last_name').disabled = true;
+            fullNameRequiredContainer.style.display = 'block';
+            firstNameRequiredContainer.style.display = 'none';
+            lastNameRequiredContainer.style.display = 'none';
         } else {
             document.getElementById('field_first_name').disabled = false;
             document.getElementById('field_last_name').disabled = false;
+            fullNameRequiredContainer.style.display = 'none';
         }
     }
 
@@ -790,7 +952,7 @@
         // Update form field visibility in preview
         const fields = [
             'full_name', 'first_name', 'last_name', 'email',
-            'company', 'position', 'social_url'
+            'company', 'position', 'social_url', 'email_signature'
         ];
 
         fields.forEach(field => {
@@ -799,6 +961,14 @@
 
             if (checkbox && previewField) {
                 previewField.style.display = checkbox.checked ? 'block' : 'none';
+
+                // Update label to show required indicator
+                const requiredCheckbox = document.getElementById('required_' + field);
+                const label = previewField.querySelector('.form-label');
+                if (label && requiredCheckbox) {
+                    const fieldName = label.textContent.replace(' *', '');
+                    label.textContent = requiredCheckbox.checked ? fieldName + ' *' : fieldName;
+                }
             }
         });
     }
@@ -860,9 +1030,25 @@
     }
 
     function updateEmailPreview() {
+        // Update email title
+        const title = document.getElementById('email_title').value;
+        document.getElementById('preview-email-title').textContent = title || 'Your Feedback Matters!';
+
+        // Update email header background color
+        const bgColor = document.getElementById('email_background_color').value;
+        document.getElementById('preview-email-header').style.background = bgColor;
+
+        // Update CTA button background color (separate from header)
+        const buttonColor = document.getElementById('cta_button_color').value;
+        document.getElementById('preview-cta-button').style.background = buttonColor;
+
         // Update email subject
         const subject = document.getElementById('email_subject').value;
         document.getElementById('preview-email-subject').textContent = subject || 'We\'d love to hear your feedback!';
+
+        // Update CTA button text
+        const ctaText = document.getElementById('cta_button_text').value;
+        document.getElementById('preview-cta-button').textContent = ctaText || 'Share Your Feedback';
 
         // Update email content from Quill editor
         const content = quill.root.innerHTML;
@@ -895,6 +1081,20 @@
         } else {
             document.getElementById('star-rating-preview').style.display = 'none';
             document.getElementById('smile-rating-preview').style.display = 'flex';
+        }
+    }
+
+    function updatePageBackgroundColor() {
+        const previewPanel = document.querySelector('.preview-panel');
+        if (previewPanel) {
+            let bgColor;
+            // Use different background color based on current step
+            if (currentStep === 1) {
+                bgColor = document.getElementById('page_background_color').value;
+            } else {
+                bgColor = document.getElementById('form_background_color').value;
+            }
+            previewPanel.style.background = bgColor;
         }
     }
 
@@ -939,9 +1139,15 @@
         const formData = {
             email: email,
             name: document.getElementById('name').value,
+            email_title: document.getElementById('email_title').value,
             email_subject: document.getElementById('email_subject').value,
             email_content: quill.root.innerHTML,
+            email_background_color: document.getElementById('email_background_color').value,
+            cta_button_color: document.getElementById('cta_button_color').value,
+            cta_button_text: document.getElementById('cta_button_text').value,
             promotional_offer: document.getElementById('promotional_offer').value,
+            page_background_color: document.getElementById('page_background_color').value,
+            form_background_color: document.getElementById('form_background_color').value,
             // Form field settings
             field_full_name: document.getElementById('field_full_name').checked,
             field_first_name: document.getElementById('field_first_name').checked,
@@ -950,6 +1156,16 @@
             field_company: document.getElementById('field_company').checked,
             field_position: document.getElementById('field_position').checked,
             field_social_url: document.getElementById('field_social_url').checked,
+            field_email_signature: document.getElementById('field_email_signature').checked,
+            // Required field settings
+            required_full_name: document.getElementById('required_full_name').checked,
+            required_first_name: document.getElementById('required_first_name').checked,
+            required_last_name: document.getElementById('required_last_name').checked,
+            required_email: document.getElementById('required_email').checked,
+            required_company: document.getElementById('required_company').checked,
+            required_position: document.getElementById('required_position').checked,
+            required_social_url: document.getElementById('required_social_url').checked,
+            required_email_signature: document.getElementById('required_email_signature').checked,
             // Testimonial type settings
             collect_text: document.getElementById('collect_text').checked,
             collect_video: document.getElementById('collect_video').checked,

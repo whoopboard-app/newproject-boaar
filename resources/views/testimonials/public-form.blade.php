@@ -14,7 +14,7 @@
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: {{ $template->form_background_color ?? $template->page_background_color ?? '#667eea' }};
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -28,7 +28,7 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             max-width: 700px;
             width: 100%;
-            margin: 0 1rem;
+            margin: 0 auto;
         }
 
         .testimonial-header {
