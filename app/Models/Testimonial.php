@@ -13,6 +13,7 @@ class Testimonial extends Model
     protected $fillable = [
         'team_id',
         'template_id',
+        'campaign_id',
         'name',
         'email',
         'company',
@@ -42,19 +43,35 @@ class Testimonial extends Model
     }
 
     /**
-     * Scope for active testimonials
+     * Get the campaign for this testimonial
      */
-    public function scopeActive($query)
+    public function campaign()
     {
-        return $query->where('status', 'active');
+        return $this->belongsTo(TestimonialCampaign::class, 'campaign_id');
     }
 
     /**
-     * Scope for inactive testimonials
+     * Scope for published testimonials
      */
-    public function scopeInactive($query)
+    public function scopePublished($query)
     {
-        return $query->where('status', 'inactive');
+        return $query->where('status', 'published');
+    }
+
+    /**
+     * Scope for pending review testimonials
+     */
+    public function scopePendingReview($query)
+    {
+        return $query->where('status', 'pending_review');
+    }
+
+    /**
+     * Scope for under review testimonials
+     */
+    public function scopeUnderReview($query)
+    {
+        return $query->where('status', 'under_review');
     }
 
     /**
@@ -63,6 +80,22 @@ class Testimonial extends Model
     public function scopeDraft($query)
     {
         return $query->where('status', 'draft');
+    }
+
+    /**
+     * Scope for active testimonials (backward compatibility)
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+
+    /**
+     * Scope for inactive testimonials (backward compatibility)
+     */
+    public function scopeInactive($query)
+    {
+        return $query->where('status', 'inactive');
     }
 
     /**

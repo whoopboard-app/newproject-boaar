@@ -293,6 +293,9 @@
 
             <form action="{{ route('testimonials.public.store', $template->unique_url) }}" method="POST" enctype="multipart/form-data" id="testimonial-form">
                 @csrf
+                @if(isset($trackingToken))
+                    <input type="hidden" name="tracking_token" value="{{ $trackingToken }}">
+                @endif
 
                 <!-- Step 1: Rating -->
                 <div class="step-content active" data-step="1">

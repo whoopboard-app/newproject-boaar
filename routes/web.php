@@ -177,6 +177,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/testimonial-templates/{template}/edit', [TestimonialTemplateController::class, 'edit'])->name('testimonial-templates.edit');
     Route::put('/testimonial-templates/{template}', [TestimonialTemplateController::class, 'update'])->name('testimonial-templates.update');
     Route::delete('/testimonial-templates/{template}', [TestimonialTemplateController::class, 'destroy'])->name('testimonial-templates.destroy');
+
+    // Testimonial Campaigns Management
+    Route::get('/testimonial-campaigns', [\App\Http\Controllers\TestimonialCampaignController::class, 'index'])->name('testimonial-campaigns.index');
+    Route::post('/testimonial-campaigns', [\App\Http\Controllers\TestimonialCampaignController::class, 'store'])->name('testimonial-campaigns.store');
+    Route::get('/testimonial-campaigns/{campaign}', [\App\Http\Controllers\TestimonialCampaignController::class, 'show'])->name('testimonial-campaigns.show');
+    Route::put('/testimonial-campaigns/{campaign}', [\App\Http\Controllers\TestimonialCampaignController::class, 'update'])->name('testimonial-campaigns.update');
+    Route::delete('/testimonial-campaigns/{campaign}', [\App\Http\Controllers\TestimonialCampaignController::class, 'destroy'])->name('testimonial-campaigns.destroy');
+    Route::get('/testimonial-campaigns/{campaign}/statistics', [\App\Http\Controllers\TestimonialCampaignController::class, 'statistics'])->name('testimonial-campaigns.statistics');
 });
 
 require __DIR__.'/auth.php';
@@ -184,6 +192,10 @@ require __DIR__.'/auth.php';
 // Public Testimonial Form Routes (No Authentication Required)
 Route::get('/testimonial/{uniqueUrl}', [TestimonialController::class, 'publicForm'])->name('testimonials.public.form');
 Route::post('/testimonial/{uniqueUrl}', [TestimonialController::class, 'publicStore'])->name('testimonials.public.store');
+
+// Campaign Tracking Routes (No Authentication Required)
+Route::get('/testimonial-campaign/open/{trackingToken}', [\App\Http\Controllers\TestimonialCampaignController::class, 'trackOpen'])->name('testimonials.campaign-open');
+Route::get('/testimonial-campaign/click/{trackingToken}', [\App\Http\Controllers\TestimonialCampaignController::class, 'trackClick'])->name('testimonials.campaign-click');
 
 // Public Pages - MUST BE LAST (Catch-all routes)
 Route::get('/{unique_url}/roadmap', [PublicController::class, 'roadmap'])->name('public.roadmap');

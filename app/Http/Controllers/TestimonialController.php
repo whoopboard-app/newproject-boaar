@@ -18,8 +18,8 @@ class TestimonialController extends Controller
     {
         $activeTab = $request->get('tab', 'testimonials');
 
-        // Get testimonials with template relationship
-        $testimonials = Testimonial::with('template')
+        // Get testimonials with template and campaign relationships
+        $testimonials = Testimonial::with('template', 'campaign')
             ->latest()
             ->paginate(20);
 
@@ -28,7 +28,13 @@ class TestimonialController extends Controller
             ->latest()
             ->get();
 
-        return view('testimonials.index', compact('testimonials', 'templates', 'activeTab'));
+        // Get campaigns with metrics
+        $campaigns = \App\Models\TestimonialCampaign::with('template')
+            ->withCount('testimonials')
+            ->latest()
+            ->get();
+
+        return view('testimonials.index', compact('testimonials', 'templates', 'campaigns', 'activeTab'));
     }
 
     /**
@@ -55,7 +61,7 @@ class TestimonialController extends Controller
             'video_url' => 'required_if:type,video|nullable|url',
             'rating' => 'nullable|integer|min:1|max:5',
             'source' => 'required|in:email,website,script,manual',
-            'status' => 'required|in:active,inactive,draft',
+            'status' => 'required|in:published,pending_review,under_review,draft,active,inactive',
             'template_id' => 'nullable|exists:testimonial_templates,id',
             'avatar' => 'nullable|image|max:2048',
         ]);
@@ -106,7 +112,7 @@ class TestimonialController extends Controller
             'video_url' => 'required_if:type,video|nullable|url',
             'rating' => 'nullable|integer|min:1|max:5',
             'source' => 'required|in:email,website,script,manual',
-            'status' => 'required|in:active,inactive,draft',
+            'status' => 'required|in:published,pending_review,under_review,draft,active,inactive',
             'template_id' => 'nullable|exists:testimonial_templates,id',
             'avatar' => 'nullable|image|max:2048',
         ]);
@@ -145,7 +151,7 @@ class TestimonialController extends Controller
     /**
      * Public form to submit testimonial
      */
-    public function publicForm($uniqueUrl)
+    public function publicForm($uniqueUrl, Request $request)
     {
         // Handle test preview URL
         if ($uniqueUrl === 'test-preview') {
@@ -166,7 +172,10 @@ class TestimonialController extends Controller
             ->where('status', 'active')
             ->firstOrFail();
 
-        return view('testimonials.public-form', compact('template'));
+        // Get tracking token if provided
+        $trackingToken = $request->query('tracking_token');
+
+        return view('testimonials.public-form', compact('template', 'trackingToken'));
     }
 
     /**
@@ -206,19 +215,36 @@ class TestimonialController extends Controller
             'video_url' => 'required_if:type,video|nullable|url',
             'rating' => 'nullable|integer|min:1|max:5',
             'avatar' => 'nullable|image|max:2048',
+            'tracking_token' => 'nullable|string',
         ]);
 
         $validated['team_id'] = $template->team_id;
         $validated['template_id'] = $template->id;
         $validated['source'] = 'website';
-        $validated['status'] = 'draft';
+        $validated['status'] = 'pending_review';
+
+        // Handle tracking token for campaign testimonials
+        $campaignSubscriber = null;
+        if (isset($validated['tracking_token'])) {
+            $campaignSubscriber = \App\Models\CampaignSubscriber::where('tracking_token', $validated['tracking_token'])->first();
+            if ($campaignSubscriber) {
+                $validated['campaign_id'] = $campaignSubscriber->campaign_id;
+                $validated['source'] = 'email';
+            }
+        }
+        unset($validated['tracking_token']);
 
         // Handle avatar upload
         if ($request->hasFile('avatar')) {
             $validated['avatar'] = $request->file('avatar')->store('testimonials/avatars', 'public');
         }
 
-        Testimonial::create($validated);
+        $testimonial = Testimonial::create($validated);
+
+        // Update campaign subscriber if applicable
+        if ($campaignSubscriber) {
+            $campaignSubscriber->markTestimonialSubmitted($testimonial->id);
+        }
 
         // Show custom thank you page if enabled
         if ($template->enable_thankyou) {

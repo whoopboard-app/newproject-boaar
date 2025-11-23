@@ -8,6 +8,7 @@ use App\Models\FeedbackCategory;
 use App\Models\Roadmap;
 use App\Models\RoadmapItem;
 use App\Models\Changelog;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class PublicController extends Controller
@@ -116,6 +117,22 @@ class PublicController extends Controller
             ->where('id', $changelogId)
             ->firstOrFail();
 
-        return view('public.changelog-detail', compact('settings', 'changelog'));
+        // Get all published changelogs for filtering
+        $allChangelogs = Changelog::with('category')
+            ->where('team_id', $settings->team_id)
+            ->where('status', 'Published')
+            ->orderBy('published_date', 'desc')
+            ->get();
+
+        // Get categories with changelog count
+        $categories = Category::where('status', 'active')
+            ->withCount(['changelogs' => function($query) use ($settings) {
+                $query->where('team_id', $settings->team_id)
+                      ->where('status', 'Published');
+            }])
+            ->having('changelogs_count', '>', 0)
+            ->get();
+
+        return view('public.changelog-detail', compact('settings', 'changelog', 'allChangelogs', 'categories'));
     }
 }

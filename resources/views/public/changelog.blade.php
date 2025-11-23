@@ -89,16 +89,28 @@
             background: white;
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 2rem;
+            padding: 0;
             margin-bottom: 2rem;
             transition: all 0.2s;
             cursor: pointer;
+            overflow: hidden;
         }
 
         .changelog-item:hover {
             border-color: var(--primary-color);
             box-shadow: 0 2px 8px rgba(88, 101, 242, 0.1);
             transform: translateY(-2px);
+        }
+
+        .changelog-item-body {
+            padding: 2rem;
+        }
+
+        .changelog-cover {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .changelog-header {
@@ -399,26 +411,33 @@
                                      data-year="{{ \Carbon\Carbon::parse($changelog->published_date)->format('Y') }}"
                                      data-month="{{ \Carbon\Carbon::parse($changelog->published_date)->format('n') }}"
                                      data-timestamp="{{ \Carbon\Carbon::parse($changelog->published_date)->timestamp }}"
-                                     data-search="{{ strtolower($changelog->title . ' ' . strip_tags($changelog->content)) }}"
+                                     data-search="{{ strtolower($changelog->title . ' ' . strip_tags($changelog->description)) }}"
                                      onclick="window.location.href=this.dataset.url">
-                                <header class="changelog-header">
-                                    <div>
-                                        <h2 class="changelog-title">{{ $changelog->title }}</h2>
-                                        <div style="margin-top: 0.5rem;">
-                                            @if($changelog->category)
-                                                <span class="changelog-category" style="background-color: {{ $changelog->category->color ?? '#e5e7eb' }}20; color: {{ $changelog->category->color ?? '#6b7280' }};">
-                                                    {{ $changelog->category->name }}
-                                                </span>
-                                            @endif
+
+                                @if($changelog->cover_image)
+                                    <img src="{{ asset('storage/' . $changelog->cover_image) }}" alt="{{ $changelog->title }}" class="changelog-cover">
+                                @endif
+
+                                <div class="changelog-item-body">
+                                    <header class="changelog-header">
+                                        <div>
+                                            <h2 class="changelog-title">{{ $changelog->title }}</h2>
+                                            <div style="margin-top: 0.5rem;">
+                                                @if($changelog->category)
+                                                    <span class="changelog-category" style="background-color: {{ $changelog->category->color ?? '#e5e7eb' }}20; color: {{ $changelog->category->color ?? '#6b7280' }};">
+                                                        {{ $changelog->category->name }}
+                                                    </span>
+                                                @endif
+                                            </div>
                                         </div>
+                                        <div class="changelog-date">
+                                            <i class="ti ti-calendar"></i>
+                                            {{ \Carbon\Carbon::parse($changelog->published_date)->format('M d, Y') }}
+                                        </div>
+                                    </header>
+                                    <div class="changelog-content">
+                                        {{ Str::limit($changelog->short_description, 200) }}
                                     </div>
-                                    <div class="changelog-date">
-                                        <i class="ti ti-calendar"></i>
-                                        {{ \Carbon\Carbon::parse($changelog->published_date)->format('M d, Y') }}
-                                    </div>
-                                </header>
-                                <div class="changelog-content">
-                                    {!! Str::limit(strip_tags($changelog->content), 300) !!}
                                 </div>
                             </article>
                         @endforeach
