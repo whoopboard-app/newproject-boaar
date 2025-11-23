@@ -186,10 +186,7 @@ class TestimonialCampaignController extends Controller
 
             // Redirect to the testimonial form
             $template = $campaignSubscriber->campaign->template;
-            return redirect()->route('testimonials.public-form', [
-                'uniqueUrl' => $template->unique_url,
-                'tracking_token' => $trackingToken,
-            ]);
+            return redirect()->route('testimonials.public.form', $template->unique_url);
         }
 
         return redirect('/');

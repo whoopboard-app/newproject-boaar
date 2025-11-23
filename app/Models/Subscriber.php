@@ -30,7 +30,12 @@ class Subscriber extends Model
      */
     public function segments()
     {
-        return $this->belongsToMany(UserSegment::class, 'subscriber_user_segment');
+        return $this->belongsToMany(
+            UserSegment::class,
+            'subscriber_user_segment',
+            'subscriber_id',
+            'user_segment_id'
+        );
     }
 
     /**

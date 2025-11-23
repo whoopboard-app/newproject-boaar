@@ -2,6 +2,18 @@
 
 @section('title', 'Testimonials')
 
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css">
+<style>
+    .tagify {
+        min-height: 39.51px !important;
+        padding: 0.375rem 0.75rem !important;
+        border: 1px solid #dee2e6 !important;
+        border-radius: 0.25rem !important;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="row">
     <div class="col-12">
@@ -381,13 +393,12 @@
 
             <!-- Status -->
             <div class="mb-3">
-                <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
-                <select class="form-select" id="status" name="status" required>
-                    <option value="draft">Draft</option>
+                <label for="campaign_status" class="form-label">Status <span class="text-danger">*</span></label>
+                <select class="form-select" id="campaign_status" name="status" required style="display: block !important; visibility: visible !important; opacity: 1 !important;">
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
                 </select>
-                <small class="text-muted">Note: Only active campaigns will send emails and schedules will work.</small>
+                <small class="text-muted d-block mt-1">Note: Only active campaigns will send emails and schedules will work.</small>
             </div>
 
             <!-- Template -->
@@ -404,15 +415,26 @@
             <!-- Subscriber List -->
             <div class="mb-3">
                 <label for="segment_ids" class="form-label">Select Subscriber List <span class="text-danger">*</span></label>
-                <select class="form-select" id="segment_ids" name="segment_ids[]" multiple required style="min-height: 100px;">
+                <input type="text" class="form-control" id="segment_ids" placeholder="Select subscriber segments...">
+                <div id="segmentIdsContainer"></div>
+                <small class="text-muted d-block mt-1">
                     @php
-                        $segments = \App\Models\UserSegment::where('team_id', Auth::user()->current_team_id)->get();
+                        $campaignSegments = \App\Models\UserSegment::where('team_id', Auth::user()->current_team_id)->get();
                     @endphp
-                    @foreach($segments as $segment)
-                        <option value="{{ $segment->id }}">{{ $segment->name }} ({{ $segment->subscribers()->count() }} subscribers)</option>
+                    @foreach($campaignSegments as $segment)
+                        <div class="mt-1">
+                            <strong>{{ $segment->name }}:</strong>
+                            @php
+                                $subscribers = $segment->subscribers()->where('status', 'subscribed')->get();
+                            @endphp
+                            @if($subscribers->count() > 0)
+                                {{ $subscribers->pluck('full_name')->join(', ') }}
+                            @else
+                                <span class="text-muted">No subscribers</span>
+                            @endif
+                        </div>
                     @endforeach
-                </select>
-                <small class="text-muted">Hold Ctrl/Cmd to select multiple lists</small>
+                </small>
             </div>
 
             <!-- Email Delivery Type -->
@@ -441,7 +463,60 @@
 </div>
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+<script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.polyfills.min.js"></script>
 <script>
+// Initialize Tagify for segment selection
+document.addEventListener('DOMContentLoaded', function() {
+    const segmentsData = @json($campaignSegments ?? []);
+
+    const segments = segmentsData.map(segment => ({
+        id: segment.id,
+        name: segment.name
+    }));
+
+    const segmentInput = document.querySelector('#segment_ids');
+    const segmentIdsContainer = document.getElementById('segmentIdsContainer');
+
+    if (segmentInput) {
+        const tagify = new Tagify(segmentInput, {
+            whitelist: segments.map(s => s.name),
+            maxTags: segments.length,
+            dropdown: {
+                maxItems: 20,
+                enabled: 0,
+                closeOnSelect: false
+            },
+            placeholder: "Select subscriber segments...",
+            enforceWhitelist: true,
+            keepInvalidTags: false
+        });
+
+        // Update hidden inputs whenever tagify changes
+        tagify.on('change', function(e) {
+            // Clear existing hidden inputs
+            segmentIdsContainer.innerHTML = '';
+
+            // Get selected segment names
+            const selectedSegmentNames = tagify.value.map(tag => tag.value);
+
+            // Convert names to IDs
+            const selectedSegmentIds = segments
+                .filter(s => selectedSegmentNames.includes(s.name))
+                .map(s => parseInt(s.id));
+
+            // Add hidden inputs for each selected segment ID
+            selectedSegmentIds.forEach(id => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'segment_ids[]';
+                input.value = id;
+                segmentIdsContainer.appendChild(input);
+            });
+        });
+    }
+});
+
 function toggleScheduleField() {
     const deliveryType = document.getElementById('delivery_type').value;
     const scheduleField = document.getElementById('schedule_field');

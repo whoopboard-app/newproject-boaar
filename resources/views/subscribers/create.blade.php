@@ -69,9 +69,13 @@
 
                         <div class="mb-3">
                             <label for="segments" class="form-label">Segments</label>
-                            <input type="text" class="form-control" id="segments" name="segments" placeholder="Select segments..." value="{{ old('segments', '') }}">
+                            <input type="text" class="form-control" id="segments" placeholder="Select segments...">
                             <small class="text-muted">Click to see available segments and select multiple</small>
+                            <div id="segmentsContainer"></div>
                             @error('segments')
+                                <div class="text-danger mt-1">{{ $message }}</div>
+                            @enderror
+                            @error('segments.*')
                                 <div class="text-danger mt-1">{{ $message }}</div>
                             @enderror
                         </div>
@@ -103,9 +107,15 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Get segments from PHP
-    const segments = @json($segments->map(function($segment) {
-        return ['value' => (string)$segment->id, 'name' => $segment->name];
+    const segmentsData = @json($segments);
+
+    // Create a mapping object for easier lookup
+    const segments = segmentsData.map(segment => ({
+        id: segment.id,
+        name: segment.name
     }));
+
+    console.log('Available segments:', segments);
 
     // Initialize Tagify for segments input
     const segmentInput = document.querySelector('#segments');
@@ -124,46 +134,45 @@ document.addEventListener('DOMContentLoaded', function() {
         keepInvalidTags: false
     });
 
-    // Before form submission, convert segment names back to IDs
-    const form = document.querySelector('form');
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
+    // Store old segments if validation failed
+    const oldSegments = @json(old('segments', []));
 
+    // If there are old segments, restore them
+    if (oldSegments && Array.isArray(oldSegments) && oldSegments.length > 0) {
+        const oldSegmentNames = segments
+            .filter(s => oldSegments.includes(parseInt(s.id)))
+            .map(s => s.name);
+        tagify.addTags(oldSegmentNames);
+    }
+
+    const segmentsContainer = document.getElementById('segmentsContainer');
+
+    // Update hidden inputs whenever tagify changes
+    tagify.on('change', function(e) {
+        console.log('Tagify changed:', e.detail.value);
+
+        // Clear existing hidden inputs
+        segmentsContainer.innerHTML = '';
+
+        // Get selected segment names
         const selectedSegmentNames = tagify.value.map(tag => tag.value);
+
+        // Convert names to IDs
         const selectedSegmentIds = segments
             .filter(s => selectedSegmentNames.includes(s.name))
-            .map(s => s.value);
+            .map(s => parseInt(s.id));
 
-        // Clear any existing hidden segment inputs
-        const existingInputs = form.querySelectorAll('input[name="segments[]"]');
-        existingInputs.forEach(input => input.remove());
-
-        // Remove the tagify input to prevent it from being submitted
-        const originalInput = form.querySelector('#segments');
-        if (originalInput) {
-            originalInput.removeAttribute('name');
-        }
+        console.log('Selected Segment IDs:', selectedSegmentIds);
 
         // Add hidden inputs for each selected segment ID
-        if (selectedSegmentIds.length > 0) {
-            selectedSegmentIds.forEach(id => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'segments[]';
-                input.value = id;
-                form.appendChild(input);
-            });
-        } else {
-            // If no segments selected, add empty array indicator
+        selectedSegmentIds.forEach(id => {
             const input = document.createElement('input');
             input.type = 'hidden';
-            input.name = 'segments';
-            input.value = '';
-            form.appendChild(input);
-        }
-
-        // Now submit the form
-        form.submit();
+            input.name = 'segments[]';
+            input.value = id;
+            segmentsContainer.appendChild(input);
+            console.log('Added hidden input:', input.name, '=', input.value);
+        });
     });
 });
 </script>

@@ -47,6 +47,14 @@ class SubscriberController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
+        // Debug: Log request data
+        \Log::info('Creating subscriber with segments', [
+            'request_all' => $request->all(),
+            'has_segments' => $request->has('segments'),
+            'segments_raw' => $request->segments,
+            'is_array' => is_array($request->segments),
+        ]);
+
         // Create subscriber
         $subscriber = Subscriber::create([
             'full_name' => $request->full_name,
@@ -56,9 +64,43 @@ class SubscriberController extends Controller
             'subscribe_date' => now(),
         ]);
 
+        \Log::info('Subscriber created', ['subscriber_id' => $subscriber->id]);
+
         // Attach segments
         if ($request->has('segments') && is_array($request->segments)) {
-            $subscriber->segments()->attach($request->segments);
+            // Filter out any empty values and ensure they're integers
+            $segmentIds = array_filter($request->segments, function($id) {
+                return !empty($id) && is_numeric($id);
+            });
+
+            \Log::info('Attaching segments', [
+                'segment_ids' => $segmentIds,
+                'count' => count($segmentIds),
+            ]);
+
+            if (!empty($segmentIds)) {
+                $subscriber->segments()->attach($segmentIds);
+
+                // Refresh the relationship to get updated data
+                $subscriber->load('segments');
+
+                // Verify in database directly
+                $pivotRecords = \DB::table('subscriber_user_segment')
+                    ->where('subscriber_id', $subscriber->id)
+                    ->get();
+
+                \Log::info('Segments attached', [
+                    'subscriber_id' => $subscriber->id,
+                    'segment_ids_to_attach' => $segmentIds,
+                    'segments_after_attach' => $subscriber->segments->pluck('id')->toArray(),
+                    'pivot_table_records' => $pivotRecords->toArray(),
+                ]);
+            }
+        } else {
+            \Log::warning('No segments to attach', [
+                'has_segments' => $request->has('segments'),
+                'is_array' => $request->segments ? is_array($request->segments) : 'null',
+            ]);
         }
 
         // Send verification email if requested
