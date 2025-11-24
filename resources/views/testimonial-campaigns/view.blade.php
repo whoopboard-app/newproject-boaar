@@ -2,6 +2,36 @@
 
 @section('title', 'Campaign Details - ' . $campaign->name)
 
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css">
+<style>
+    .tagify {
+        min-height: 39.51px !important;
+        padding: 0.375rem 0.75rem !important;
+        border: 1px solid #dee2e6 !important;
+        border-radius: 0.25rem !important;
+    }
+    .tagify__tag--locked {
+        background-color: #6c757d !important;
+        color: #fff !important;
+        cursor: not-allowed !important;
+        opacity: 0.9 !important;
+    }
+    .tagify__tag--locked .tagify__tag__removeBtn {
+        display: none !important;
+    }
+    .tagify__tag--locked:hover {
+        background-color: #6c757d !important;
+    }
+    .tagify__tag--locked > div {
+        color: #fff !important;
+    }
+    .tagify__tag--locked .tagify__tag-text {
+        color: #fff !important;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="row">
     <div class="col-12">
@@ -26,6 +56,9 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 @endif
+
+<!-- Success message container for dynamic messages -->
+<div id="dynamicSuccessMessage" style="display: none;"></div>
 
 <!-- Quick Overview Cards -->
 <div class="row mb-4">
@@ -153,9 +186,9 @@
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2">
-                    <a href="{{ route('testimonials.index', ['tab' => 'campaigns']) }}" class="btn btn-primary">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#editCampaignDrawer">
                         <i class="ti ti-edit me-1"></i> Edit Campaign
-                    </a>
+                    </button>
                     <form action="{{ route('testimonial-campaigns.pause', $campaign) }}" method="POST">
                         @csrf
                         <button type="submit" class="btn btn-warning w-100">
@@ -326,7 +359,125 @@
     </div>
 </div>
 
+<!-- Edit Campaign Drawer -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="editCampaignDrawer" aria-labelledby="editCampaignDrawerLabel" style="width: 600px;">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="editCampaignDrawerLabel">Edit Campaign</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <form id="editCampaignForm">
+            @csrf
+            @method('PUT')
+
+            <!-- Campaign Name -->
+            <div class="mb-3">
+                <label for="edit_campaign_name" class="form-label">Campaign Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="edit_campaign_name" name="name" value="{{ $campaign->name }}" required>
+            </div>
+
+            <!-- Objective -->
+            <div class="mb-3">
+                <label for="edit_objective" class="form-label">Objective</label>
+                <textarea class="form-control" id="edit_objective" name="objective" rows="3" placeholder="What's the goal of this campaign?">{{ $campaign->objective }}</textarea>
+            </div>
+
+            <!-- Status (Read-only) -->
+            <div class="mb-3">
+                <label class="form-label">Status</label>
+                <input type="text" class="form-control" value="@if($campaign->status === 'active')Active @elseif($campaign->status === 'inactive')Inactive @else Draft @endif" readonly disabled>
+                <small class="text-muted">Status cannot be changed from edit. Use Pause/Resume button instead.</small>
+            </div>
+
+            <!-- Template (Read-only) -->
+            <div class="mb-3">
+                <label class="form-label">Testimonial Template</label>
+                <input type="text" class="form-control" value="{{ $campaign->template->name }}" readonly disabled>
+                <small class="text-muted">Template cannot be changed after campaign creation</small>
+            </div>
+
+            @php
+                // Get segments used in this campaign by analyzing campaign subscribers
+                $campaignSubscriberIds = $campaign->campaignSubscribers->pluck('subscriber_id')->unique();
+                $campaignSubscribers = \App\Models\Subscriber::whereIn('id', $campaignSubscriberIds)->with('segments')->get();
+
+                // Get unique segments from all campaign subscribers
+                $existingSegmentIds = [];
+                foreach ($campaignSubscribers as $subscriber) {
+                    foreach ($subscriber->segments as $segment) {
+                        $existingSegmentIds[] = $segment->id;
+                    }
+                }
+                $existingSegmentIds = array_unique($existingSegmentIds);
+                $existingSegments = \App\Models\UserSegment::whereIn('id', $existingSegmentIds)->get();
+
+                // Calculate subscriber counts for existing segments
+                $existingSegmentsWithCounts = $existingSegments->map(function($segment) {
+                    $subscribers = $segment->subscribers()->where('status', 'subscribed')->get();
+                    $uniqueEmails = $subscribers->pluck('email')->unique();
+
+                    return [
+                        'id' => $segment->id,
+                        'name' => $segment->name,
+                        'subscriber_count' => $uniqueEmails->count(),
+                    ];
+                })->values();
+
+                // Calculate total subscriber count
+                $totalSubscriberCount = $existingSegmentsWithCounts->sum('subscriber_count');
+            @endphp
+
+            <!-- Subscriber List (Read-only) -->
+            <div class="mb-3">
+                <label class="form-label">
+                    Subscriber Segments
+                    <span id="editSubscriberCount" class="badge bg-info ms-2"></span>
+                </label>
+                <div class="form-control bg-light" style="min-height: 45px; display: flex; flex-wrap: wrap; gap: 5px; align-items: center;">
+                    @foreach($existingSegments as $segment)
+                        <span class="badge bg-secondary" style="font-size: 0.875rem; padding: 0.5rem 0.75rem;">
+                            <i class="ti ti-lock me-1"></i>{{ $segment->name }}
+                        </span>
+                    @endforeach
+                    @if($existingSegments->isEmpty())
+                        <span class="text-muted">No segments selected</span>
+                    @endif
+                </div>
+                <small class="text-muted d-block mt-1">
+                    <i class="ti ti-info-circle me-1"></i>Subscriber segments cannot be changed after campaign creation.
+                </small>
+            </div>
+
+            <!-- Email Delivery Type -->
+            <div class="mb-3">
+                <label for="edit_delivery_type" class="form-label">Email Delivery Type <span class="text-danger">*</span></label>
+                <select class="form-select" id="edit_delivery_type" name="delivery_type" required onchange="toggleEditScheduleField()">
+                    <option value="instant" {{ $campaign->delivery_type === 'instant' ? 'selected' : '' }}>Instant</option>
+                    <option value="scheduled" {{ $campaign->delivery_type === 'scheduled' ? 'selected' : '' }}>Scheduled</option>
+                </select>
+            </div>
+
+            <!-- Schedule Date -->
+            <div class="mb-3" id="edit_schedule_field" style="display: {{ $campaign->delivery_type === 'scheduled' ? 'block' : 'none' }};">
+                <label for="edit_scheduled_at" class="form-label">Schedule Date for Email Delivery <span class="text-danger">*</span></label>
+                <input type="datetime-local" class="form-control" id="edit_scheduled_at" name="scheduled_at"
+                       value="{{ $campaign->scheduled_at ? $campaign->scheduled_at->format('Y-m-d\TH:i') : '' }}"
+                       {{ $campaign->delivery_type === 'scheduled' ? 'required' : '' }}>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="ti ti-check me-1"></i> Update Campaign
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+<script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.polyfills.min.js"></script>
 <script>
 // Select all checkboxes functionality
 document.addEventListener('DOMContentLoaded', function() {
@@ -408,6 +559,159 @@ function deleteCampaignFromView(campaignId) {
             alert('Failed to delete campaign.');
         });
     }
+}
+
+function toggleEditScheduleField() {
+    const deliveryType = document.getElementById('edit_delivery_type').value;
+    const scheduleField = document.getElementById('edit_schedule_field');
+    const scheduledAtInput = document.getElementById('edit_scheduled_at');
+
+    if (deliveryType === 'scheduled') {
+        scheduleField.style.display = 'block';
+        scheduledAtInput.required = true;
+    } else {
+        scheduleField.style.display = 'none';
+        scheduledAtInput.required = false;
+    }
+}
+
+// Initialize Edit Campaign - Display subscriber count
+const editSubscriberCountBadge = document.getElementById('editSubscriberCount');
+if (editSubscriberCountBadge) {
+    const totalCount = @json($totalSubscriberCount);
+    editSubscriberCountBadge.textContent = `${totalCount} subscribers`;
+}
+
+// Handle edit campaign form submission
+document.getElementById('editCampaignForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const data = {};
+
+    formData.forEach((value, key) => {
+        if (key === '_method') {
+            // Skip the _method field as we'll use PUT in fetch
+        } else {
+            data[key] = value;
+        }
+    });
+
+    console.log('Updating campaign with data:', data);
+
+    // Disable submit button
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Updating...';
+
+    // Submit via AJAX
+    fetch('{{ route("testimonial-campaigns.update", $campaign) }}', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => Promise.reject(err));
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Campaign updated:', data);
+
+        // Close the drawer
+        const drawer = bootstrap.Offcanvas.getInstance(document.getElementById('editCampaignDrawer'));
+        if (drawer) {
+            drawer.hide();
+        }
+
+        const message = data.message || 'Campaign updated successfully!';
+
+        // Show success toast notification
+        showSuccessToast(message);
+
+        // Show success alert message
+        showSuccessMessage(message);
+
+        // Reload page after a short delay to show the message
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+
+        let errorMessage = 'Failed to update campaign. Please try again.';
+        if (error.message) {
+            errorMessage = error.message;
+        } else if (error.errors) {
+            errorMessage = Object.values(error.errors).flat().join('\n');
+        }
+        alert(errorMessage);
+    });
+});
+
+// Function to show success message on the page
+function showSuccessMessage(message) {
+    const container = document.getElementById('dynamicSuccessMessage');
+    if (container) {
+        container.innerHTML = `
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="ti ti-check-circle me-2"></i>${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        container.style.display = 'block';
+
+        // Scroll to the top to show the message
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+// Function to show success toast notification
+function showSuccessToast(message) {
+    // Create toast container if it doesn't exist
+    let toastContainer = document.querySelector('.toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+        toastContainer.style.zIndex = '9999';
+        document.body.appendChild(toastContainer);
+    }
+
+    // Create toast element
+    const toastId = 'toast-' + Date.now();
+    const toastHtml = `
+        <div id="${toastId}" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="ti ti-check-circle me-2"></i>${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+
+    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+
+    // Show toast
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement, {
+        autohide: true,
+        delay: 5000
+    });
+    toast.show();
+
+    // Remove toast element after it's hidden
+    toastElement.addEventListener('hidden.bs.toast', function() {
+        toastElement.remove();
+    });
 }
 </script>
 @endpush

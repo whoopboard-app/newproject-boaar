@@ -175,7 +175,7 @@
                     <!-- Status -->
                     <div class="mb-3">
                         <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
-                        <select class="form-select" id="status" name="status" required>
+                        <select class="form-select" id="status" name="status" required style="display: block !important; visibility: visible !important; opacity: 1 !important; height: auto !important; width: 100% !important;">
                             <option value="draft" {{ old('status', $testimonial->status ?? 'draft') === 'draft' ? 'selected' : '' }}>Draft</option>
                             <option value="pending_review" {{ old('status', $testimonial->status ?? '') === 'pending_review' ? 'selected' : '' }}>Pending Review</option>
                             <option value="under_review" {{ old('status', $testimonial->status ?? '') === 'under_review' ? 'selected' : '' }}>Under Review</option>
@@ -231,6 +231,30 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Force status field to be visible
+    const statusSelect = document.getElementById('status');
+    if (statusSelect) {
+        statusSelect.style.display = 'block';
+        statusSelect.style.visibility = 'visible';
+        statusSelect.style.opacity = '1';
+        statusSelect.style.height = 'auto';
+        statusSelect.style.width = '100%';
+
+        // Set up a MutationObserver to prevent any script from hiding it
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                    if (statusSelect.style.display !== 'block') {
+                        statusSelect.style.display = 'block';
+                        statusSelect.style.visibility = 'visible';
+                        statusSelect.style.opacity = '1';
+                    }
+                }
+            });
+        });
+        observer.observe(statusSelect, { attributes: true });
+    }
+
     // Toggle between text and video fields
     const typeRadios = document.querySelectorAll('input[name="type"]');
     const textField = document.getElementById('text_content_field');

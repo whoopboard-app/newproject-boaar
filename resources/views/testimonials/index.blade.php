@@ -189,6 +189,9 @@
 
             <!-- Campaigns Tab -->
             <div class="tab-pane fade {{ $activeTab === 'campaigns' ? 'show active' : '' }}" id="campaigns" role="tabpanel">
+                <!-- Success message container for campaigns -->
+                <div id="campaignSuccessAlert" style="display: none;"></div>
+
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Testimonials Campaigns</h5>
@@ -397,7 +400,7 @@
             <!-- Status -->
             <div class="mb-3">
                 <label for="campaign_status" class="form-label">Status <span class="text-danger">*</span></label>
-                <select class="form-select" id="campaign_status" name="status" required style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                <select class="form-select" id="campaign_status" name="status" required style="display: block !important; visibility: visible !important; opacity: 1 !important; height: auto !important; width: 100% !important;">
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
                 </select>
@@ -407,7 +410,7 @@
             <!-- Template -->
             <div class="mb-3">
                 <label for="template_id" class="form-label">Select Testimonial Template <span class="text-danger">*</span></label>
-                <select class="form-select" id="template_id" name="template_id" required>
+                <select class="form-select" id="template_id" name="template_id" required style="display: block !important; visibility: visible !important; opacity: 1 !important; height: auto !important; width: 100% !important;">
                     <option value="">Choose a template...</option>
                     @foreach($templates as $template)
                         <option value="{{ $template->id }}">{{ $template->name }}</option>
@@ -504,14 +507,55 @@
 <script>
 // Initialize Tagify for segment selection
 document.addEventListener('DOMContentLoaded', function() {
+    // Force campaign select fields to be visible
+    const campaignStatusSelect = document.getElementById('campaign_status');
+    const templateSelect = document.getElementById('template_id');
+
+    if (campaignStatusSelect) {
+        campaignStatusSelect.style.display = 'block';
+        campaignStatusSelect.style.visibility = 'visible';
+        campaignStatusSelect.style.opacity = '1';
+        campaignStatusSelect.style.height = 'auto';
+        campaignStatusSelect.style.width = '100%';
+    }
+
+    if (templateSelect) {
+        templateSelect.style.display = 'block';
+        templateSelect.style.visibility = 'visible';
+        templateSelect.style.opacity = '1';
+        templateSelect.style.height = 'auto';
+        templateSelect.style.width = '100%';
+    }
+
     // Check for success message from sessionStorage
     const successMessage = sessionStorage.getItem('campaignSuccess');
     if (successMessage) {
         // Remove from sessionStorage
         sessionStorage.removeItem('campaignSuccess');
 
-        // Show success message
+        // Show success toast
         showSuccessToast(successMessage);
+
+        // Also show alert at the top
+        const alertContainer = document.getElementById('campaignSuccessAlert');
+        if (alertContainer) {
+            alertContainer.innerHTML = `
+                <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+                    <i class="ti ti-check-circle me-2"></i>${successMessage}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            alertContainer.style.display = 'block';
+
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                const alert = alertContainer.querySelector('.alert');
+                if (alert) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }
+            }, 5000);
+        }
     }
 
     const segmentsData = @json($segmentsWithCounts ?? []);

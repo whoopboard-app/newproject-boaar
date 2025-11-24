@@ -138,6 +138,16 @@
                                 </p>
                             </div>
                         @endif
+                        @if($testimonial->campaignSubscriber && $testimonial->campaignSubscriber->subscriber && $testimonial->campaignSubscriber->subscriber->segments->isNotEmpty())
+                            <div class="col-md-6 mb-3">
+                                <strong>Segment{{ $testimonial->campaignSubscriber->subscriber->segments->count() > 1 ? 's' : '' }}:</strong>
+                                <p class="mb-0">
+                                    @foreach($testimonial->campaignSubscriber->subscriber->segments as $segment)
+                                        <span class="badge bg-primary">{{ $segment->name }}</span>{{ !$loop->last ? ' ' : '' }}
+                                    @endforeach
+                                </p>
+                            </div>
+                        @endif
                         <div class="col-md-6 mb-3">
                             <strong>Source:</strong>
                             @if($testimonial->source === 'email')

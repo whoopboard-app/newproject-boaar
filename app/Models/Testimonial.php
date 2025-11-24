@@ -51,6 +51,14 @@ class Testimonial extends Model
     }
 
     /**
+     * Get the campaign subscriber who submitted this testimonial
+     */
+    public function campaignSubscriber()
+    {
+        return $this->hasOne(CampaignSubscriber::class, 'testimonial_id');
+    }
+
+    /**
      * Scope for published testimonials
      */
     public function scopePublished($query)

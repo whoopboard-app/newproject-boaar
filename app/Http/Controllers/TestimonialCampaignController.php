@@ -183,21 +183,57 @@ class TestimonialCampaignController extends Controller
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
             'objective' => 'nullable|string',
-            'status' => 'sometimes|in:active,inactive,draft',
             'template_id' => 'sometimes|exists:testimonial_templates,id',
             'delivery_type' => 'sometimes|in:instant,scheduled',
             'scheduled_at' => 'required_if:delivery_type,scheduled|nullable|date|after:now',
+            'segment_ids' => 'sometimes|array',
+            'segment_ids.*' => 'exists:user_segments,id',
         ]);
 
-        $campaign->update($validated);
+        // Handle segment additions if provided
+        if (isset($validated['segment_ids'])) {
+            $newSegmentIds = $validated['segment_ids'];
 
-        // If campaign is activated and hasn't been sent yet, send it
-        if (isset($validated['status']) && $validated['status'] === 'active' && !$campaign->sent_at) {
-            if ($campaign->delivery_type === 'instant' ||
-                ($campaign->delivery_type === 'scheduled' && $campaign->scheduled_at && $campaign->scheduled_at->isPast())) {
-                $this->sendCampaignEmails($campaign);
+            // Get existing subscriber IDs in this campaign
+            $existingSubscriberIds = $campaign->campaignSubscribers->pluck('subscriber_id')->unique()->toArray();
+
+            // Get all subscribers from the new segment list
+            $allSubscriberIds = [];
+            foreach ($newSegmentIds as $segmentId) {
+                $segment = UserSegment::find($segmentId);
+                if ($segment) {
+                    $segmentSubscriberIds = $segment->subscribers()->subscribed()->pluck('subscribers.id')->toArray();
+                    $allSubscriberIds = array_merge($allSubscriberIds, $segmentSubscriberIds);
+                }
             }
+
+            // Remove duplicates
+            $allSubscriberIds = array_unique($allSubscriberIds);
+
+            // Find new subscribers (those not already in the campaign)
+            $newSubscriberIds = array_diff($allSubscriberIds, $existingSubscriberIds);
+
+            \Log::info('Campaign update - Existing subscribers: ' . count($existingSubscriberIds));
+            \Log::info('Campaign update - All subscribers from segments: ' . count($allSubscriberIds));
+            \Log::info('Campaign update - New subscribers to add: ' . count($newSubscriberIds));
+
+            // Create campaign subscriber records for new subscribers
+            foreach ($newSubscriberIds as $subscriberId) {
+                CampaignSubscriber::create([
+                    'campaign_id' => $campaign->id,
+                    'subscriber_id' => $subscriberId,
+                ]);
+            }
+
+            // If campaign is active and delivery is instant, send emails to new subscribers only
+            if ($campaign->status === 'active' && $campaign->delivery_type === 'instant' && count($newSubscriberIds) > 0) {
+                $this->sendCampaignEmailsToSubscribers($campaign, $newSubscriberIds);
+            }
+
+            unset($validated['segment_ids']);
         }
+
+        $campaign->update($validated);
 
         return response()->json([
             'message' => 'Campaign updated successfully!',
@@ -275,6 +311,66 @@ class TestimonialCampaignController extends Controller
 
         // Mark campaign as sent and update metrics
         $campaign->markAsSent();
+        $campaign->updateMetrics();
+    }
+
+    /**
+     * Send campaign emails to specific subscribers
+     */
+    protected function sendCampaignEmailsToSubscribers(TestimonialCampaign $campaign, array $subscriberIds)
+    {
+        $campaignSubscribers = $campaign->campaignSubscribers()
+            ->whereIn('subscriber_id', $subscriberIds)
+            ->with('subscriber')
+            ->get();
+
+        \Log::info('Sending emails for campaign ' . $campaign->id . ' to ' . $campaignSubscribers->count() . ' new subscribers');
+
+        $sentCount = 0;
+        $errorCount = 0;
+
+        foreach ($campaignSubscribers as $index => $campaignSubscriber) {
+            if (!$campaignSubscriber->email_sent) {
+                try {
+                    \Log::info('Sending email to: ' . $campaignSubscriber->subscriber->email);
+
+                    // Increment send attempts
+                    $campaignSubscriber->send_attempts = $campaignSubscriber->send_attempts + 1;
+                    $campaignSubscriber->save();
+
+                    // Send email
+                    Mail::to($campaignSubscriber->subscriber->email)->send(
+                        new TestimonialCampaignMail($campaign, $campaignSubscriber)
+                    );
+
+                    // Mark as sent
+                    $campaignSubscriber->markAsSent();
+                    $sentCount++;
+
+                    \Log::info('Email sent successfully to: ' . $campaignSubscriber->subscriber->email);
+
+                    // Add delay between emails
+                    if ($index < $campaignSubscribers->count() - 1) {
+                        sleep(2);
+                    }
+                } catch (\Exception $e) {
+                    $errorCount++;
+                    $errorMessage = $e->getMessage();
+                    \Log::error('Failed to send campaign email to ' . $campaignSubscriber->subscriber->email . ': ' . $errorMessage);
+
+                    $campaignSubscriber->markAsFailed($errorMessage);
+
+                    if (strpos($errorMessage, 'Too many emails') !== false || strpos($errorMessage, '550 5.7.0') !== false) {
+                        \Log::info('Rate limit detected, adding extra delay...');
+                        sleep(3);
+                    }
+                }
+            }
+        }
+
+        \Log::info('Campaign email sending to new subscribers complete. Sent: ' . $sentCount . ', Errors: ' . $errorCount);
+
+        // Update campaign metrics
         $campaign->updateMetrics();
     }
 

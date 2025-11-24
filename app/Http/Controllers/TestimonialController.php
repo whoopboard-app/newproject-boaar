@@ -84,7 +84,7 @@ class TestimonialController extends Controller
      */
     public function show(Testimonial $testimonial)
     {
-        $testimonial->load('template', 'campaign');
+        $testimonial->load('template', 'campaign', 'campaignSubscriber.subscriber.segments');
         return view('testimonials.show', compact('testimonial'));
     }
 
