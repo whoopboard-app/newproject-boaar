@@ -404,15 +404,21 @@
     <!-- Header -->
     <header class="public-header pt-0">
         <div class="container">
-            <div class="logo-section">
-                @if($settings->logo)
-                    <img src="{{ asset('storage/' . $settings->logo) }}" alt="{{ $settings->product_name }}" class="logo-img">
-                @else
-                    <div class="logo-img" style="background: var(--primary-color); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.25rem;">
-                        {{ strtoupper(substr($settings->product_name ?? 'F', 0, 1)) }}
-                    </div>
-                    <h1 class="product-name">{{ $settings->product_name ?? 'Feedback Board' }}</h1>
-                @endif
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="logo-section">
+                    @if($settings->logo)
+                        <img src="{{ asset('storage/' . $settings->logo) }}" alt="{{ $settings->product_name }}" class="logo-img">
+                    @else
+                        <div class="logo-img" style="background: var(--primary-color); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.25rem;">
+                            {{ strtoupper(substr($settings->product_name ?? 'F', 0, 1)) }}
+                        </div>
+                        <h1 class="product-name">{{ $settings->product_name ?? 'Feedback Board' }}</h1>
+                    @endif
+                </div>
+
+                <a href="{{ route('public.subscribe', $settings->unique_url) }}" class="btn btn-primary" style="background: var(--primary-color); border: none; padding: 0.5rem 1.5rem; border-radius: 6px; text-decoration: none; color: white; font-weight: 500;">
+                    <i class="ti ti-bell-ringing me-1"></i> Subscribe
+                </a>
             </div>
 
             <nav class="public-nav">

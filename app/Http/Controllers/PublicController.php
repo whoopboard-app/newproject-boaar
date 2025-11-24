@@ -9,7 +9,11 @@ use App\Models\Roadmap;
 use App\Models\RoadmapItem;
 use App\Models\Changelog;
 use App\Models\Category;
+use App\Models\Subscriber;
+use App\Notifications\SubscriberVerificationNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Validator;
 
 class PublicController extends Controller
 {
@@ -134,5 +138,62 @@ class PublicController extends Controller
             ->get();
 
         return view('public.changelog-detail', compact('settings', 'changelog', 'allChangelogs', 'categories'));
+    }
+
+    /**
+     * Display public subscribe page
+     */
+    public function subscribe($uniqueUrl)
+    {
+        // Find the app settings by unique URL
+        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+
+        return view('public.subscribe', compact('settings'));
+    }
+
+    /**
+     * Handle subscription form submission
+     */
+    public function subscribeSubmit(Request $request, $uniqueUrl)
+    {
+        // Find the app settings by unique URL
+        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'full_name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        // Check if email already exists
+        $existingSubscriber = Subscriber::where('email', $request->email)->first();
+
+        if ($existingSubscriber) {
+            if ($existingSubscriber->status === 'subscribed') {
+                return back()->with('error', 'This email is already subscribed.')->withInput();
+            } elseif ($existingSubscriber->status === 'pending_verify') {
+                return back()->with('error', 'This email is already registered. Please check your inbox for the verification email.')->withInput();
+            }
+        }
+
+        // Create subscriber
+        $subscriber = Subscriber::create([
+            'full_name' => $request->full_name,
+            'email' => $request->email,
+            'source' => 'online_subscribe',
+            'status' => 'pending_verify',
+            'subscribe_date' => now(),
+        ]);
+
+        // Generate token and send verification email
+        $subscriber->generateVerificationToken();
+        Notification::route('mail', $subscriber->email)
+            ->notify(new SubscriberVerificationNotification($subscriber));
+
+        return view('public.subscription-pending', compact('subscriber', 'settings'));
     }
 }

@@ -205,4 +205,6 @@ Route::get('/{unique_url}/roadmap', [PublicController::class, 'roadmap'])->name(
 Route::get('/{unique_url}/roadmap/{roadmapItem}', [PublicController::class, 'showRoadmapItem'])->name('public.roadmap.show');
 Route::get('/{unique_url}/changelog', [PublicController::class, 'changelog'])->name('public.changelog');
 Route::get('/{unique_url}/changelog/{changelog}', [PublicController::class, 'showChangelog'])->name('public.changelog.show');
+Route::get('/{unique_url}/subscribe', [PublicController::class, 'subscribe'])->name('public.subscribe');
+Route::post('/{unique_url}/subscribe', [PublicController::class, 'subscribeSubmit'])->name('public.subscribe.submit');
 Route::get('/{unique_url}', [PublicController::class, 'home'])->name('public.home');

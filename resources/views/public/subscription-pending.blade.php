@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subscription Confirmed</title>
+    <title>Check Your Email - {{ $settings->product_name ?? 'Feedback Board' }}</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -17,6 +17,7 @@
             --border-color: #e5e7eb;
             --text-primary: #1f2937;
             --text-secondary: #6b7280;
+            --bg-hover: #f9fafb;
         }
 
         body {
@@ -25,7 +26,7 @@
             color: var(--text-primary);
         }
 
-        .success-container {
+        .pending-container {
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -33,7 +34,7 @@
             padding: 2rem 1rem;
         }
 
-        .success-card {
+        .pending-card {
             background: white;
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -58,7 +59,7 @@
             color: white;
         }
 
-        .success-title {
+        .pending-title {
             font-size: 1.875rem;
             font-weight: 700;
             color: var(--text-primary);
@@ -66,7 +67,7 @@
             text-align: center;
         }
 
-        .success-message {
+        .pending-message {
             color: var(--text-secondary);
             font-size: 1.125rem;
             line-height: 1.6;
@@ -74,86 +75,82 @@
             margin-bottom: 2rem;
         }
 
-        .success-box {
-            background: #f0fdf4;
-            border: 1px solid #86efac;
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
             border-radius: 8px;
             padding: 1.25rem;
             margin-bottom: 2rem;
         }
 
-        .success-box p {
+        .info-box p {
             margin: 0;
-            color: #166534;
+            color: #1e40af;
             font-size: 0.9375rem;
             line-height: 1.6;
         }
 
-        .success-box strong {
+        .info-box strong {
             font-weight: 600;
         }
 
-        .thank-you-text {
+        .help-text {
             text-align: center;
             color: var(--text-secondary);
-            font-size: 1rem;
+            font-size: 0.9375rem;
             line-height: 1.6;
             padding: 1rem;
             background: #f9fafb;
             border-radius: 8px;
-            margin-bottom: 1.5rem;
         }
 
-        .btn-home {
-            background: var(--primary-color);
-            color: white;
-            padding: 0.875rem 2rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            width: 100%;
-            transition: all 0.2s;
+        .back-home-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-color);
             text-decoration: none;
-            display: inline-block;
-            text-align: center;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            transition: color 0.2s;
+            margin-top: 2rem;
         }
 
-        .btn-home:hover {
-            background: #4752c4;
-            color: white;
-            transform: translateY(-1px);
+        .back-home-link:hover {
+            color: #4752c4;
         }
     </style>
 </head>
 <body>
-    <div class="success-container">
-        <div class="success-card">
+    <div class="pending-container">
+        <div class="pending-card">
             <div class="success-icon">
-                <i class="ti ti-circle-check"></i>
+                <i class="ti ti-mail-check"></i>
             </div>
 
-            <h1 class="success-title">Subscription Confirmed!</h1>
+            <h1 class="pending-title">Check Your Email!</h1>
 
-            <p class="success-message">
-                Welcome, <strong>{{ $subscriber->full_name }}</strong>!
+            <p class="pending-message">
+                Thank you for subscribing, <strong>{{ $subscriber->full_name }}</strong>!
             </p>
 
-            <div class="success-box">
+            <div class="info-box">
                 <p>
-                    <i class="ti ti-check me-1"></i>
-                    Your email address <strong>{{ $subscriber->email }}</strong> has been successfully verified.
-                    You'll now receive our updates and newsletters.
+                    <i class="ti ti-info-circle me-1"></i>
+                    We've sent a verification email to <strong>{{ $subscriber->email }}</strong>.
+                    Please check your inbox and click the confirmation link to complete your subscription.
                 </p>
             </div>
 
-            <div class="thank-you-text">
-                <p class="mb-0">Thank you for joining our community!</p>
+            <div class="help-text">
+                <p class="mb-0"><strong>Didn't receive the email?</strong></p>
+                <p class="mt-1 mb-0">Please check your spam folder or contact support.</p>
             </div>
 
             <div class="text-center">
-                <a href="/" class="btn-home">
-                    <i class="ti ti-home me-2"></i> Go to Home
+                <a href="{{ route('public.home', $settings->unique_url) }}" class="back-home-link">
+                    <i class="ti ti-arrow-left"></i>
+                    Back to {{ $settings->product_name }}
                 </a>
             </div>
         </div>
