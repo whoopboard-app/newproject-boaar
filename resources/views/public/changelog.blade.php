@@ -196,22 +196,22 @@
         /* Filters */
         .filters-section {
             display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
         }
 
         .search-box {
-            flex: 1;
-            min-width: 250px;
+            width: 100%;
         }
 
         .search-box input {
             width: 100%;
-            padding: 0.625rem 1rem;
+            padding: 0.625rem 0.875rem;
             border: 1px solid var(--border-color);
             border-radius: 6px;
-            font-size: 0.9375rem;
+            font-size: 0.875rem;
+            background: white;
         }
 
         .search-box input:focus {
@@ -220,16 +220,17 @@
         }
 
         .filter-dropdown {
-            min-width: 180px;
+            width: 100%;
         }
 
         .filter-dropdown select {
             width: 100%;
-            padding: 0.625rem 1rem;
+            padding: 0.625rem 0.875rem;
             border: 1px solid var(--border-color);
             border-radius: 6px;
-            font-size: 0.9375rem;
+            font-size: 0.875rem;
             cursor: pointer;
+            background: white;
         }
 
         .filter-dropdown select:focus {
@@ -347,56 +348,61 @@
 
     <!-- Main Content -->
     <div class="container">
-        <!-- Filters -->
-        <div class="filters-section" style="padding-top: 2rem;">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search changelog..." />
-            </div>
-            <div class="filter-dropdown">
-                <select id="yearFilter">
-                    <option value="">All Years</option>
-                </select>
-            </div>
-            <div class="filter-dropdown">
-                <select id="monthFilter">
-                    <option value="">All Months</option>
-                    <option value="1">January</option>
-                    <option value="2">February</option>
-                    <option value="3">March</option>
-                    <option value="4">April</option>
-                    <option value="5">May</option>
-                    <option value="6">June</option>
-                    <option value="7">July</option>
-                    <option value="8">August</option>
-                    <option value="9">September</option>
-                    <option value="10">October</option>
-                    <option value="11">November</option>
-                    <option value="12">December</option>
-                </select>
-            </div>
-            <div class="filter-dropdown">
-                <select id="sortFilter">
-                    <option value="latest">Latest First</option>
-                    <option value="oldest">Oldest First</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="public-content">
-            <!-- Sidebar -->
+        <div class="public-content" style="padding-top: 2rem;">
+            <!-- Left Sidebar - Filters & Categories -->
             <aside class="sidebar">
-                <div class="sidebar-title">Categories</div>
-                <div class="category-list">
-                    <div class="category-item active" data-category="">
-                        <span class="category-name">All Updates</span>
-                        <span class="category-count">{{ $changelogs->total() }}</span>
+                <!-- Filters Section -->
+                <div class="filters-section">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search changelog..." />
                     </div>
-                    @foreach($categories as $category)
-                        <div class="category-item" data-category="{{ $category->id }}">
-                            <span class="category-name">{{ $category->name }}</span>
-                            <span class="category-count">{{ $category->changelogs_count }}</span>
+                </div>
+
+                <!-- Categories Section -->
+                <div style="margin-top: 2rem;">
+                    <div class="sidebar-title">Categories</div>
+                    <div class="category-list">
+                        <div class="category-item active" data-category="">
+                            <span class="category-name">All Updates</span>
+                            <span class="category-count">{{ $changelogs->total() }}</span>
                         </div>
-                    @endforeach
+                        @foreach($categories as $category)
+                            <div class="category-item" data-category="{{ $category->id }}">
+                                <span class="category-name">{{ $category->name }}</span>
+                                <span class="category-count">{{ $category->changelogs_count }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+                <div class="filters-section">
+                    <div class="filter-dropdown">
+                        <select id="yearFilter">
+                            <option value="">All Years</option>
+                        </select>
+                    </div>
+                    <div class="filter-dropdown">
+                        <select id="monthFilter">
+                            <option value="">All Months</option>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+                    <div class="filter-dropdown">
+                        <select id="sortFilter">
+                            <option value="latest">Latest First</option>
+                            <option value="oldest">Oldest First</option>
+                        </select>
+                    </div>
                 </div>
             </aside>
 
@@ -455,6 +461,8 @@
             </main>
         </div>
     </div>
+
+    @include('partials.public-footer')
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

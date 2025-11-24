@@ -41,5 +41,7 @@
             </div>
         </div>
     </div>
+
+    @include('partials.public-footer')
 </body>
 </html>

@@ -16,7 +16,8 @@
       "Bash(cmd.exe /c dir \"C:\\wamp64\\www\\whoopboard\\resources\\views\" /b)",
       "Bash(\"C:\\wamp64\\bin\\php\\php8.1.0\\php.exe\" artisan make:migration add_failure_tracking_to_campaign_subscribers_table)",
       "Bash(cmd.exe /c \"C:\\wamp64\\bin\\php\\php8.1.0\\php.exe artisan make:migration add_failure_tracking_to_campaign_subscribers_table\")",
-      "Bash(dir \"C:\\wamp64\\www\\whoopboard\\resources\\views\\testimonials\")"
+      "Bash(dir \"C:\\wamp64\\www\\whoopboard\\resources\\views\\testimonials\")",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []
