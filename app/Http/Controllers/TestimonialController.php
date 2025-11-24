@@ -43,7 +43,7 @@ class TestimonialController extends Controller
     public function create()
     {
         $templates = TestimonialTemplate::active()->get();
-        return view('testimonials.create', compact('templates'));
+        return view('testimonials.form', compact('templates'));
     }
 
     /**
@@ -84,7 +84,7 @@ class TestimonialController extends Controller
      */
     public function show(Testimonial $testimonial)
     {
-        $testimonial->load('template');
+        $testimonial->load('template', 'campaign');
         return view('testimonials.show', compact('testimonial'));
     }
 
@@ -94,7 +94,7 @@ class TestimonialController extends Controller
     public function edit(Testimonial $testimonial)
     {
         $templates = TestimonialTemplate::active()->get();
-        return view('testimonials.edit', compact('testimonial', 'templates'));
+        return view('testimonials.form', compact('testimonial', 'templates'));
     }
 
     /**

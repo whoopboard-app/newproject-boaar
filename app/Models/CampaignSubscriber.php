@@ -16,6 +16,9 @@ class CampaignSubscriber extends Model
         'tracking_token',
         'email_sent',
         'sent_at',
+        'email_failed',
+        'failure_reason',
+        'send_attempts',
         'email_opened',
         'opened_at',
         'link_clicked',
@@ -27,6 +30,8 @@ class CampaignSubscriber extends Model
     protected $casts = [
         'email_sent' => 'boolean',
         'sent_at' => 'datetime',
+        'email_failed' => 'boolean',
+        'send_attempts' => 'integer',
         'email_opened' => 'boolean',
         'opened_at' => 'datetime',
         'link_clicked' => 'boolean',
@@ -79,6 +84,19 @@ class CampaignSubscriber extends Model
     {
         $this->email_sent = true;
         $this->sent_at = now();
+        $this->email_failed = false;
+        $this->failure_reason = null;
+        $this->save();
+    }
+
+    /**
+     * Mark email as failed
+     */
+    public function markAsFailed($reason)
+    {
+        $this->email_failed = true;
+        $this->failure_reason = $reason;
+        $this->send_attempts = $this->send_attempts + 1;
         $this->save();
     }
 

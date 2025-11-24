@@ -265,7 +265,10 @@
                                                 </td>
                                                 <td>
                                                     <div class="btn-group btn-group-sm">
-                                                        <button class="btn btn-sm btn-outline-primary" title="View Statistics" onclick="viewCampaignStats({{ $campaign->id }})">
+                                                        <a href="{{ route('testimonial-campaigns.view', $campaign) }}" class="btn btn-sm btn-outline-success" title="View Details">
+                                                            <i class="ti ti-eye"></i>
+                                                        </a>
+                                                        <button class="btn btn-sm btn-outline-primary" title="Quick Statistics" onclick="viewCampaignStats({{ $campaign->id }})">
                                                             <i class="ti ti-chart-bar"></i>
                                                         </button>
                                                         <button class="btn btn-sm btn-outline-danger" title="Delete" onclick="deleteCampaign({{ $campaign->id }})">
@@ -414,27 +417,60 @@
 
             <!-- Subscriber List -->
             <div class="mb-3">
-                <label for="segment_ids" class="form-label">Select Subscriber List <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" id="segment_ids" placeholder="Select subscriber segments...">
+                <label for="segment_ids" class="form-label">
+                    Select Subscriber List <span class="text-danger">*</span>
+                    <span id="subscriberCount" class="badge bg-info ms-2"></span>
+                </label>
+                <input type="text" class="form-control" id="segment_ids" placeholder="Select subscriber segments..." value="" autocomplete="off">
                 <div id="segmentIdsContainer"></div>
-                <small class="text-muted d-block mt-1">
-                    @php
-                        $campaignSegments = \App\Models\UserSegment::where('team_id', Auth::user()->current_team_id)->get();
-                    @endphp
-                    @foreach($campaignSegments as $segment)
-                        <div class="mt-1">
-                            <strong>{{ $segment->name }}:</strong>
-                            @php
-                                $subscribers = $segment->subscribers()->where('status', 'subscribed')->get();
-                            @endphp
-                            @if($subscribers->count() > 0)
-                                {{ $subscribers->pluck('full_name')->join(', ') }}
-                            @else
-                                <span class="text-muted">No subscribers</span>
-                            @endif
-                        </div>
-                    @endforeach
-                </small>
+                @php
+                    $campaignSegments = \App\Models\UserSegment::where('team_id', Auth::user()->current_team_id)->get();
+
+                    // Get all unique subscriber emails across all segments (deduplicated)
+                    $allSubscribers = \App\Models\Subscriber::where('status', 'subscribed')
+                        ->whereHas('segments', function($query) use ($campaignSegments) {
+                            $query->whereIn('user_segments.id', $campaignSegments->pluck('id'));
+                        })
+                        ->get();
+
+                    // Get emails that have already submitted testimonials
+                    $testimonialEmails = \App\Models\Testimonial::whereNotNull('email')
+                        ->where('team_id', Auth::user()->current_team_id)
+                        ->pluck('email')
+                        ->unique()
+                        ->toArray();
+
+                    // Calculate counts for each segment with deduplication
+                    $segmentsWithCounts = $campaignSegments->map(function($segment) use ($testimonialEmails) {
+                        $subscribers = $segment->subscribers()->where('status', 'subscribed')->get();
+                        $uniqueEmails = $subscribers->pluck('email')->unique();
+                        $subscribersWithoutTestimonials = $uniqueEmails->diff($testimonialEmails);
+
+                        return [
+                            'id' => $segment->id,
+                            'name' => $segment->name,
+                            'subscriber_emails' => $uniqueEmails->toArray(),
+                            'subscriber_count' => $uniqueEmails->count(),
+                            'subscriber_count_without_testimonials' => $subscribersWithoutTestimonials->count()
+                        ];
+                    });
+
+                    // Total unique subscribers (deduplicated across all segments)
+                    $totalUniqueEmails = $allSubscribers->pluck('email')->unique();
+                    $totalSubscribers = $totalUniqueEmails->count();
+                    $totalSubscribersWithoutTestimonials = $totalUniqueEmails->diff($testimonialEmails)->count();
+                @endphp
+            </div>
+
+            <!-- Exclude Testimonial Givers -->
+            <div class="mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="exclude_testimonial_givers" name="exclude_testimonial_givers" value="1">
+                    <label class="form-check-label" for="exclude_testimonial_givers">
+                        Remove subscribers that already gave a testimonial
+                    </label>
+                    <small class="text-muted d-block mt-1">This will prevent sending duplicate emails to subscribers who have already submitted testimonials.</small>
+                </div>
             </div>
 
             <!-- Email Delivery Type -->
@@ -468,31 +504,109 @@
 <script>
 // Initialize Tagify for segment selection
 document.addEventListener('DOMContentLoaded', function() {
-    const segmentsData = @json($campaignSegments ?? []);
+    // Check for success message from sessionStorage
+    const successMessage = sessionStorage.getItem('campaignSuccess');
+    if (successMessage) {
+        // Remove from sessionStorage
+        sessionStorage.removeItem('campaignSuccess');
+
+        // Show success message
+        showSuccessToast(successMessage);
+    }
+
+    const segmentsData = @json($segmentsWithCounts ?? []);
+    const totalSubscribers = @json($totalSubscribers ?? 0);
+    const totalSubscribersWithoutTestimonials = @json($totalSubscribersWithoutTestimonials ?? 0);
 
     const segments = segmentsData.map(segment => ({
         id: segment.id,
-        name: segment.name
+        name: segment.name,
+        subscriber_emails: segment.subscriber_emails || [],
+        subscriber_count: segment.subscriber_count,
+        subscriber_count_without_testimonials: segment.subscriber_count_without_testimonials
     }));
+
+    console.log('Segments data:', segments);
+    console.log('Whitelist:', segments.map(s => s.name));
 
     const segmentInput = document.querySelector('#segment_ids');
     const segmentIdsContainer = document.getElementById('segmentIdsContainer');
+    const subscriberCountBadge = document.getElementById('subscriberCount');
+    const excludeTestimonialGivers = document.getElementById('exclude_testimonial_givers');
+    let tagify; // Declare tagify variable here before it's used
+
+    // Function to update subscriber count display
+    function updateSubscriberCount() {
+        const excludeChecked = excludeTestimonialGivers ? excludeTestimonialGivers.checked : false;
+        const selectedSegmentNames = tagify ? tagify.value.map(tag => tag.value) : [];
+
+        if (selectedSegmentNames.length === 0) {
+            // No segments selected - show total unique count
+            const count = excludeChecked ? totalSubscribersWithoutTestimonials : totalSubscribers;
+            subscriberCountBadge.textContent = `Total: ${count} subscribers`;
+        } else {
+            // Segments selected - calculate unique count across selected segments
+            const selectedSegments = segments.filter(s => selectedSegmentNames.includes(s.name));
+
+            // Get unique emails across all selected segments (deduplication)
+            const uniqueEmails = new Set();
+            selectedSegments.forEach(segment => {
+                segment.subscriber_emails.forEach(email => uniqueEmails.add(email));
+            });
+
+            let count;
+            if (excludeChecked) {
+                // Use the count without testimonials for selected segments
+                // We need to deduplicate across selected segments
+                count = selectedSegments.reduce((sum, s) => sum + s.subscriber_count_without_testimonials, 0);
+                // Note: This is an approximation. For exact deduplication with filter,
+                // we'd need the full email lists without testimonials, but this gives a good estimate
+            } else {
+                count = uniqueEmails.size;
+            }
+
+            subscriberCountBadge.textContent = `${count} subscribers`;
+        }
+    }
+
+    // Initialize with total subscriber count
+    if (subscriberCountBadge) {
+        updateSubscriberCount();
+    }
 
     if (segmentInput) {
-        const tagify = new Tagify(segmentInput, {
+        // Clear any existing value
+        segmentInput.value = '';
+
+        tagify = new Tagify(segmentInput, {
             whitelist: segments.map(s => s.name),
             maxTags: segments.length,
             dropdown: {
                 maxItems: 20,
-                enabled: 0,
-                closeOnSelect: false
+                enabled: 0,              // Show dropdown on focus without typing
+                closeOnSelect: false,    // Keep dropdown open after selection
+                highlightFirst: true,    // Highlight first item
+                position: 'text'         // Position dropdown relative to text
             },
             placeholder: "Select subscriber segments...",
             enforceWhitelist: true,
-            keepInvalidTags: false
+            keepInvalidTags: false,
+            duplicates: false
         });
 
-        // Update hidden inputs whenever tagify changes
+        // Show dropdown when input is focused/clicked
+        tagify.on('focus', function() {
+            tagify.dropdown.show.call(tagify, tagify.value[tagify.value.length - 1]);
+        });
+
+        // Show dropdown when clicking on the input
+        segmentInput.addEventListener('click', function() {
+            if (!tagify.state.dropdown.visible) {
+                tagify.dropdown.show.call(tagify);
+            }
+        });
+
+        // Update hidden inputs and subscriber count whenever tagify changes
         tagify.on('change', function(e) {
             // Clear existing hidden inputs
             segmentIdsContainer.innerHTML = '';
@@ -501,9 +615,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const selectedSegmentNames = tagify.value.map(tag => tag.value);
 
             // Convert names to IDs
-            const selectedSegmentIds = segments
-                .filter(s => selectedSegmentNames.includes(s.name))
-                .map(s => parseInt(s.id));
+            const selectedSegments = segments.filter(s => selectedSegmentNames.includes(s.name));
+            const selectedSegmentIds = selectedSegments.map(s => parseInt(s.id));
 
             // Add hidden inputs for each selected segment ID
             selectedSegmentIds.forEach(id => {
@@ -513,6 +626,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 input.value = id;
                 segmentIdsContainer.appendChild(input);
             });
+
+            // Update subscriber count
+            updateSubscriberCount();
+        });
+    }
+
+    // Update count when checkbox changes
+    if (excludeTestimonialGivers) {
+        excludeTestimonialGivers.addEventListener('change', function() {
+            updateSubscriberCount();
+        });
+    }
+
+    // Reset form when drawer is opened
+    const campaignDrawer = document.getElementById('campaignDrawer');
+    if (campaignDrawer) {
+        campaignDrawer.addEventListener('show.bs.offcanvas', function() {
+            // Reset the form
+            document.getElementById('campaignForm').reset();
+
+            // Clear Tagify
+            if (tagify) {
+                tagify.removeAllTags();
+            }
+
+            // Clear hidden inputs
+            segmentIdsContainer.innerHTML = '';
+
+            // Reset subscriber count
+            updateSubscriberCount();
         });
     }
 });
@@ -543,11 +686,28 @@ document.getElementById('campaignForm').addEventListener('submit', function(e) {
             if (!data.segment_ids) {
                 data.segment_ids = [];
             }
-            data.segment_ids.push(value);
+            // Convert to integer
+            data.segment_ids.push(parseInt(value));
+        } else if (key === 'exclude_testimonial_givers') {
+            // Convert checkbox to boolean
+            data.exclude_testimonial_givers = value === '1' ? true : false;
         } else {
             data[key] = value;
         }
     });
+
+    // Ensure exclude_testimonial_givers is set even if checkbox is unchecked
+    if (!data.hasOwnProperty('exclude_testimonial_givers')) {
+        data.exclude_testimonial_givers = false;
+    }
+
+    console.log('Submitting campaign data:', data);
+
+    // Disable submit button to prevent double submission
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating...';
 
     // Submit via AJAX
     fetch('{{ route("testimonial-campaigns.store") }}', {
@@ -558,16 +718,31 @@ document.getElementById('campaignForm').addEventListener('submit', function(e) {
         },
         body: JSON.stringify(data)
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.message) {
-            alert(data.message);
-            window.location.reload();
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => Promise.reject(err));
         }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Campaign created:', data);
+
+        // Show success message and redirect
+        sessionStorage.setItem('campaignSuccess', data.message || 'Campaign created successfully!');
+        window.location.href = '{{ route("testimonials.index", ["tab" => "campaigns"]) }}';
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Failed to create campaign. Please try again.');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+
+        let errorMessage = 'Failed to create campaign. Please try again.';
+        if (error.message) {
+            errorMessage = error.message;
+        } else if (error.errors) {
+            errorMessage = Object.values(error.errors).flat().join('\n');
+        }
+        alert(errorMessage);
     });
 });
 
@@ -593,6 +768,9 @@ function viewCampaignStats(campaignId) {
                                         <strong>Emails Sent:</strong> ${data.emails_sent}
                                     </div>
                                     <div class="col-6 mb-3">
+                                        <strong>Emails Failed:</strong> <span class="text-danger">${data.emails_failed || 0}</span>
+                                    </div>
+                                    <div class="col-6 mb-3">
                                         <strong>Emails Opened:</strong> ${data.emails_opened} (${data.open_rate}%)
                                     </div>
                                     <div class="col-6 mb-3">
@@ -601,8 +779,14 @@ function viewCampaignStats(campaignId) {
                                     <div class="col-6 mb-3">
                                         <strong>Testimonials Submitted:</strong> ${data.testimonials_submitted} (${data.conversion_rate}%)
                                     </div>
-                                    <div class="col-6 mb-3">
-                                        <strong>Average Rating:</strong> ${data.average_rating ? data.average_rating.toFixed(1) : 'N/A'}
+                                    <div class="col-12 mb-3">
+                                        <strong>Average Rating:</strong>
+                                        ${data.average_rating ?
+                                            `<span class="text-warning">
+                                                ${[1,2,3,4,5].map(i => `<i class="ti ti-star${i <= Math.round(data.average_rating) ? '-filled' : ''}"></i>`).join('')}
+                                                <span class="ms-2">${data.average_rating.toFixed(1)}</span>
+                                            </span>`
+                                            : '<span class="text-muted">N/A</span>'}
                                     </div>
                                 </div>
                             </div>
@@ -647,6 +831,46 @@ function deleteCampaign(campaignId) {
             alert('Failed to delete campaign.');
         });
     }
+}
+
+// Function to show success toast notification
+function showSuccessToast(message) {
+    // Create toast container if it doesn't exist
+    let toastContainer = document.querySelector('.toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+        toastContainer.style.zIndex = '9999';
+        document.body.appendChild(toastContainer);
+    }
+
+    // Create toast element
+    const toastId = 'toast-' + Date.now();
+    const toastHtml = `
+        <div id="${toastId}" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="ti ti-check-circle me-2"></i>${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+
+    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+
+    // Show toast
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement, {
+        autohide: true,
+        delay: 5000
+    });
+    toast.show();
+
+    // Remove toast element after it's hidden
+    toastElement.addEventListener('hidden.bs.toast', function() {
+        toastElement.remove();
+    });
 }
 </script>
 @endpush

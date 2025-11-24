@@ -41,9 +41,14 @@ class TestimonialCampaignController extends Controller
             'segment_ids.*' => 'exists:user_segments,id',
             'delivery_type' => 'required|in:instant,scheduled',
             'scheduled_at' => 'required_if:delivery_type,scheduled|nullable|date|after:now',
+            'exclude_testimonial_givers' => 'nullable|boolean',
         ]);
 
         $validated['team_id'] = Auth::user()->current_team_id;
+
+        // Store exclude_testimonial_givers separately as it's not a campaign field
+        $excludeTestimonialGivers = $validated['exclude_testimonial_givers'] ?? false;
+        unset($validated['exclude_testimonial_givers']);
 
         // Create the campaign
         $campaign = TestimonialCampaign::create($validated);
@@ -52,12 +57,42 @@ class TestimonialCampaignController extends Controller
         $subscriberIds = [];
         foreach ($validated['segment_ids'] as $segmentId) {
             $segment = UserSegment::find($segmentId);
-            $segmentSubscriberIds = $segment->subscribers()->subscribed()->pluck('subscribers.id')->toArray();
-            $subscriberIds = array_merge($subscriberIds, $segmentSubscriberIds);
+            if ($segment) {
+                $segmentSubscriberIds = $segment->subscribers()->subscribed()->pluck('subscribers.id')->toArray();
+                $subscriberIds = array_merge($subscriberIds, $segmentSubscriberIds);
+            }
         }
 
-        // Remove duplicates
+        // Remove duplicates (ensure each subscriber only gets one email)
         $subscriberIds = array_unique($subscriberIds);
+        \Log::info('Campaign subscribers before exclusion: ' . count($subscriberIds));
+
+        // If exclude_testimonial_givers is checked, filter out subscribers who already gave testimonials
+        if ($excludeTestimonialGivers) {
+            // Get all emails from subscribers in the list
+            $subscriberEmails = Subscriber::whereIn('id', $subscriberIds)
+                ->pluck('email', 'id')
+                ->toArray();
+
+            // Get emails that have already submitted testimonials
+            $testimonialEmails = \App\Models\Testimonial::where('team_id', Auth::user()->current_team_id)
+                ->whereNotNull('email')
+                ->whereIn('email', array_values($subscriberEmails))
+                ->pluck('email')
+                ->toArray();
+
+            \Log::info('Testimonial emails to exclude: ' . count($testimonialEmails));
+
+            // Filter out subscribers whose emails match testimonial emails
+            $subscriberIds = array_filter($subscriberIds, function($subscriberId) use ($subscriberEmails, $testimonialEmails) {
+                return !in_array($subscriberEmails[$subscriberId], $testimonialEmails);
+            });
+
+            // Re-index array
+            $subscriberIds = array_values($subscriberIds);
+        }
+
+        \Log::info('Final campaign subscribers: ' . count($subscriberIds));
 
         // Create campaign subscriber records
         foreach ($subscriberIds as $subscriberId) {
@@ -66,6 +101,8 @@ class TestimonialCampaignController extends Controller
                 'subscriber_id' => $subscriberId,
             ]);
         }
+
+        \Log::info('Campaign subscriber records created: ' . CampaignSubscriber::where('campaign_id', $campaign->id)->count());
 
         // If instant delivery and active status, send emails immediately
         if ($validated['delivery_type'] === 'instant' && $validated['status'] === 'active') {
@@ -79,12 +116,63 @@ class TestimonialCampaignController extends Controller
     }
 
     /**
+     * Display the campaign view page with details.
+     */
+    public function view(TestimonialCampaign $campaign)
+    {
+        $campaign->load('template', 'campaignSubscribers.subscriber', 'testimonials');
+
+        // Get statistics
+        $stats = [
+            'total_subscribers' => $campaign->campaignSubscribers()->count(),
+            'emails_sent' => $campaign->campaignSubscribers()->where('email_sent', true)->count(),
+            'emails_failed' => $campaign->campaignSubscribers()->where('email_failed', true)->count(),
+            'emails_opened' => $campaign->campaignSubscribers()->where('email_opened', true)->count(),
+            'links_clicked' => $campaign->campaignSubscribers()->where('link_clicked', true)->count(),
+            'testimonials_submitted' => $campaign->campaignSubscribers()->where('testimonial_submitted', true)->count(),
+            'average_rating' => $campaign->testimonials()->avg('rating'),
+            'open_rate' => 0,
+            'click_rate' => 0,
+            'conversion_rate' => 0,
+        ];
+
+        if ($stats['emails_sent'] > 0) {
+            $stats['open_rate'] = round(($stats['emails_opened'] / $stats['emails_sent']) * 100, 2);
+            $stats['click_rate'] = round(($stats['links_clicked'] / $stats['emails_sent']) * 100, 2);
+            $stats['conversion_rate'] = round(($stats['testimonials_submitted'] / $stats['emails_sent']) * 100, 2);
+        }
+
+        // Get email logs
+        $sentEmails = $campaign->campaignSubscribers()->where('email_sent', true)->with('subscriber')->get();
+        $failedEmails = $campaign->campaignSubscribers()->where('email_failed', true)->with('subscriber')->get();
+        $scheduledEmails = $campaign->campaignSubscribers()
+            ->where('email_sent', false)
+            ->where('email_failed', false)
+            ->with('subscriber')
+            ->get();
+
+        return view('testimonial-campaigns.view', compact('campaign', 'stats', 'sentEmails', 'failedEmails', 'scheduledEmails'));
+    }
+
+    /**
      * Display the specified campaign.
      */
     public function show(TestimonialCampaign $campaign)
     {
         $campaign->load('template', 'campaignSubscribers.subscriber', 'testimonials');
         return response()->json($campaign);
+    }
+
+    /**
+     * Pause/Resume a campaign
+     */
+    public function pause(TestimonialCampaign $campaign)
+    {
+        // Toggle between active and inactive
+        $newStatus = $campaign->status === 'active' ? 'inactive' : 'active';
+        $campaign->update(['status' => $newStatus]);
+
+        return redirect()->back()->with('success', 'Campaign ' . ($newStatus === 'active' ? 'resumed' : 'paused') . ' successfully!');
     }
 
     /**
@@ -135,10 +223,20 @@ class TestimonialCampaignController extends Controller
     protected function sendCampaignEmails(TestimonialCampaign $campaign)
     {
         $campaignSubscribers = $campaign->campaignSubscribers()->with('subscriber')->get();
+        \Log::info('Starting to send emails for campaign ' . $campaign->id . ' to ' . $campaignSubscribers->count() . ' subscribers');
 
-        foreach ($campaignSubscribers as $campaignSubscriber) {
+        $sentCount = 0;
+        $errorCount = 0;
+
+        foreach ($campaignSubscribers as $index => $campaignSubscriber) {
             if (!$campaignSubscriber->email_sent) {
                 try {
+                    \Log::info('Sending email to: ' . $campaignSubscriber->subscriber->email);
+
+                    // Increment send attempts
+                    $campaignSubscriber->send_attempts = $campaignSubscriber->send_attempts + 1;
+                    $campaignSubscriber->save();
+
                     // Send email
                     Mail::to($campaignSubscriber->subscriber->email)->send(
                         new TestimonialCampaignMail($campaign, $campaignSubscriber)
@@ -146,12 +244,34 @@ class TestimonialCampaignController extends Controller
 
                     // Mark as sent
                     $campaignSubscriber->markAsSent();
+                    $sentCount++;
+
+                    \Log::info('Email sent successfully to: ' . $campaignSubscriber->subscriber->email);
+
+                    // Add delay between emails to avoid rate limiting
+                    // Skip delay for the last email
+                    if ($index < $campaignSubscribers->count() - 1) {
+                        sleep(2); // 2 second delay between emails
+                    }
                 } catch (\Exception $e) {
-                    // Log error but continue with other emails
-                    \Log::error('Failed to send campaign email: ' . $e->getMessage());
+                    // Log error and mark as failed
+                    $errorCount++;
+                    $errorMessage = $e->getMessage();
+                    \Log::error('Failed to send campaign email to ' . $campaignSubscriber->subscriber->email . ': ' . $errorMessage);
+
+                    // Mark email as failed with reason
+                    $campaignSubscriber->markAsFailed($errorMessage);
+
+                    // If rate limit error, add extra delay before next email
+                    if (strpos($errorMessage, 'Too many emails') !== false || strpos($errorMessage, '550 5.7.0') !== false) {
+                        \Log::info('Rate limit detected, adding extra delay...');
+                        sleep(3); // Extra 3 second delay for rate limit errors
+                    }
                 }
             }
         }
+
+        \Log::info('Campaign email sending complete. Sent: ' . $sentCount . ', Errors: ' . $errorCount);
 
         // Mark campaign as sent and update metrics
         $campaign->markAsSent();
@@ -197,9 +317,42 @@ class TestimonialCampaignController extends Controller
      */
     public function statistics(TestimonialCampaign $campaign)
     {
+        // Get sent emails with subscriber details
+        $sentEmails = $campaign->campaignSubscribers()
+            ->where('email_sent', true)
+            ->with('subscriber')
+            ->get()
+            ->map(function ($cs) {
+                return [
+                    'id' => $cs->id,
+                    'email' => $cs->subscriber->email,
+                    'name' => $cs->subscriber->full_name,
+                    'sent_at' => $cs->sent_at ? $cs->sent_at->format('M d, Y H:i') : null,
+                    'email_opened' => $cs->email_opened,
+                    'link_clicked' => $cs->link_clicked,
+                    'testimonial_submitted' => $cs->testimonial_submitted,
+                ];
+            });
+
+        // Get failed emails with subscriber details and failure reason
+        $failedEmails = $campaign->campaignSubscribers()
+            ->where('email_failed', true)
+            ->with('subscriber')
+            ->get()
+            ->map(function ($cs) {
+                return [
+                    'id' => $cs->id,
+                    'email' => $cs->subscriber->email,
+                    'name' => $cs->subscriber->full_name,
+                    'failure_reason' => $cs->failure_reason,
+                    'send_attempts' => $cs->send_attempts,
+                ];
+            });
+
         $stats = [
             'total_subscribers' => $campaign->campaignSubscribers()->count(),
             'emails_sent' => $campaign->campaignSubscribers()->where('email_sent', true)->count(),
+            'emails_failed' => $campaign->campaignSubscribers()->where('email_failed', true)->count(),
             'emails_opened' => $campaign->campaignSubscribers()->where('email_opened', true)->count(),
             'links_clicked' => $campaign->campaignSubscribers()->where('link_clicked', true)->count(),
             'testimonials_submitted' => $campaign->campaignSubscribers()->where('testimonial_submitted', true)->count(),
@@ -207,6 +360,8 @@ class TestimonialCampaignController extends Controller
             'open_rate' => 0,
             'click_rate' => 0,
             'conversion_rate' => 0,
+            'sent_emails' => $sentEmails,
+            'failed_emails' => $failedEmails,
         ];
 
         if ($stats['emails_sent'] > 0) {
@@ -216,5 +371,87 @@ class TestimonialCampaignController extends Controller
         }
 
         return response()->json($stats);
+    }
+
+    /**
+     * Resend emails to failed subscribers
+     */
+    public function resendFailedEmails(Request $request, TestimonialCampaign $campaign)
+    {
+        $validated = $request->validate([
+            'subscriber_ids' => 'required|array|min:1',
+            'subscriber_ids.*' => 'exists:campaign_subscribers,id',
+        ]);
+
+        $subscriberIds = $validated['subscriber_ids'];
+
+        // Get the failed campaign subscribers
+        $campaignSubscribers = $campaign->campaignSubscribers()
+            ->whereIn('id', $subscriberIds)
+            ->where('email_failed', true)
+            ->with('subscriber')
+            ->get();
+
+        if ($campaignSubscribers->isEmpty()) {
+            return response()->json([
+                'message' => 'No failed emails found to resend.',
+            ], 400);
+        }
+
+        \Log::info('Resending emails for campaign ' . $campaign->id . ' to ' . $campaignSubscribers->count() . ' subscribers');
+
+        $sentCount = 0;
+        $errorCount = 0;
+
+        foreach ($campaignSubscribers as $index => $campaignSubscriber) {
+            try {
+                \Log::info('Resending email to: ' . $campaignSubscriber->subscriber->email);
+
+                // Increment send attempts
+                $campaignSubscriber->send_attempts = $campaignSubscriber->send_attempts + 1;
+                $campaignSubscriber->save();
+
+                // Send email
+                Mail::to($campaignSubscriber->subscriber->email)->send(
+                    new TestimonialCampaignMail($campaign, $campaignSubscriber)
+                );
+
+                // Mark as sent
+                $campaignSubscriber->markAsSent();
+                $sentCount++;
+
+                \Log::info('Email resent successfully to: ' . $campaignSubscriber->subscriber->email);
+
+                // Add delay between emails to avoid rate limiting
+                if ($index < $campaignSubscribers->count() - 1) {
+                    sleep(2);
+                }
+            } catch (\Exception $e) {
+                // Log error and mark as failed
+                $errorCount++;
+                $errorMessage = $e->getMessage();
+                \Log::error('Failed to resend email to ' . $campaignSubscriber->subscriber->email . ': ' . $errorMessage);
+
+                // Mark email as failed with reason
+                $campaignSubscriber->markAsFailed($errorMessage);
+
+                // If rate limit error, add extra delay
+                if (strpos($errorMessage, 'Too many emails') !== false || strpos($errorMessage, '550 5.7.0') !== false) {
+                    \Log::info('Rate limit detected, adding extra delay...');
+                    sleep(3);
+                }
+            }
+        }
+
+        \Log::info('Email resending complete. Sent: ' . $sentCount . ', Errors: ' . $errorCount);
+
+        // Update campaign metrics
+        $campaign->updateMetrics();
+
+        return response()->json([
+            'message' => "Resend complete. Successfully sent: {$sentCount}, Failed: {$errorCount}",
+            'sent' => $sentCount,
+            'failed' => $errorCount,
+        ]);
     }
 }

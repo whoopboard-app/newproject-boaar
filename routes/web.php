@@ -181,10 +181,13 @@ Route::middleware('auth')->group(function () {
     // Testimonial Campaigns Management
     Route::get('/testimonial-campaigns', [\App\Http\Controllers\TestimonialCampaignController::class, 'index'])->name('testimonial-campaigns.index');
     Route::post('/testimonial-campaigns', [\App\Http\Controllers\TestimonialCampaignController::class, 'store'])->name('testimonial-campaigns.store');
+    Route::get('/testimonial-campaigns/{campaign}/view', [\App\Http\Controllers\TestimonialCampaignController::class, 'view'])->name('testimonial-campaigns.view');
     Route::get('/testimonial-campaigns/{campaign}', [\App\Http\Controllers\TestimonialCampaignController::class, 'show'])->name('testimonial-campaigns.show');
     Route::put('/testimonial-campaigns/{campaign}', [\App\Http\Controllers\TestimonialCampaignController::class, 'update'])->name('testimonial-campaigns.update');
+    Route::post('/testimonial-campaigns/{campaign}/pause', [\App\Http\Controllers\TestimonialCampaignController::class, 'pause'])->name('testimonial-campaigns.pause');
     Route::delete('/testimonial-campaigns/{campaign}', [\App\Http\Controllers\TestimonialCampaignController::class, 'destroy'])->name('testimonial-campaigns.destroy');
     Route::get('/testimonial-campaigns/{campaign}/statistics', [\App\Http\Controllers\TestimonialCampaignController::class, 'statistics'])->name('testimonial-campaigns.statistics');
+    Route::post('/testimonial-campaigns/{campaign}/resend-failed', [\App\Http\Controllers\TestimonialCampaignController::class, 'resendFailedEmails'])->name('testimonial-campaigns.resend-failed');
 });
 
 require __DIR__.'/auth.php';
