@@ -21,7 +21,7 @@ return new class extends Migration
             $table->timestamp('voted_at');
             $table->timestamps();
 
-            $table->foreign('feedback_id')->references('id')->on('feedback')->onDelete('cascade');
+            $table->foreign('feedback_id')->references('id')->on('feedbacks')->onDelete('cascade');
             $table->foreign('public_user_id')->references('id')->on('public_users')->onDelete('cascade');
 
             // Ensure one vote per user per feedback (for authenticated users)
