@@ -21,10 +21,16 @@ return new class extends Migration
             $table->timestamp('voted_at');
             $table->timestamps();
 
-            $table->foreign('feedback_id')->references('id')->on('feedbacks')->onDelete('cascade');
-            $table->foreign('public_user_id')->references('id')->on('public_users')->onDelete('cascade');
+            $table->foreign('feedback_id')
+                ->references('id')
+                ->on('feedbacks')
+                ->onDelete('cascade');
 
-            // Ensure one vote per user per feedback (for authenticated users)
+            $table->foreign('public_user_id')
+                ->references('id')
+                ->on('public_users')
+                ->onDelete('cascade');
+
             $table->unique(['feedback_id', 'public_user_id'], 'unique_feedback_user_vote');
         });
 
@@ -39,6 +45,12 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // First drop foreign keys manually (required on MySQL)
+        Schema::table('feedback_votes', function (Blueprint $table) {
+            $table->dropForeign(['feedback_id']);
+            $table->dropForeign(['public_user_id']);
+        });
+
         Schema::dropIfExists('feedback_votes');
     }
 };
