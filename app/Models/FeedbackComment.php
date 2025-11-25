@@ -12,6 +12,7 @@ class FeedbackComment extends Model
     protected $fillable = [
         'feedback_id',
         'user_id',
+        'public_user_id',
         'commenter_name',
         'commenter_email',
         'comment',
@@ -39,12 +40,23 @@ class FeedbackComment extends Model
     }
 
     /**
+     * Get the public user who made the comment (if logged in as public user).
+     */
+    public function publicUser()
+    {
+        return $this->belongsTo(PublicUser::class);
+    }
+
+    /**
      * Get the commenter name.
      */
     public function getCommenterNameAttribute($value)
     {
         if ($this->user) {
             return $this->user->name;
+        }
+        if ($this->publicUser) {
+            return $this->publicUser->full_name;
         }
         return $value;
     }

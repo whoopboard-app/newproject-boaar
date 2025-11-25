@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subscription Confirmed</title>
+    <title>Verification Failed - Feedback Board</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -14,6 +14,7 @@
     <style>
         :root {
             --primary-color: #5865F2;
+            --error-color: #ef4444;
             --border-color: #e5e7eb;
             --text-primary: #1f2937;
             --text-secondary: #6b7280;
@@ -25,7 +26,7 @@
             color: var(--text-primary);
         }
 
-        .success-container {
+        .error-container {
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -33,19 +34,20 @@
             padding: 2rem 1rem;
         }
 
-        .success-card {
+        .error-card {
             background: white;
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             padding: 3rem;
-            max-width: 550px;
+            max-width: 450px;
             width: 100%;
+            text-align: center;
         }
 
-        .success-icon {
+        .error-icon {
             width: 80px;
             height: 80px;
-            background: #10b981;
+            background: var(--error-color);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -53,55 +55,23 @@
             margin: 0 auto 1.5rem;
         }
 
-        .success-icon i {
+        .error-icon i {
             font-size: 2.5rem;
             color: white;
         }
 
-        .success-title {
-            font-size: 1.875rem;
+        .error-title {
+            font-size: 1.75rem;
             font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 1rem;
-            text-align: center;
+            margin-bottom: 0.5rem;
         }
 
-        .success-message {
-            color: var(--text-secondary);
-            font-size: 1.125rem;
-            line-height: 1.6;
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .success-box {
-            background: #f0fdf4;
-            border: 1px solid #86efac;
-            border-radius: 8px;
-            padding: 1.25rem;
-            margin-bottom: 2rem;
-        }
-
-        .success-box p {
-            margin: 0;
-            color: #166534;
-            font-size: 0.9375rem;
-            line-height: 1.6;
-        }
-
-        .success-box strong {
-            font-weight: 600;
-        }
-
-        .thank-you-text {
-            text-align: center;
+        .error-description {
             color: var(--text-secondary);
             font-size: 1rem;
             line-height: 1.6;
-            padding: 1rem;
-            background: #f9fafb;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .btn-home {
@@ -112,11 +82,11 @@
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 600;
-            width: 100%;
-            transition: all 0.2s;
             text-decoration: none;
-            display: inline-block;
-            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
         }
 
         .btn-home:hover {
@@ -127,35 +97,22 @@
     </style>
 </head>
 <body>
-    <div class="success-container">
-        <div class="success-card">
-            <div class="success-icon">
-                <i class="ti ti-circle-check"></i>
+    <div class="error-container">
+        <div class="error-card">
+            <div class="error-icon">
+                <i class="ti ti-x"></i>
             </div>
 
-            <h1 class="success-title">Subscription Confirmed!</h1>
+            <h1 class="error-title">Verification Failed</h1>
 
-            <p class="success-message">
-                Welcome, <strong>{{ $subscriber->full_name }}</strong>!
+            <p class="error-description">
+                {{ $message ?? 'The verification link is invalid or has expired. Please try submitting your idea again.' }}
             </p>
 
-            <div class="success-box">
-                <p>
-                    <i class="ti ti-check me-1"></i>
-                    Your email address <strong>{{ $subscriber->email }}</strong> has been successfully verified.
-                    You'll now receive our updates and newsletters.
-                </p>
-            </div>
-
-            <div class="thank-you-text">
-                <p class="mb-0">Thank you for joining our community!</p>
-            </div>
-
-            {{--<div class="text-center">
-                <a href="/" class="btn-home">
-                    <i class="ti ti-home me-2"></i> Go to Home
-                </a>
-            </div>--}}
+            <a href="/" class="btn btn-home">
+                <i class="ti ti-home"></i>
+                Go Home
+            </a>
         </div>
     </div>
 

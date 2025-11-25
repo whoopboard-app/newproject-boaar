@@ -282,4 +282,42 @@
     </div>
 
 </div>
+
+<!-- Third Settings Row -->
+<div class="row mt-3">
+
+    <!-- App Configuration Card -->
+    <div class="col-lg-3 col-md-6 mb-3 d-flex">
+        <div class="card h-100 w-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="avatar-lg">
+                        <span class="avatar-title rounded-circle bg-purple-subtle" style="background-color: rgba(111, 66, 193, 0.18) !important;">
+                            <i class="ti ti-adjustments-horizontal fs-2" style="color: #6f42c1;"></i>
+                        </span>
+                    </div>
+                </div>
+                <h5 class="card-title mb-2">App Configuration</h5>
+                <p class="text-muted fs-14 mb-3">
+                    Configure module settings for Feedback, Changelog, Testimonials, Email Templates, and Knowledge Board.
+                </p>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('configuration.index') }}" class="btn btn-sm" style="background-color: #6f42c1; color: white;">
+                        <i class="ti ti-eye me-1"></i>View
+                    </a>
+                    <a href="{{ route('configuration.index') }}" class="btn btn-sm btn-outline-secondary" style="border-color: #6f42c1; color: #6f42c1;">
+                        <i class="ti ti-settings me-1"></i>Configure
+                    </a>
+                </div>
+            </div>
+            <div class="card-footer border-top">
+                <div class="d-flex align-items-center text-muted">
+                    <i class="ti ti-apps me-2"></i>
+                    <small>Module-level configurations</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
 @endsection

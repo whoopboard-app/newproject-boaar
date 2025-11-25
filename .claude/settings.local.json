@@ -19,7 +19,11 @@
       "Bash(dir \"C:\\wamp64\\www\\whoopboard\\resources\\views\\testimonials\")",
       "Bash(dir:*)",
       "Bash(\"C:\\wamp64\\bin\\php\\php8.1.0\\php.exe\" artisan route:list --path=subscribe)",
-      "Bash(cmd.exe /c \"C:\\wamp64\\bin\\php\\php8.1.0\\php.exe artisan route:list --path=subscribe\")"
+      "Bash(cmd.exe /c \"C:\\wamp64\\bin\\php\\php8.1.0\\php.exe artisan route:list --path=subscribe\")",
+      "Bash(nul)",
+      "Bash(\"C:\\wamp64\\bin\\php\\php8.1.0\\php.exe\" artisan view:clear)",
+      "Bash(\"C:\\wamp64\\bin\\php\\php8.1.0\\php.exe\" artisan make:migration add_public_user_id_to_feedback_comments_table --path=C:wamp64wwwwhoopboard)",
+      "Bash(cmd.exe:*)"
     ],
     "deny": [],
     "ask": []

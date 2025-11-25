@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ChangelogController;
 use App\Http\Controllers\AppSettingsController;
+use App\Http\Controllers\AppConfigurationController;
 use App\Http\Controllers\KnowledgeBoardController;
 use App\Http\Controllers\BoardCategoryController;
 use App\Http\Controllers\BoardArticleController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\FeedbackCategoryController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\TeamInvitationController;
 use App\Http\Controllers\PublicController;
+use App\Http\Controllers\PublicAuthController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\TestimonialTemplateController;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +33,12 @@ Route::get('/dashboard', function () {
 Route::post('/subscribe', [SubscriberController::class, 'subscribe'])->name('subscriber.subscribe');
 Route::get('/verify/{token}', [SubscriberController::class, 'verify'])->name('subscriber.verify');
 Route::get('/unsubscribe/{token}', [SubscriberController::class, 'unsubscribe'])->name('subscriber.unsubscribe');
+
+// Public Authentication Routes (Magic Link)
+Route::get('/auth/verify/{token}', [PublicAuthController::class, 'verifyMagicLink'])->name('public.auth.verify');
+
+// Public Feedback Verification Route
+Route::get('/feedback/verify/{token}', [PublicController::class, 'verifyFeedback'])->name('public.feedback.verify');
 
 // Public Team Invitation Routes (No Authentication Required)
 Route::get('/invitation/{token}', [TeamInvitationController::class, 'accept'])->name('team.invitation.accept');
@@ -118,6 +126,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings/general', [AppSettingsController::class, 'general'])->name('settings.general');
     Route::put('/settings/general', [AppSettingsController::class, 'updateGeneral'])->name('settings.general.update');
 
+    // App Configuration (Module Settings)
+    Route::get('/configuration', [AppConfigurationController::class, 'index'])->name('configuration.index');
+    Route::post('/configuration/feedback-settings', [AppConfigurationController::class, 'updateFeedbackSettings'])->name('configuration.feedback-settings.update');
+
     // Roadmap Management
     Route::get('/roadmap', [RoadmapController::class, 'index'])->name('roadmap.index');
     Route::post('/roadmap', [RoadmapController::class, 'store'])->name('roadmap.store');
@@ -201,10 +213,23 @@ Route::get('/testimonial-campaign/open/{trackingToken}', [\App\Http\Controllers\
 Route::get('/testimonial-campaign/click/{trackingToken}', [\App\Http\Controllers\TestimonialCampaignController::class, 'trackClick'])->name('testimonials.campaign-click');
 
 // Public Pages - MUST BE LAST (Catch-all routes)
+Route::get('/{unique_url}/login', [PublicAuthController::class, 'showLoginForm'])->name('public.auth.login');
+Route::post('/{unique_url}/login', [PublicAuthController::class, 'sendMagicLink'])->name('public.auth.send-magic-link');
+Route::get('/{unique_url}/logout', [PublicAuthController::class, 'logout'])->name('public.auth.logout');
 Route::get('/{unique_url}/roadmap', [PublicController::class, 'roadmap'])->name('public.roadmap');
 Route::get('/{unique_url}/roadmap/{roadmapItem}', [PublicController::class, 'showRoadmapItem'])->name('public.roadmap.show');
 Route::get('/{unique_url}/changelog', [PublicController::class, 'changelog'])->name('public.changelog');
 Route::get('/{unique_url}/changelog/{changelog}', [PublicController::class, 'showChangelog'])->name('public.changelog.show');
 Route::get('/{unique_url}/subscribe', [PublicController::class, 'subscribe'])->name('public.subscribe');
 Route::post('/{unique_url}/subscribe', [PublicController::class, 'subscribeSubmit'])->name('public.subscribe.submit');
+
+// Public Feedback Submission and Voting
+Route::post('/{unique_url}/feedback/submit', [PublicController::class, 'submitFeedback'])->name('public.feedback.submit');
+Route::get('/{unique_url}/feedback/{feedback}', [PublicController::class, 'showFeedback'])->name('public.feedback.show');
+Route::post('/{unique_url}/feedback/{feedback}/vote', [PublicController::class, 'vote'])->name('public.feedback.vote');
+Route::post('/{unique_url}/feedback/{feedback}/unvote', [PublicController::class, 'unvote'])->name('public.feedback.unvote');
+Route::post('/{unique_url}/feedback/{feedback}/request-otp', [PublicController::class, 'requestVoteOtp'])->name('public.feedback.request-otp');
+Route::post('/{unique_url}/feedback/{feedback}/verify-otp', [PublicController::class, 'verifyVoteOtp'])->name('public.feedback.verify-otp');
+Route::post('/{unique_url}/feedback/{feedback}/comment', [PublicController::class, 'storePublicComment'])->name('public.feedback.comment');
+
 Route::get('/{unique_url}', [PublicController::class, 'home'])->name('public.home');

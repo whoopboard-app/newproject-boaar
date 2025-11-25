@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $settings->product_name ?? 'Feedback' }}</title>
 
     <!-- Bootstrap CSS -->
@@ -10,6 +11,11 @@
 
     <!-- Tabler Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+
+    <!-- hCaptcha -->
+    @if($feedbackSettings->enable_captcha ?? false)
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+    @endif
 
     <style>
         :root {
@@ -329,6 +335,200 @@
                 position: static;
             }
         }
+
+        /* Vote box states */
+        .vote-box.voted {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .vote-box.voted .vote-count {
+            color: white;
+        }
+
+        .vote-box.processing {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* Add Idea Button */
+        .btn-add-idea {
+            background: var(--primary-color);
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px;
+            color: white;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-add-idea:hover {
+            background: #4752c4;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Header actions */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn-login {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-login:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-logout {
+            background: transparent;
+            border: 1px solid #dc3545;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            color: #dc3545;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: #dc3545;
+            color: white;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 0.75rem;
+            background: #f3f4f6;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .user-info i {
+            color: var(--primary-color);
+        }
+
+        /* Offcanvas styles */
+        .offcanvas.offcanvas-end {
+            width: 650px !important;
+        }
+
+        @media (max-width: 768px) {
+            .offcanvas.offcanvas-end {
+                width: 100% !important;
+            }
+        }
+
+        .offcanvas-header {
+            border-bottom: 1px solid var(--border-color);
+            background: #f9fafb;
+        }
+
+        .offcanvas-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(88, 101, 242, 0.15);
+        }
+
+        .form-text {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+        }
+
+        .topic-checkbox {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .topic-checkbox .form-check {
+            background: #f9fafb;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            padding-left: 2rem;
+            margin: 0;
+            transition: all 0.2s;
+        }
+
+        .topic-checkbox .form-check:hover {
+            border-color: var(--primary-color);
+        }
+
+        .topic-checkbox .form-check-input:checked + .form-check-label {
+            color: var(--primary-color);
+        }
+
+        .topic-checkbox .form-check-input:checked ~ .form-check {
+            border-color: var(--primary-color);
+            background: rgba(88, 101, 242, 0.05);
+        }
+
+        /* Image upload */
+        .image-upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .image-upload-area:hover {
+            border-color: var(--primary-color);
+            background: rgba(88, 101, 242, 0.02);
+        }
+
+        .image-upload-area.has-image {
+            border-style: solid;
+            border-color: var(--primary-color);
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 6px;
+            margin-top: 0.75rem;
+        }
+
+        /* Success/Error alerts */
+        .alert-idea-success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-idea-error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
     </style>
 </head>
 <body>
@@ -347,9 +547,32 @@
                     @endif
                 </div>
 
-                <a href="{{ route('public.subscribe', $settings->unique_url) }}" class="btn btn-primary" style="background: var(--primary-color); border: none; padding: 0.5rem 1.5rem; border-radius: 6px; text-decoration: none; color: white; font-weight: 500;">
-                    <i class="ti ti-bell-ringing me-1"></i> Subscribe
-                </a>
+                <div class="header-actions">
+                    <!-- Add Idea Button -->
+                    <button type="button" class="btn btn-add-idea" data-bs-toggle="offcanvas" data-bs-target="#addIdeaOffcanvas" aria-controls="addIdeaOffcanvas">
+                        <i class="ti ti-bulb me-1"></i> Add Idea
+                    </button>
+
+                    <!-- Subscribe Button -->
+                    <a href="{{ route('public.subscribe', $settings->unique_url) }}" class="btn btn-primary" style="background: var(--primary-color); border: none; padding: 0.5rem 1.5rem; border-radius: 6px; text-decoration: none; color: white; font-weight: 500;">
+                        <i class="ti ti-bell-ringing me-1"></i> Subscribe
+                    </a>
+
+                    <!-- Login/Logout Section -->
+                    @if($isLoggedIn)
+                        <span class="user-info">
+                            <i class="ti ti-user-circle"></i>
+                            {{ $publicUser->full_name ?? $publicUser->email }}
+                        </span>
+                        <a href="{{ route('public.auth.logout', $settings->unique_url) }}" class="btn-logout">
+                            <i class="ti ti-logout me-1"></i> Log out
+                        </a>
+                    @else
+                        <a href="{{ route('public.auth.login', $settings->unique_url) }}" class="btn-login">
+                            <i class="ti ti-login me-1"></i> Log in
+                        </a>
+                    @endif
+                </div>
             </div>
 
             <nav class="public-nav">
@@ -433,18 +656,31 @@
                         @foreach($categories as $category)
                             @if(isset($feedbacks[$category->id]) && $feedbacks[$category->id]->count() > 0)
                                 @foreach($feedbacks[$category->id] as $feedback)
+                                    @php
+                                        $voteCount = $feedback->votes()->count();
+                                        $hasVoted = false;
+                                        if ($isLoggedIn && $publicUser) {
+                                            $hasVoted = $feedback->hasVotedBy($publicUser->id);
+                                        } elseif (!$feedbackSettings->enable_login_for_voting && $feedbackSettings->enable_anonymous_voting) {
+                                            $hasVoted = $feedback->hasVotedBy(null, null, request()->ip());
+                                        }
+                                    @endphp
                                     <div class="feedback-card"
+                                         data-feedback-id="{{ $feedback->id }}"
                                          data-category="{{ $category->id }}"
                                          data-year="{{ $feedback->created_at->format('Y') }}"
                                          data-month="{{ $feedback->created_at->format('n') }}"
                                          data-timestamp="{{ $feedback->created_at->timestamp }}"
                                          data-search="{{ strtolower($feedback->idea . ' ' . strip_tags($feedback->value_description ?? '')) }}">
                                         <div class="feedback-header">
-                                            <div class="vote-box">
+                                            <div class="vote-box {{ $hasVoted ? 'voted' : '' }}"
+                                                 data-feedback-id="{{ $feedback->id }}"
+                                                 onclick="event.stopPropagation(); handleVote(this, {{ $feedback->id }})"
+                                                 title="{{ $hasVoted ? 'Click to remove your vote' : 'Click to vote for this idea' }}">
                                                 <i class="ti ti-arrow-up vote-icon"></i>
-                                                <span class="vote-count">0</span>
+                                                <span class="vote-count">{{ $voteCount }}</span>
                                             </div>
-                                            <div class="feedback-content">
+                                            <a href="{{ route('public.feedback.show', [$settings->unique_url, $feedback->id]) }}" class="feedback-content" style="text-decoration: none; color: inherit;">
                                                 <h3 class="feedback-title">{{ $feedback->idea }}</h3>
                                                 @if($feedback->value_description)
                                                     <div class="feedback-description">
@@ -465,7 +701,7 @@
                                                         {{ $feedback->created_at->diffForHumans() }}
                                                     </span>
                                                 </div>
-                                            </div>
+                                            </a>
                                         </div>
                                     </div>
                                 @endforeach
@@ -485,8 +721,401 @@
 
     @include('partials.public-footer')
 
+    <!-- Add Idea Offcanvas -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="addIdeaOffcanvas" aria-labelledby="addIdeaOffcanvasLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="addIdeaOffcanvasLabel">
+                <i class="ti ti-bulb me-2" style="color: var(--primary-color);"></i>Share Your Idea
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <!-- Success/Error Alert -->
+            <div id="ideaAlert" class="alert d-none mb-3" role="alert"></div>
+
+            <form id="addIdeaForm" enctype="multipart/form-data">
+                @csrf
+
+                <!-- Idea Title -->
+                <div class="mb-3">
+                    <label for="ideaTitle" class="form-label">Tell us your idea! <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="ideaTitle" name="idea" required
+                           placeholder="What's your brilliant idea?">
+                    <div class="invalid-feedback" id="ideaError"></div>
+                </div>
+
+                <!-- Value Description -->
+                <div class="mb-3">
+                    <label for="ideaValue" class="form-label">Why will your idea add more value to the product?</label>
+                    <textarea class="form-control" id="ideaValue" name="value_description" rows="3"
+                              placeholder="Explain why this idea would be valuable..."></textarea>
+                    <div class="invalid-feedback" id="valueError"></div>
+                </div>
+
+                <!-- Full Name -->
+                <div class="mb-3">
+                    <label for="ideaName" class="form-label">Full Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="ideaName" name="full_name" required
+                           placeholder="Enter your full name"
+                           value="{{ $isLoggedIn && $publicUser ? $publicUser->full_name : '' }}">
+                    <div class="invalid-feedback" id="nameError"></div>
+                </div>
+
+                <!-- Email -->
+                <div class="mb-3">
+                    <label for="ideaEmail" class="form-label">Email Address <span class="text-danger">*</span></label>
+                    <input type="email" class="form-control" id="ideaEmail" name="email" required
+                           placeholder="Enter your email address"
+                           value="{{ $isLoggedIn && $publicUser ? $publicUser->email : '' }}"
+                           {{ $isLoggedIn && $publicUser ? 'readonly' : '' }}>
+                    <div class="form-text">We'll send a confirmation link to this email.</div>
+                    <div class="invalid-feedback" id="emailError"></div>
+                </div>
+
+                <!-- Categories/Topics -->
+                <div class="mb-3">
+                    <label class="form-label">Choose up to 3 topics for this idea (Optional)</label>
+                    <div class="topic-checkbox">
+                        @foreach($categories as $category)
+                            <div class="form-check">
+                                <input class="form-check-input topic-input" type="checkbox"
+                                       name="categories[]" value="{{ $category->id }}"
+                                       id="category{{ $category->id }}">
+                                <label class="form-check-label" for="category{{ $category->id }}">
+                                    {{ $category->name }}
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                    <div class="form-text">Select categories that best describe your idea.</div>
+                </div>
+
+                <!-- Image Upload -->
+                <div class="mb-3">
+                    <label class="form-label">Add Image (Optional)</label>
+                    <div class="image-upload-area" id="imageUploadArea" onclick="document.getElementById('ideaImage').click()">
+                        <i class="ti ti-photo-plus" style="font-size: 2rem; color: var(--text-secondary);"></i>
+                        <p class="mb-0 mt-2 text-muted">Click to upload an image</p>
+                        <small class="text-muted">PNG, JPG up to 2MB</small>
+                        <img id="imagePreview" class="image-preview d-none" alt="Preview">
+                    </div>
+                    <input type="file" class="d-none" id="ideaImage" name="image" accept="image/png,image/jpeg,image/jpg">
+                    <div class="invalid-feedback" id="imageError"></div>
+                </div>
+
+                <!-- hCaptcha -->
+                @if($feedbackSettings->enable_captcha ?? false)
+                <div class="mb-3">
+                    <div class="h-captcha" data-sitekey="{{ config('services.hcaptcha.sitekey') }}"></div>
+                    <div class="invalid-feedback d-block" id="captchaError"></div>
+                </div>
+                @endif
+
+                <!-- Privacy Policy Checkbox -->
+                <div class="mb-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="privacyAgree" name="privacy_agree" required>
+                        <label class="form-check-label" for="privacyAgree">
+                            I agree with the <a href="#" target="_blank">Privacy Policy</a> and <a href="#" target="_blank">Terms and Conditions</a> <span class="text-danger">*</span>
+                        </label>
+                        <div class="invalid-feedback" id="privacyError">You must agree to the Privacy Policy and Terms.</div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-add-idea" id="submitIdeaBtn">
+                        <i class="ti ti-send me-1"></i> Submit Idea
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- OTP Verification Modal -->
+    <div class="modal fade" id="otpModal" tabindex="-1" aria-labelledby="otpModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title" id="otpModalLabel">
+                        <i class="ti ti-mail-check me-2" style="color: var(--primary-color);"></i>Email Verification
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="otpAlert" class="alert d-none mb-3"></div>
+
+                    <!-- Step 1: Email Input -->
+                    <div id="otpStep1">
+                        <p class="text-muted mb-3">Please enter your email address to verify your vote.</p>
+                        <div class="mb-3">
+                            <label for="otpEmail" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="otpEmail" placeholder="Enter your email">
+                        </div>
+                        <button type="button" class="btn w-100" style="background: var(--primary-color); color: white;" onclick="requestOtp()">
+                            <i class="ti ti-send me-1"></i> Send Verification Code
+                        </button>
+                    </div>
+
+                    <!-- Step 2: OTP Input -->
+                    <div id="otpStep2" class="d-none">
+                        <p class="text-muted mb-3">We've sent a 6-digit code to <strong id="otpEmailDisplay"></strong>. Enter it below to verify.</p>
+                        <div class="mb-3">
+                            <label for="otpCode" class="form-label">Verification Code</label>
+                            <input type="text" class="form-control text-center fs-4 letter-spacing-2" id="otpCode" maxlength="6" placeholder="000000" style="letter-spacing: 0.5em;">
+                        </div>
+                        <button type="button" class="btn w-100 mb-2" style="background: var(--primary-color); color: white;" onclick="verifyOtp()">
+                            <i class="ti ti-check me-1"></i> Verify & Vote
+                        </button>
+                        <button type="button" class="btn btn-link w-100 text-muted" onclick="resendOtp()">
+                            Didn't receive the code? Resend
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Configuration from server
+        const CONFIG = {
+            uniqueUrl: '{{ $settings->unique_url }}',
+            isLoggedIn: {{ $isLoggedIn ? 'true' : 'false' }},
+            requireLoginForVoting: {{ ($feedbackSettings->enable_login_for_voting ?? false) ? 'true' : 'false' }},
+            enableAnonymousVoting: {{ ($feedbackSettings->enable_anonymous_voting ?? true) ? 'true' : 'false' }},
+            requireOtpFirstVote: {{ ($feedbackSettings->require_email_otp_first_vote ?? false) ? 'true' : 'false' }},
+            enableCaptcha: {{ ($feedbackSettings->enable_captcha ?? false) ? 'true' : 'false' }},
+            csrfToken: document.querySelector('meta[name="csrf-token"]').content
+        };
+
+        // OTP Modal state
+        let currentVoteElement = null;
+        let currentFeedbackId = null;
+        let otpModal = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            otpModal = new bootstrap.Modal(document.getElementById('otpModal'));
+        });
+
+        // Voting function
+        async function handleVote(element, feedbackId) {
+            // Check if login is required
+            if (CONFIG.requireLoginForVoting && !CONFIG.isLoggedIn) {
+                if (confirm('You need to log in to vote. Would you like to log in now?')) {
+                    window.location.href = '/' + CONFIG.uniqueUrl + '/login';
+                }
+                return;
+            }
+
+            // Check if voting is allowed
+            if (!CONFIG.enableAnonymousVoting && !CONFIG.isLoggedIn) {
+                alert('Anonymous voting is not enabled. Please log in to vote.');
+                return;
+            }
+
+            // Add processing state
+            element.classList.add('processing');
+
+            try {
+                const isVoted = element.classList.contains('voted');
+                const action = isVoted ? 'unvote' : 'vote';
+
+                const response = await fetch('/' + CONFIG.uniqueUrl + '/feedback/' + feedbackId + '/' + action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': CONFIG.csrfToken,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update vote count
+                    const countElement = element.querySelector('.vote-count');
+                    countElement.textContent = data.vote_count;
+
+                    // Toggle voted state
+                    if (action === 'vote') {
+                        element.classList.add('voted');
+                        element.title = 'Click to remove your vote';
+                    } else {
+                        element.classList.remove('voted');
+                        element.title = 'Click to vote for this idea';
+                    }
+                } else if (data.require_otp) {
+                    // OTP required - show modal
+                    element.classList.remove('processing');
+                    currentVoteElement = element;
+                    currentFeedbackId = feedbackId;
+                    showOtpModal();
+                } else {
+                    alert(data.message || 'An error occurred. Please try again.');
+                }
+            } catch (error) {
+                console.error('Vote error:', error);
+                alert('An error occurred. Please try again.');
+            } finally {
+                element.classList.remove('processing');
+            }
+        }
+
+        function showOtpModal() {
+            // Reset modal state
+            document.getElementById('otpStep1').classList.remove('d-none');
+            document.getElementById('otpStep2').classList.add('d-none');
+            document.getElementById('otpEmail').value = '';
+            document.getElementById('otpCode').value = '';
+            hideOtpAlert();
+            otpModal.show();
+        }
+
+        async function requestOtp() {
+            const email = document.getElementById('otpEmail').value.trim();
+
+            if (!email || !isValidEmail(email)) {
+                showOtpAlert('Please enter a valid email address.', 'danger');
+                return;
+            }
+
+            try {
+                const response = await fetch('/' + CONFIG.uniqueUrl + '/feedback/' + currentFeedbackId + '/request-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': CONFIG.csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    if (data.already_verified) {
+                        // Already verified, cast the vote directly
+                        await castVoteWithEmail(email);
+                    } else {
+                        // Show OTP input step
+                        document.getElementById('otpStep1').classList.add('d-none');
+                        document.getElementById('otpStep2').classList.remove('d-none');
+                        document.getElementById('otpEmailDisplay').textContent = email;
+                        showOtpAlert(data.message, 'success');
+                    }
+                } else {
+                    showOtpAlert(data.message || 'Failed to send verification code.', 'danger');
+                }
+            } catch (error) {
+                console.error('OTP request error:', error);
+                showOtpAlert('An error occurred. Please try again.', 'danger');
+            }
+        }
+
+        async function verifyOtp() {
+            const email = document.getElementById('otpEmail').value.trim();
+            const otp = document.getElementById('otpCode').value.trim();
+
+            if (!otp || otp.length !== 6) {
+                showOtpAlert('Please enter the 6-digit verification code.', 'danger');
+                return;
+            }
+
+            try {
+                const response = await fetch('/' + CONFIG.uniqueUrl + '/feedback/' + currentFeedbackId + '/verify-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': CONFIG.csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email, otp: otp })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update vote UI
+                    if (currentVoteElement) {
+                        const countElement = currentVoteElement.querySelector('.vote-count');
+                        countElement.textContent = data.vote_count;
+                        currentVoteElement.classList.add('voted');
+                        currentVoteElement.title = 'Click to remove your vote';
+                    }
+
+                    showOtpAlert(data.message, 'success');
+
+                    // Close modal after short delay
+                    setTimeout(() => {
+                        otpModal.hide();
+                    }, 1500);
+                } else {
+                    showOtpAlert(data.message || 'Invalid verification code.', 'danger');
+                }
+            } catch (error) {
+                console.error('OTP verify error:', error);
+                showOtpAlert('An error occurred. Please try again.', 'danger');
+            }
+        }
+
+        async function resendOtp() {
+            await requestOtp();
+        }
+
+        async function castVoteWithEmail(email) {
+            try {
+                const response = await fetch('/' + CONFIG.uniqueUrl + '/feedback/' + currentFeedbackId + '/vote', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': CONFIG.csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    if (currentVoteElement) {
+                        const countElement = currentVoteElement.querySelector('.vote-count');
+                        countElement.textContent = data.vote_count;
+                        currentVoteElement.classList.add('voted');
+                        currentVoteElement.title = 'Click to remove your vote';
+                    }
+
+                    showOtpAlert('Vote recorded successfully!', 'success');
+
+                    setTimeout(() => {
+                        otpModal.hide();
+                    }, 1500);
+                } else {
+                    showOtpAlert(data.message || 'Failed to cast vote.', 'danger');
+                }
+            } catch (error) {
+                console.error('Vote error:', error);
+                showOtpAlert('An error occurred. Please try again.', 'danger');
+            }
+        }
+
+        function showOtpAlert(message, type) {
+            const alert = document.getElementById('otpAlert');
+            alert.className = `alert alert-${type} mb-3`;
+            alert.textContent = message;
+            alert.classList.remove('d-none');
+        }
+
+        function hideOtpAlert() {
+            document.getElementById('otpAlert').classList.add('d-none');
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+    </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -572,6 +1201,145 @@
 
             // Initial sort
             applyFilters();
+
+            // === Add Idea Form Handling ===
+            const addIdeaForm = document.getElementById('addIdeaForm');
+            const ideaAlert = document.getElementById('ideaAlert');
+            const submitBtn = document.getElementById('submitIdeaBtn');
+            const imageInput = document.getElementById('ideaImage');
+            const imagePreview = document.getElementById('imagePreview');
+            const imageUploadArea = document.getElementById('imageUploadArea');
+            const topicCheckboxes = document.querySelectorAll('.topic-input');
+
+            // Limit topic selection to 3
+            topicCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const checked = document.querySelectorAll('.topic-input:checked');
+                    if (checked.length > 3) {
+                        this.checked = false;
+                        showAlert('You can only select up to 3 topics.', 'warning');
+                    }
+                });
+            });
+
+            // Image preview
+            imageInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    // Validate file size (2MB)
+                    if (file.size > 2 * 1024 * 1024) {
+                        showAlert('Image size must be less than 2MB.', 'danger');
+                        this.value = '';
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.classList.remove('d-none');
+                        imageUploadArea.classList.add('has-image');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Form submission
+            addIdeaForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                // Clear previous errors
+                document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                hideAlert();
+
+                // Validate privacy checkbox
+                const privacyCheckbox = document.getElementById('privacyAgree');
+                if (!privacyCheckbox.checked) {
+                    privacyCheckbox.classList.add('is-invalid');
+                    return;
+                }
+
+                // Validate hCaptcha if enabled
+                if (CONFIG.enableCaptcha) {
+                    const hcaptchaResponse = document.querySelector('[name="h-captcha-response"]')?.value;
+                    if (!hcaptchaResponse) {
+                        document.getElementById('captchaError').textContent = 'Please complete the captcha.';
+                        return;
+                    }
+                }
+
+                // Show loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Submitting...';
+
+                try {
+                    const formData = new FormData(this);
+
+                    const response = await fetch('/' + CONFIG.uniqueUrl + '/feedback/submit', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': CONFIG.csrfToken,
+                            'Accept': 'application/json'
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Show success message
+                        showAlert(data.message || 'Your idea has been submitted! Please check your email to confirm.', 'success');
+
+                        // Reset form
+                        addIdeaForm.reset();
+                        imagePreview.classList.add('d-none');
+                        imageUploadArea.classList.remove('has-image');
+
+                        // Reset hCaptcha if enabled
+                        if (CONFIG.enableCaptcha && typeof hcaptcha !== 'undefined') {
+                            hcaptcha.reset();
+                        }
+
+                        // Close offcanvas after delay
+                        setTimeout(() => {
+                            const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('addIdeaOffcanvas'));
+                            if (offcanvas) {
+                                offcanvas.hide();
+                            }
+                        }, 3000);
+                    } else {
+                        // Show validation errors
+                        if (data.errors) {
+                            Object.keys(data.errors).forEach(field => {
+                                const input = document.querySelector(`[name="${field}"]`);
+                                if (input) {
+                                    input.classList.add('is-invalid');
+                                    const feedback = input.nextElementSibling;
+                                    if (feedback && feedback.classList.contains('invalid-feedback')) {
+                                        feedback.textContent = data.errors[field][0];
+                                    }
+                                }
+                            });
+                        }
+                        showAlert(data.message || 'Please correct the errors and try again.', 'danger');
+                    }
+                } catch (error) {
+                    console.error('Submit error:', error);
+                    showAlert('An error occurred. Please try again.', 'danger');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="ti ti-send me-1"></i> Submit Idea';
+                }
+            });
+
+            function showAlert(message, type) {
+                ideaAlert.className = `alert alert-${type} mb-3`;
+                ideaAlert.textContent = message;
+                ideaAlert.classList.remove('d-none');
+            }
+
+            function hideAlert() {
+                ideaAlert.classList.add('d-none');
+            }
         });
     </script>
 </body>

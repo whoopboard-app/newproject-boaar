@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 
 class FeedbackController extends Controller
 {
@@ -124,6 +125,7 @@ class FeedbackController extends Controller
             'tags' => 'nullable|string',
             'persona_id' => 'nullable|exists:personas,id',
             'source' => 'required|in:Admin Added,User Submitted,Social Scraping,Project Management tool,Support System',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         // Process tags
@@ -131,6 +133,11 @@ class FeedbackController extends Controller
             $validated['tags'] = array_map('trim', explode(',', $validated['tags']));
         } else {
             $validated['tags'] = null;
+        }
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('feedback-images', 'public');
         }
 
         $validated['login_access_enabled'] = $request->has('login_access_enabled');
@@ -253,6 +260,7 @@ class FeedbackController extends Controller
             'tags' => 'nullable|string',
             'persona_id' => 'nullable|exists:personas,id',
             'source' => 'required|in:Admin Added,User Submitted,Social Scraping,Project Management tool,Support System',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         // Process tags
@@ -260,6 +268,21 @@ class FeedbackController extends Controller
             $validated['tags'] = array_map('trim', explode(',', $validated['tags']));
         } else {
             $validated['tags'] = null;
+        }
+
+        // Handle image removal
+        if ($request->has('remove_image') && $feedback->image) {
+            Storage::disk('public')->delete($feedback->image);
+            $validated['image'] = null;
+        }
+
+        // Handle new image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($feedback->image) {
+                Storage::disk('public')->delete($feedback->image);
+            }
+            $validated['image'] = $request->file('image')->store('feedback-images', 'public');
         }
 
         $validated['login_access_enabled'] = $request->has('login_access_enabled');

@@ -24,8 +24,13 @@ class Feedback extends Model
         'is_public',
         'show_in_roadmap',
         'tags',
+        'image',
         'persona_id',
+        'public_user_id',
         'source',
+        'verification_token',
+        'is_verified',
+        'verified_at',
     ];
 
     protected $casts = [
@@ -33,6 +38,8 @@ class Feedback extends Model
         'login_access_enabled' => 'boolean',
         'is_public' => 'boolean',
         'show_in_roadmap' => 'boolean',
+        'is_verified' => 'boolean',
+        'verified_at' => 'datetime',
     ];
 
     /**
@@ -81,5 +88,58 @@ class Feedback extends Model
     public function internalComments()
     {
         return $this->hasMany(FeedbackComment::class)->where('is_internal', true)->orderBy('created_at', 'asc');
+    }
+
+    /**
+     * Get the public user who submitted this feedback.
+     */
+    public function publicUser()
+    {
+        return $this->belongsTo(PublicUser::class);
+    }
+
+    /**
+     * Get all votes for this feedback.
+     */
+    public function votes()
+    {
+        return $this->hasMany(FeedbackVote::class);
+    }
+
+    /**
+     * Get the vote count for this feedback.
+     */
+    public function voteCount()
+    {
+        return $this->votes()->count();
+    }
+
+    /**
+     * Check if a user has voted for this feedback.
+     */
+    public function hasVotedBy($publicUserId = null, $email = null, $ip = null)
+    {
+        return FeedbackVote::hasVoted($this->id, $publicUserId, $email, $ip);
+    }
+
+    /**
+     * Generate verification token for feedback submission.
+     */
+    public function generateVerificationToken()
+    {
+        $this->verification_token = \Illuminate\Support\Str::random(64);
+        $this->save();
+        return $this->verification_token;
+    }
+
+    /**
+     * Mark feedback as verified.
+     */
+    public function markAsVerified()
+    {
+        $this->is_verified = true;
+        $this->verified_at = now();
+        $this->verification_token = null;
+        $this->save();
     }
 }

@@ -59,7 +59,7 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <form method="POST" action="{{ isset($feedback) ? route('feedback.update', $feedback) : route('feedback.store') }}">
+                <form method="POST" action="{{ isset($feedback) ? route('feedback.update', $feedback) : route('feedback.store') }}" enctype="multipart/form-data">
                     @csrf
                     @if(isset($feedback))
                         @method('PUT')
@@ -138,6 +138,34 @@
                                 @error('value_description')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image Upload -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="image" class="form-label">Attach Image (Optional)</label>
+                                <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image" accept="image/jpeg,image/png,image/jpg">
+                                <small class="text-muted">Accepted formats: JPG, JPEG, PNG. Max size: 2MB</small>
+                                @error('image')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                @if(isset($feedback) && $feedback->image)
+                                    <div class="mt-2">
+                                        <label class="form-label text-muted">Current Image:</label>
+                                        <div class="border rounded p-2" style="max-width: 300px;">
+                                            <img src="{{ asset('storage/' . $feedback->image) }}" alt="Feedback Image" class="img-fluid rounded">
+                                        </div>
+                                        <div class="form-check mt-2">
+                                            <input class="form-check-input" type="checkbox" id="remove_image" name="remove_image" value="1">
+                                            <label class="form-check-label text-danger" for="remove_image">
+                                                Remove current image
+                                            </label>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>

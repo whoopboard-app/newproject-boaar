@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subscription Confirmed</title>
+    <title>Idea Confirmed - {{ $settings->product_name ?? 'Feedback Board' }}</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -14,6 +14,7 @@
     <style>
         :root {
             --primary-color: #5865F2;
+            --success-color: #10b981;
             --border-color: #e5e7eb;
             --text-primary: #1f2937;
             --text-secondary: #6b7280;
@@ -40,12 +41,13 @@
             padding: 3rem;
             max-width: 550px;
             width: 100%;
+            text-align: center;
         }
 
         .success-icon {
             width: 80px;
             height: 80px;
-            background: #10b981;
+            background: var(--success-color);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -59,49 +61,41 @@
         }
 
         .success-title {
-            font-size: 1.875rem;
+            font-size: 1.75rem;
             font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 1rem;
-            text-align: center;
+            margin-bottom: 0.5rem;
         }
 
-        .success-message {
-            color: var(--text-secondary);
-            font-size: 1.125rem;
-            line-height: 1.6;
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .success-box {
-            background: #f0fdf4;
-            border: 1px solid #86efac;
-            border-radius: 8px;
-            padding: 1.25rem;
-            margin-bottom: 2rem;
-        }
-
-        .success-box p {
-            margin: 0;
-            color: #166534;
-            font-size: 0.9375rem;
-            line-height: 1.6;
-        }
-
-        .success-box strong {
-            font-weight: 600;
-        }
-
-        .thank-you-text {
-            text-align: center;
+        .success-description {
             color: var(--text-secondary);
             font-size: 1rem;
             line-height: 1.6;
-            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .idea-summary {
             background: #f9fafb;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .idea-summary-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .idea-summary-text {
+            font-size: 1rem;
+            color: var(--text-primary);
+            font-weight: 500;
         }
 
         .btn-home {
@@ -112,11 +106,11 @@
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 600;
-            width: 100%;
-            transition: all 0.2s;
             text-decoration: none;
-            display: inline-block;
-            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
         }
 
         .btn-home:hover {
@@ -124,38 +118,64 @@
             color: white;
             transform: translateY(-1px);
         }
+
+        .already-verified {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            color: #92400e;
+            font-size: 0.875rem;
+        }
     </style>
 </head>
 <body>
     <div class="success-container">
         <div class="success-card">
             <div class="success-icon">
-                <i class="ti ti-circle-check"></i>
+                <i class="ti ti-check"></i>
             </div>
 
-            <h1 class="success-title">Subscription Confirmed!</h1>
+            <h1 class="success-title">
+                @if($alreadyVerified)
+                    Already Confirmed!
+                @else
+                    Idea Successfully Confirmed!
+                @endif
+            </h1>
 
-            <p class="success-message">
-                Welcome, <strong>{{ $subscriber->full_name }}</strong>!
+            @if($alreadyVerified)
+                <div class="already-verified">
+                    <i class="ti ti-info-circle me-1"></i>
+                    This idea has already been confirmed. No further action is needed.
+                </div>
+            @endif
+
+            <p class="success-description">
+                @if($alreadyVerified)
+                    Your idea was already confirmed and is visible on our feedback board.
+                @else
+                    Thank you for confirming your submission! Your idea is now visible on our feedback board and ready to receive votes from the community.
+                @endif
             </p>
 
-            <div class="success-box">
-                <p>
-                    <i class="ti ti-check me-1"></i>
-                    Your email address <strong>{{ $subscriber->email }}</strong> has been successfully verified.
-                    You'll now receive our updates and newsletters.
-                </p>
+            <div class="idea-summary">
+                <div class="idea-summary-label">Your Idea</div>
+                <div class="idea-summary-text">{{ $feedback->idea }}</div>
             </div>
 
-            <div class="thank-you-text">
-                <p class="mb-0">Thank you for joining our community!</p>
-            </div>
-
-            {{--<div class="text-center">
-                <a href="/" class="btn-home">
-                    <i class="ti ti-home me-2"></i> Go to Home
+            @if($settings)
+                <a href="{{ route('public.home', $settings->unique_url) }}" class="btn btn-home">
+                    <i class="ti ti-arrow-left"></i>
+                    Go to Feedback Board
                 </a>
-            </div>--}}
+            @else
+                <a href="/" class="btn btn-home">
+                    <i class="ti ti-home"></i>
+                    Go Home
+                </a>
+            @endif
         </div>
     </div>
 

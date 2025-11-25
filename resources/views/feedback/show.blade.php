@@ -62,6 +62,19 @@
                     </div>
                 @endif
 
+                <!-- Attached Image -->
+                @if($feedback->image)
+                    <div class="mb-4">
+                        <h6 class="text-muted mb-2">Attached Image</h6>
+                        <div class="border rounded p-2" style="max-width: 500px;">
+                            <a href="{{ asset('storage/' . $feedback->image) }}" target="_blank">
+                                <img src="{{ asset('storage/' . $feedback->image) }}" alt="Feedback Image" class="img-fluid rounded">
+                            </a>
+                        </div>
+                        <small class="text-muted">Click image to view full size</small>
+                    </div>
+                @endif
+
                 <!-- Category & Status -->
                 <div class="row mb-4">
                     <div class="col-md-6">
