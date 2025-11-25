@@ -396,14 +396,20 @@ class PublicController extends Controller
         // Generate verification token
         $feedback->generateVerificationToken();
 
-        // Send verification email
-        Notification::route('mail', $request->email)
-            ->notify(new FeedbackSubmissionNotification($feedback, $settings));
-
-        return response()->json([
+        // Return response immediately, then send email
+        $response = response()->json([
             'success' => true,
             'message' => 'Your idea has been submitted! Please check your email to confirm your submission.',
         ]);
+
+        // Use dispatch to send email after response
+        $email = $request->email;
+        dispatch(function () use ($feedback, $settings, $email) {
+            Notification::route('mail', $email)
+                ->notify(new FeedbackSubmissionNotification($feedback, $settings));
+        })->afterResponse();
+
+        return $response;
     }
 
     /**

@@ -591,6 +591,15 @@
 
     <!-- Main Content -->
     <div class="container">
+        <!-- Page Level Success Message -->
+        <div id="pageSuccessAlert" class="alert alert-success alert-dismissible fade d-none" role="alert" style="margin-top: 1rem; border-radius: 8px;">
+            <div class="d-flex align-items-center">
+                <i class="ti ti-circle-check me-2" style="font-size: 1.25rem;"></i>
+                <span id="pageSuccessMessage"></span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
         <div class="public-content" style="padding-top: 2rem;">
             <!-- Left Sidebar - Filters & Categories -->
             <aside class="sidebar">
@@ -1286,9 +1295,6 @@
                     const data = await response.json();
 
                     if (data.success) {
-                        // Show success message
-                        showAlert(data.message || 'Your idea has been submitted! Please check your email to confirm.', 'success');
-
                         // Reset form
                         addIdeaForm.reset();
                         imagePreview.classList.add('d-none');
@@ -1299,13 +1305,14 @@
                             hcaptcha.reset();
                         }
 
-                        // Close offcanvas after delay
-                        setTimeout(() => {
-                            const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('addIdeaOffcanvas'));
-                            if (offcanvas) {
-                                offcanvas.hide();
-                            }
-                        }, 3000);
+                        // Close offcanvas immediately
+                        const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('addIdeaOffcanvas'));
+                        if (offcanvas) {
+                            offcanvas.hide();
+                        }
+
+                        // Show success message on the main page
+                        showPageSuccess(data.message || 'Your idea has been submitted! Please check your email to confirm.');
                     } else {
                         // Show validation errors
                         if (data.errors) {
@@ -1339,6 +1346,26 @@
 
             function hideAlert() {
                 ideaAlert.classList.add('d-none');
+            }
+
+            function showPageSuccess(message) {
+                const pageAlert = document.getElementById('pageSuccessAlert');
+                const pageMessage = document.getElementById('pageSuccessMessage');
+
+                pageMessage.textContent = message;
+                pageAlert.classList.remove('d-none');
+                pageAlert.classList.add('show');
+
+                // Scroll to top to show the message
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                // Auto-hide after 8 seconds
+                setTimeout(() => {
+                    pageAlert.classList.remove('show');
+                    setTimeout(() => {
+                        pageAlert.classList.add('d-none');
+                    }, 150);
+                }, 8000);
             }
         });
     </script>
