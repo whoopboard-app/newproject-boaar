@@ -144,6 +144,14 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="is_internal" name="is_internal" value="1">
+                            <label class="form-check-label" for="is_internal">
+                                <i class="ti ti-lock me-1"></i> Add as private comment <small class="text-muted">(only visible to admin)</small>
+                            </label>
+                        </div>
+                    </div>
                     <button type="submit" class="btn btn-primary">
                         <i class="ti ti-send me-1"></i> Post Comment
                     </button>
@@ -153,22 +161,27 @@
 
                 <!-- Comments List -->
                 @forelse($feedback->comments as $comment)
-                    <div class="d-flex mb-3">
+                    <div class="d-flex mb-3 {{ $comment->is_internal ? 'bg-light rounded p-2' : '' }}">
                         <div class="flex-shrink-0">
                             <div class="avatar-sm">
-                                <span class="avatar-title rounded-circle bg-primary">
-                                    <i class="ti ti-user text-white"></i>
+                                <span class="avatar-title rounded-circle {{ $comment->is_internal ? 'bg-warning' : 'bg-primary' }}">
+                                    <i class="ti {{ $comment->is_internal ? 'ti-lock' : 'ti-user' }} text-white"></i>
                                 </span>
                             </div>
                         </div>
                         <div class="flex-grow-1 ms-3">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <h6 class="mb-1">{{ $comment->user ? $comment->user->name : 'Anonymous' }}</h6>
+                                    <h6 class="mb-1">
+                                        {{ $comment->user ? $comment->user->name : ($comment->commenter_name ?? 'Anonymous') }}
+                                        @if($comment->is_internal)
+                                            <span class="badge bg-warning text-dark ms-2"><i class="ti ti-lock me-1"></i>Private</span>
+                                        @endif
+                                    </h6>
                                     <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
                                 </div>
                                 @auth
-                                    @if(auth()->id() === $comment->user_id)
+                                    @if(auth()->id() === $comment->user_id || Auth::user()->canDelete())
                                         <form method="POST" action="{{ route('feedback.comment.destroy', [$feedback, $comment]) }}" onsubmit="return confirm('Are you sure you want to delete this comment?');">
                                             @csrf
                                             @method('DELETE')

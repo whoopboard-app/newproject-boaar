@@ -174,8 +174,8 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" placeholder="Enter your name" value="{{ old('name', isset($feedback) ? $feedback->name : '') }}" required>
+                                <label for="name" class="form-label">Name</label>
+                                <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" placeholder="Enter name (optional)" value="{{ old('name', isset($feedback) ? $feedback->name : '') }}">
                                 @error('name')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -184,8 +184,8 @@
 
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" placeholder="Enter your email" value="{{ old('email', isset($feedback) ? $feedback->email : '') }}" required>
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" placeholder="Enter email (optional)" value="{{ old('email', isset($feedback) ? $feedback->email : '') }}">
                                 @error('email')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

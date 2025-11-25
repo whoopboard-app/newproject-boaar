@@ -117,8 +117,8 @@ class FeedbackController extends Controller
             'feedback_category_id' => 'nullable|exists:feedback_categories,id',
             'value_description' => 'nullable|string',
             'roadmap_id' => 'nullable|exists:roadmaps,id',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|email|max:255',
             'login_access_enabled' => 'boolean',
             'is_public' => 'required|boolean',
             'show_in_roadmap' => 'boolean',
@@ -144,6 +144,8 @@ class FeedbackController extends Controller
         $validated['is_public'] = $request->input('is_public', true);
         $validated['show_in_roadmap'] = $request->has('show_in_roadmap');
         $validated['team_id'] = Auth::user()->current_team_id;
+        $validated['is_verified'] = true; // Admin-created feedbacks are always verified
+        $validated['verified_at'] = now();
 
         $feedback = Feedback::create($validated);
 
@@ -252,8 +254,8 @@ class FeedbackController extends Controller
             'feedback_category_id' => 'nullable|exists:feedback_categories,id',
             'value_description' => 'nullable|string',
             'roadmap_id' => 'nullable|exists:roadmaps,id',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|email|max:255',
             'login_access_enabled' => 'boolean',
             'is_public' => 'required|boolean',
             'show_in_roadmap' => 'boolean',
@@ -353,7 +355,7 @@ class FeedbackController extends Controller
             'feedback_id' => $feedback->id,
             'user_id' => auth()->id(),
             'comment' => $validated['comment'],
-            'is_internal' => false,
+            'is_internal' => $request->has('is_internal'),
         ]);
 
         return redirect()->route('feedback.show', $feedback)
