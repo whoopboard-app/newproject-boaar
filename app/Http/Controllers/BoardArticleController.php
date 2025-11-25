@@ -99,7 +99,7 @@ class BoardArticleController extends Controller
             'article_title' => 'required|string|max:255',
             'board_category_id' => 'required|exists:board_categories,id',
             'detailed_post' => 'required|string',
-            'cover_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'cover_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:2048',
             'tags' => 'nullable|string',
             'changelog_categories' => 'nullable|array',
             'changelog_categories.*' => 'exists:categories,id',
@@ -144,9 +144,25 @@ class BoardArticleController extends Controller
                 $article->changelogCategories()->attach($validated['changelog_categories']);
             }
 
+            // Return JSON for AJAX requests
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => 'Article created successfully!',
+                    'redirect' => route('knowledge-board.show', $knowledgeBoard)
+                ]);
+            }
+
             return redirect()->route('knowledge-board.show', $knowledgeBoard)
                 ->with('success', 'Article created successfully!');
         } catch (\Exception $e) {
+            // Return JSON error for AJAX requests
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'message' => 'Failed to create article. Please try again.',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
+
             return redirect()->back()
                 ->with('error', 'Failed to create article. Please try again. Error: ' . $e->getMessage())
                 ->withInput();
@@ -165,7 +181,7 @@ class BoardArticleController extends Controller
             'article_title' => 'required|string|max:255',
             'board_category_id' => 'required|exists:board_categories,id',
             'detailed_post' => 'required|string',
-            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'cover_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:2048',
             'tags' => 'nullable|string',
             'changelog_categories' => 'nullable|array',
             'changelog_categories.*' => 'exists:categories,id',
@@ -215,9 +231,25 @@ class BoardArticleController extends Controller
                 $article->changelogCategories()->detach();
             }
 
+            // Return JSON for AJAX requests
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => 'Article updated successfully!',
+                    'redirect' => route('knowledge-board.show', $knowledgeBoard)
+                ]);
+            }
+
             return redirect()->route('knowledge-board.show', $knowledgeBoard)
                 ->with('success', 'Article updated successfully!');
         } catch (\Exception $e) {
+            // Return JSON error for AJAX requests
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'message' => 'Failed to update article. Please try again.',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
+
             return redirect()->back()
                 ->with('error', 'Failed to update article. Please try again. Error: ' . $e->getMessage())
                 ->withInput();

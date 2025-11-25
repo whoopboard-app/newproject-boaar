@@ -40,7 +40,7 @@ class PersonaController extends Controller
             'description' => 'required|string',
             'quote' => 'nullable|string',
             'status' => 'required|in:active,inactive,draft',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'avatar' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:2048',
         ]);
 
         // Handle avatar upload
@@ -96,7 +96,7 @@ class PersonaController extends Controller
             'description' => 'required|string',
             'quote' => 'nullable|string',
             'status' => 'required|in:active,inactive,draft',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'avatar' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:2048',
         ]);
 
         // Handle avatar removal

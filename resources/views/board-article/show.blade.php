@@ -47,7 +47,31 @@
     .article-content {
         line-height: 1.8;
         font-size: 1rem;
-        white-space: pre-wrap;
+    }
+
+    .article-content h1, .article-content h2, .article-content h3 {
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .article-content p {
+        margin-bottom: 1rem;
+    }
+
+    .article-content ul, .article-content ol {
+        margin-bottom: 1rem;
+        padding-left: 2rem;
+    }
+
+    .article-content a {
+        color: #007bff;
+    }
+
+    .article-content blockquote {
+        border-left: 4px solid #dee2e6;
+        padding-left: 1rem;
+        margin-left: 0;
+        color: #6c757d;
     }
 </style>
 @endpush
@@ -87,7 +111,7 @@
 
                 <!-- Detailed Post -->
                 <div class="article-content">
-                    {!! nl2br(e($article->detailed_post)) !!}
+                    {!! $article->detailed_post !!}
                 </div>
             </div>
         </div>

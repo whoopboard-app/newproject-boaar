@@ -56,7 +56,7 @@ class ChangelogController extends Controller
         }
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'cover_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:2048',
             'short_description' => 'required|string|max:200',
             'description' => 'required|string',
             'category' => 'required|array',
@@ -115,7 +115,7 @@ class ChangelogController extends Controller
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'cover_image' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:2048',
             'short_description' => 'required|string|max:200',
             'description' => 'required|string',
             'category' => 'required|array',

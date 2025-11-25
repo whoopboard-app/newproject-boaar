@@ -60,7 +60,7 @@ class KnowledgeBoardController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'short_description' => 'required|string',
-            'cover_page' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'cover_page' => 'required|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:2048',
             'document_type' => 'required|in:manual,help_document',
             'visibility_type' => 'required|in:private,public',
             'status' => 'required|in:published,unpublished,draft',

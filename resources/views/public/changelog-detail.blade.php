@@ -431,6 +431,12 @@
                 <a href="{{ route('public.changelog', $settings->unique_url) }}" class="nav-tab active">
                     <i class="ti ti-clipboard-list"></i> Changelog
                 </a>
+                <a href="{{ route('public.testimonials', $settings->unique_url) }}" class="nav-tab">
+                    <i class="ti ti-star"></i> Testimonials
+                </a>
+                <a href="{{ route('public.knowledge', $settings->unique_url) }}" class="nav-tab">
+                    <i class="ti ti-book"></i> Knowledge
+                </a>
             </nav>
         </div>
     </header>

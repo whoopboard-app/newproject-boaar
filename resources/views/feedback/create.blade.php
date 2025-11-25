@@ -147,8 +147,8 @@
                         <div class="col-md-12">
                             <div class="mb-3">
                                 <label for="image" class="form-label">Attach Image (Optional)</label>
-                                <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image" accept="image/jpeg,image/png,image/jpg">
-                                <small class="text-muted">Accepted formats: JPG, JPEG, PNG. Max size: 2MB</small>
+                                <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image" accept="image/jpeg,image/png,image/jpg,image/webp,image/avif">
+                                <small class="text-muted">Accepted formats: JPG, JPEG, PNG, WebP, AVIF. Max size: 2MB</small>
                                 @error('image')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

@@ -220,6 +220,12 @@ Route::get('/{unique_url}/roadmap', [PublicController::class, 'roadmap'])->name(
 Route::get('/{unique_url}/roadmap/{roadmapItem}', [PublicController::class, 'showRoadmapItem'])->name('public.roadmap.show');
 Route::get('/{unique_url}/changelog', [PublicController::class, 'changelog'])->name('public.changelog');
 Route::get('/{unique_url}/changelog/{changelog}', [PublicController::class, 'showChangelog'])->name('public.changelog.show');
+Route::get('/{unique_url}/testimonials', [PublicController::class, 'testimonials'])->name('public.testimonials');
+Route::get('/{unique_url}/testimonials/{testimonial}', [PublicController::class, 'showTestimonial'])->name('public.testimonials.show');
+Route::get('/{unique_url}/knowledge', [PublicController::class, 'knowledge'])->name('public.knowledge');
+Route::get('/{unique_url}/knowledge/{knowledgeBoard}', [PublicController::class, 'showKnowledge'])->name('public.knowledge.show');
+Route::get('/{unique_url}/knowledge/{knowledgeBoard}/article/{article}', [PublicController::class, 'showKnowledgeArticle'])->name('public.knowledge.article');
+Route::get('/{unique_url}/knowledge/{knowledgeBoard}/search', [PublicController::class, 'searchKnowledgeArticles'])->name('public.knowledge.search');
 Route::get('/{unique_url}/subscribe', [PublicController::class, 'subscribe'])->name('public.subscribe');
 Route::post('/{unique_url}/subscribe', [PublicController::class, 'subscribeSubmit'])->name('public.subscribe.submit');
 

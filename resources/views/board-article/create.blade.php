@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
 <link href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css">
 @include('components.filepond-styles')
+@include('components.quill-styles')
 <style>
     .choices__inner {
         min-height: 39.51px !important;
@@ -119,16 +120,18 @@
                     <!-- Detailed Post -->
                     <div class="mb-3">
                         <label for="detailed_post" class="form-label">Detailed Post <span class="text-danger">*</span></label>
-                        <textarea class="form-control @error('detailed_post') is-invalid @enderror" id="detailed_post" name="detailed_post" rows="10" placeholder="Write your detailed article content here..." required>{{ old('detailed_post', $article->detailed_post ?? '') }}</textarea>
+                        <div class="quill-editor-wrapper @error('detailed_post') is-invalid @enderror">
+                            <div id="quill-editor"></div>
+                        </div>
+                        <input type="hidden" id="detailed_post" name="detailed_post" value="{{ old('detailed_post', $article->detailed_post ?? '') }}">
                         @error('detailed_post')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
-                        <small class="text-muted">You can use HTML formatting in your content</small>
                     </div>
 
                     <!-- Cover Image -->
                     <div class="mb-3">
-                        <label for="cover_image" class="form-label">Cover Image @if(!$article)<span class="text-danger">*</span>@endif</label>
+                        <label for="cover_image" class="form-label">Cover Image (Optional)</label>
                         @if($article)
                             <p class="text-muted small mb-2"><strong>Leave empty to keep existing image</strong></p>
                         @endif
@@ -233,6 +236,7 @@
 <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
 @include('components.filepond-scripts')
+@include('components.quill-scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Check for sessionStorage messages and display them
@@ -285,6 +289,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Initialize Quill editor
+    const detailedPostInput = document.getElementById('detailed_post');
+    const quillEditor = initQuill('#quill-editor', {
+        placeholder: 'Write your detailed article content here...',
+        initialContent: detailedPostInput.value
+    });
+
+    // Sync Quill content to hidden input on text change
+    quillEditor.on('text-change', function() {
+        detailedPostInput.value = quillEditor.root.innerHTML;
+    });
+
     // Initialize Tagify for tags input with localStorage whitelist
     const tagInput = document.querySelector('#tags');
 
@@ -319,14 +335,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Initialize FilePond with same 16:9 aspect ratio as changelog
-    // Set required based on edit mode
     const pond = initFilePond('.filepond', {
         imageCropAspectRatio: '16:9',
         imageResizeTargetWidth: 1200,
         imageResizeTargetHeight: 675,
         imageResizeMode: 'cover',
         imageResizeUpscale: false,
-        required: !isEdit
+        required: false
     });
 
     // Handle form submission with FilePond
@@ -335,12 +350,6 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
 
         const files = pond.getFiles();
-
-        // Only require image if not in edit mode
-        if (!isEdit && files.length === 0) {
-            alert('Please upload a cover image');
-            return false;
-        }
 
         // Create FormData and append all form fields
         const formData = new FormData();
@@ -356,7 +365,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add text inputs
         formData.append('article_title', document.getElementById('article_title').value);
         formData.append('board_category_id', document.getElementById('board_category_id').value);
-        formData.append('detailed_post', document.getElementById('detailed_post').value);
+
+        // Get detailed post from Quill editor
+        const detailedPostHtml = quillEditor.root.innerHTML;
+        formData.append('detailed_post', detailedPostHtml);
+
         formData.append('tags', document.getElementById('tags').value);
         formData.append('author_id', document.getElementById('author_id').value);
         formData.append('status', document.getElementById('status').value);

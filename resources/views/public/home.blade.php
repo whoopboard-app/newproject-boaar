@@ -585,6 +585,12 @@
                 <a href="{{ route('public.changelog', $settings->unique_url) }}" class="nav-tab">
                     <i class="ti ti-clipboard-list"></i> Changelog
                 </a>
+                <a href="{{ route('public.testimonials', $settings->unique_url) }}" class="nav-tab">
+                    <i class="ti ti-star"></i> Testimonials
+                </a>
+                <a href="{{ route('public.knowledge', $settings->unique_url) }}" class="nav-tab">
+                    <i class="ti ti-book"></i> Knowledge
+                </a>
             </nav>
         </div>
     </header>
@@ -805,10 +811,10 @@
                     <div class="image-upload-area" id="imageUploadArea" onclick="document.getElementById('ideaImage').click()">
                         <i class="ti ti-photo-plus" style="font-size: 2rem; color: var(--text-secondary);"></i>
                         <p class="mb-0 mt-2 text-muted">Click to upload an image</p>
-                        <small class="text-muted">PNG, JPG up to 2MB</small>
+                        <small class="text-muted">PNG, JPG, WebP, AVIF up to 2MB</small>
                         <img id="imagePreview" class="image-preview d-none" alt="Preview">
                     </div>
-                    <input type="file" class="d-none" id="ideaImage" name="image" accept="image/png,image/jpeg,image/jpg">
+                    <input type="file" class="d-none" id="ideaImage" name="image" accept="image/png,image/jpeg,image/jpg,image/webp,image/avif">
                     <div class="invalid-feedback" id="imageError"></div>
                 </div>
 

@@ -125,7 +125,7 @@ class FeedbackController extends Controller
             'tags' => 'nullable|string',
             'persona_id' => 'nullable|exists:personas,id',
             'source' => 'required|in:Admin Added,User Submitted,Social Scraping,Project Management tool,Support System',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'image' => 'nullable|file|mimes:jpeg,png,jpg,webp,avif|mimetypes:image/jpeg,image/png,image/webp,image/avif|max:2048',
         ]);
 
         // Process tags
@@ -262,7 +262,7 @@ class FeedbackController extends Controller
             'tags' => 'nullable|string',
             'persona_id' => 'nullable|exists:personas,id',
             'source' => 'required|in:Admin Added,User Submitted,Social Scraping,Project Management tool,Support System',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'image' => 'nullable|file|mimes:jpeg,png,jpg,webp,avif|mimetypes:image/jpeg,image/png,image/webp,image/avif|max:2048',
         ]);
 
         // Process tags

@@ -48,7 +48,7 @@ class AppSettingsController extends Controller
         }
 
         $validated = $request->validate([
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
+            'logo' => 'nullable|file|mimes:jpeg,png,jpg,svg,webp,avif|mimetypes:image/jpeg,image/png,image/svg+xml,image/webp,image/avif|max:2048',
             'product_name' => 'required|string|max:255',
             'website_url' => 'nullable|url|max:255',
             'unique_url' => 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:app_settings,unique_url,' . Auth::user()->current_team_id . ',team_id',

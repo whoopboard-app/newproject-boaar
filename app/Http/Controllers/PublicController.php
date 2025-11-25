@@ -14,6 +14,10 @@ use App\Models\Changelog;
 use App\Models\Category;
 use App\Models\Subscriber;
 use App\Models\VoteOtp;
+use App\Models\Testimonial;
+use App\Models\KnowledgeBoard;
+use App\Models\BoardArticle;
+use App\Models\BoardCategory;
 use App\Notifications\SubscriberVerificationNotification;
 use App\Notifications\FeedbackSubmissionNotification;
 use App\Notifications\VoteOtpNotification;
@@ -225,6 +229,220 @@ class PublicController extends Controller
     }
 
     /**
+     * Display public testimonials
+     */
+    public function testimonials($uniqueUrl)
+    {
+        // Find the app settings by unique URL
+        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+
+        // Get published testimonials for this team
+        $testimonials = Testimonial::where('team_id', $settings->team_id)
+            ->where('status', 'published')
+            ->orderBy('created_at', 'desc')
+            ->paginate(12);
+
+        return view('public.testimonials', compact('settings', 'testimonials'));
+    }
+
+    /**
+     * Display single testimonial
+     */
+    public function showTestimonial($uniqueUrl, $testimonialId)
+    {
+        // Find the app settings by unique URL
+        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+
+        // Get the specific testimonial
+        $testimonial = Testimonial::where('team_id', $settings->team_id)
+            ->where('status', 'published')
+            ->where('id', $testimonialId)
+            ->firstOrFail();
+
+        // Get other published testimonials for sidebar
+        $otherTestimonials = Testimonial::where('team_id', $settings->team_id)
+            ->where('status', 'published')
+            ->where('id', '!=', $testimonialId)
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        return view('public.testimonial-detail', compact('settings', 'testimonial', 'otherTestimonials'));
+    }
+
+    /**
+     * Display public knowledge board
+     */
+    public function knowledge($uniqueUrl)
+    {
+        // Find the app settings by unique URL
+        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+
+        // Get published public knowledge boards for this team
+        $knowledgeBoards = KnowledgeBoard::where('team_id', $settings->team_id)
+            ->where('visibility_type', 'public')
+            ->where('status', 'published')
+            ->orderBy('created_at', 'desc')
+            ->paginate(12);
+
+        return view('public.knowledge', compact('settings', 'knowledgeBoards'));
+    }
+
+    /**
+     * Display single knowledge board with theme-based layout
+     */
+    public function showKnowledge($uniqueUrl, $knowledgeBoardId)
+    {
+        // Find the app settings by unique URL
+        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+
+        // Get the specific knowledge board
+        $knowledgeBoard = KnowledgeBoard::where('team_id', $settings->team_id)
+            ->where('visibility_type', 'public')
+            ->where('status', 'published')
+            ->where('id', $knowledgeBoardId)
+            ->firstOrFail();
+
+        // Get categories with their published articles
+        $categories = BoardCategory::where('knowledge_board_id', $knowledgeBoard->id)
+            ->where('status', 'active')
+            ->whereNull('parent_category_id') // Get parent categories only
+            ->with(['childCategories' => function($query) {
+                $query->where('status', 'active')->orderBy('order');
+            }])
+            ->orderBy('order')
+            ->get();
+
+        // Get all published articles for this board, grouped by category
+        $articles = BoardArticle::where('knowledge_board_id', $knowledgeBoard->id)
+            ->where('status', 'published')
+            ->with('boardCategory')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->groupBy('board_category_id');
+
+        // Determine view based on document_type
+        $view = $knowledgeBoard->document_type === 'manual'
+            ? 'public.knowledge-board.manual'
+            : 'public.knowledge-board.help-document';
+
+        return view($view, compact('settings', 'knowledgeBoard', 'categories', 'articles'));
+    }
+
+    /**
+     * Display single knowledge board article
+     */
+    public function showKnowledgeArticle($uniqueUrl, $knowledgeBoardId, $articleId)
+    {
+        // Find the app settings by unique URL
+        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+
+        // Get the knowledge board
+        $knowledgeBoard = KnowledgeBoard::where('team_id', $settings->team_id)
+            ->where('visibility_type', 'public')
+            ->where('status', 'published')
+            ->where('id', $knowledgeBoardId)
+            ->firstOrFail();
+
+        // Get the article
+        $article = BoardArticle::where('knowledge_board_id', $knowledgeBoard->id)
+            ->where('status', 'published')
+            ->where('id', $articleId)
+            ->with(['boardCategory', 'author'])
+            ->firstOrFail();
+
+        // Get categories for sidebar navigation
+        $categories = BoardCategory::where('knowledge_board_id', $knowledgeBoard->id)
+            ->where('status', 'active')
+            ->whereNull('parent_category_id')
+            ->with(['childCategories' => function($query) {
+                $query->where('status', 'active')->orderBy('order');
+            }])
+            ->orderBy('order')
+            ->get();
+
+        // Get articles grouped by category for sidebar
+        $allArticles = BoardArticle::where('knowledge_board_id', $knowledgeBoard->id)
+            ->where('status', 'published')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->groupBy('board_category_id');
+
+        // Get prev/next articles in the same category
+        $categoryArticles = BoardArticle::where('knowledge_board_id', $knowledgeBoard->id)
+            ->where('board_category_id', $article->board_category_id)
+            ->where('status', 'published')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $currentIndex = $categoryArticles->search(function($item) use ($article) {
+            return $item->id === $article->id;
+        });
+
+        $prevArticle = $currentIndex > 0 ? $categoryArticles[$currentIndex - 1] : null;
+        $nextArticle = $currentIndex < $categoryArticles->count() - 1 ? $categoryArticles[$currentIndex + 1] : null;
+
+        // Determine view based on document_type
+        $view = $knowledgeBoard->document_type === 'manual'
+            ? 'public.knowledge-board.article-manual'
+            : 'public.knowledge-board.article-help';
+
+        return view($view, compact('settings', 'knowledgeBoard', 'article', 'categories', 'allArticles', 'prevArticle', 'nextArticle'));
+    }
+
+    /**
+     * Search knowledge board articles (AJAX)
+     */
+    public function searchKnowledgeArticles($uniqueUrl, $knowledgeBoardId, Request $request)
+    {
+        // Find the app settings by unique URL
+        $settings = AppSettings::where('unique_url', $uniqueUrl)->first();
+
+        if (!$settings) {
+            return response()->json(['results' => []]);
+        }
+
+        // Get the knowledge board
+        $knowledgeBoard = KnowledgeBoard::where('team_id', $settings->team_id)
+            ->where('visibility_type', 'public')
+            ->where('status', 'published')
+            ->where('id', $knowledgeBoardId)
+            ->first();
+
+        if (!$knowledgeBoard) {
+            return response()->json(['results' => []]);
+        }
+
+        $query = $request->get('q', '');
+
+        if (strlen($query) < 2) {
+            return response()->json(['results' => []]);
+        }
+
+        // Search articles by title and content
+        $articles = BoardArticle::where('knowledge_board_id', $knowledgeBoard->id)
+            ->where('status', 'published')
+            ->where(function($q) use ($query) {
+                $q->where('article_title', 'like', "%{$query}%")
+                  ->orWhere('detailed_post', 'like', "%{$query}%");
+            })
+            ->with('boardCategory')
+            ->limit(10)
+            ->get()
+            ->map(function($article) use ($uniqueUrl, $knowledgeBoard) {
+                return [
+                    'id' => $article->id,
+                    'title' => $article->article_title,
+                    'category' => $article->boardCategory->category_name ?? '',
+                    'excerpt' => Str::limit(strip_tags($article->detailed_post), 100),
+                    'url' => route('public.knowledge.article', [$uniqueUrl, $knowledgeBoard->id, $article->id])
+                ];
+            });
+
+        return response()->json(['results' => $articles]);
+    }
+
+    /**
      * Display public subscribe page
      */
     public function subscribe($uniqueUrl)
@@ -298,7 +516,7 @@ class PublicController extends Controller
             'email' => 'required|email|max:255',
             'categories' => 'nullable|array|max:3',
             'categories.*' => 'exists:feedback_categories,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'image' => 'nullable|file|mimes:jpeg,png,jpg,webp,avif|mimetypes:image/jpeg,image/png,image/webp,image/avif|max:2048',
             'privacy_agree' => 'accepted',
         ];
 

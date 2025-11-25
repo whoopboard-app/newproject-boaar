@@ -41,7 +41,7 @@ function initFilePond(selector, customOptions = {}) {
         imageResizeUpscale: true,
         stylePanelLayout: 'compact',
         styleButtonRemoveItemPosition: 'right',
-        acceptedFileTypes: ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'],
+        acceptedFileTypes: ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp', 'image/avif'],
         maxFileSize: '2MB',
         credits: false,
         allowMultiple: false,
