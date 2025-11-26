@@ -10,15 +10,18 @@
 
     <style>
         :root {
-            --primary-color: #5865F2;
-            --primary-hover: #4752c4;
-            --text-primary: #333;
-            --text-secondary: #666;
-            --text-light: #888;
-            --bg-dark: #1a1a2e;
-            --bg-page: #ffffff;
-            --bg-card: #f8f9fa;
-            --border-color: #e5e7eb;
+            --header-bg: #11939A;
+            --sidebar-bg: #ffffff;
+            --sidebar-width: 300px;
+            --content-bg: #ffffff;
+            --text-primary: #000000;
+            --text-secondary: #545454;
+            --text-light: #757575;
+            --accent-color: #11939A;
+            --accent-hover: #0d7a80;
+            --border-color: #e5e5e5;
+            --hover-bg: #f5f5f5;
+            --code-bg: #2d2d2d;
         }
 
         * {
@@ -29,403 +32,546 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: var(--bg-page);
+            background-color: var(--content-bg);
             color: var(--text-primary);
-            line-height: 1.7;
+            line-height: 1.6;
         }
 
         a {
-            color: var(--primary-color);
+            color: var(--accent-color);
             text-decoration: none;
         }
 
         a:hover {
-            color: var(--primary-hover);
-            text-decoration: underline;
+            color: var(--accent-hover);
         }
 
         /* Header */
-        .manual-header {
-            background: var(--bg-dark);
-            padding: 3rem 0;
-            text-align: center;
-        }
-
-        .manual-header-inner {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        .manual-brand {
+        .uber-header {
+            background: var(--header-bg);
+            height: 70px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            padding: 0 24px;
         }
 
-        .manual-brand-logo {
-            width: 48px;
-            height: 48px;
-            border-radius: 10px;
+        .uber-header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .uber-header-logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
             object-fit: contain;
             background: rgba(255,255,255,0.1);
         }
 
-        .manual-brand-name {
-            font-size: 1.5rem;
+        .uber-header-title {
+            font-size: 18px;
             font-weight: 700;
             color: white;
         }
 
-        .manual-title {
-            font-size: 2.5rem;
-            font-weight: 800;
+        .uber-header-nav {
+            margin-left: 40px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .uber-header-nav-link {
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .uber-header-nav-link:hover {
             color: white;
-            margin-bottom: 0.75rem;
-            letter-spacing: -0.02em;
+            background: rgba(255,255,255,0.1);
         }
 
-        .manual-description {
-            font-size: 1.125rem;
-            color: rgba(255,255,255,0.7);
-            max-width: 600px;
-            margin: 0 auto 2rem;
+        .uber-header-nav-link.active {
+            color: white;
         }
 
-        /* Search */
-        .manual-search {
-            max-width: 500px;
-            margin: 0 auto;
+        .uber-header-search {
+            margin-left: auto;
             position: relative;
+            width: 280px;
         }
 
-        .manual-search-input {
+        .uber-header-search-input {
             width: 100%;
-            padding: 1rem 1.25rem 1rem 3rem;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            background: rgba(255,255,255,0.95);
-            color: var(--text-primary);
+            padding: 10px 16px 10px 40px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            font-size: 14px;
+            background: rgba(255,255,255,0.05);
+            color: white;
+            transition: all 0.2s;
         }
 
-        .manual-search-input:focus {
+        .uber-header-search-input:focus {
             outline: none;
-            box-shadow: 0 0 0 4px rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.4);
+            background: rgba(255,255,255,0.1);
         }
 
-        .manual-search-input::placeholder {
-            color: var(--text-light);
+        .uber-header-search-input::placeholder {
+            color: rgba(255,255,255,0.5);
         }
 
-        .manual-search-icon {
+        .uber-header-search-icon {
             position: absolute;
-            left: 1rem;
+            left: 14px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--text-light);
-            font-size: 1.25rem;
+            color: rgba(255,255,255,0.5);
+            font-size: 16px;
         }
 
-        /* Search Results */
-        .manual-search-results {
+        /* Search Results Dropdown */
+        .uber-search-results {
             position: absolute;
             top: 100%;
             left: 0;
             right: 0;
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            margin-top: 0.5rem;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            margin-top: 8px;
             max-height: 400px;
             overflow-y: auto;
             display: none;
             z-index: 1000;
-            text-align: left;
         }
 
-        .manual-search-results.active {
+        .uber-search-results.active {
             display: block;
         }
 
-        .manual-search-result-item {
-            padding: 1rem 1.25rem;
+        .uber-search-result-item {
+            padding: 12px 16px;
             border-bottom: 1px solid var(--border-color);
             display: block;
             color: var(--text-primary);
         }
 
-        .manual-search-result-item:last-child {
+        .uber-search-result-item:last-child {
             border-bottom: none;
         }
 
-        .manual-search-result-item:hover {
-            background: var(--bg-card);
-            text-decoration: none;
+        .uber-search-result-item:hover {
+            background: var(--hover-bg);
         }
 
-        .manual-search-result-title {
+        .uber-search-result-category {
+            font-size: 11px;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .uber-search-result-title {
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 0.25rem;
+            font-size: 14px;
         }
 
-        .manual-search-result-category {
-            font-size: 0.75rem;
-            color: var(--primary-color);
-            margin-bottom: 0.25rem;
-        }
-
-        .manual-search-result-excerpt {
-            font-size: 0.8125rem;
+        .uber-search-result-excerpt {
+            font-size: 12px;
             color: var(--text-secondary);
+            margin-top: 2px;
         }
 
-        .manual-search-no-results {
-            padding: 1.5rem;
+        .uber-search-no-results {
+            padding: 20px;
             text-align: center;
             color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Layout */
+        .uber-layout {
+            display: flex;
+            padding-top: 70px;
+            min-height: calc(100vh - 70px - 100px);
+        }
+
+        /* Sidebar */
+        .uber-sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            flex-shrink: 0;
+            padding: 24px 0;
+            min-height: 100%;
+        }
+
+        .uber-sidebar-section {
+            margin-bottom: 8px;
+        }
+
+        .uber-sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 24px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        .uber-sidebar-header:hover {
+            background: var(--hover-bg);
+        }
+
+        .uber-sidebar-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .uber-sidebar-chevron {
+            font-size: 14px;
+            color: var(--text-light);
+            transition: transform 0.2s;
+        }
+
+        .uber-sidebar-section.collapsed .uber-sidebar-chevron {
+            transform: rotate(-90deg);
+        }
+
+        .uber-sidebar-section.collapsed .uber-sidebar-items {
+            display: none;
+        }
+
+        .uber-sidebar-items {
+            padding: 0;
+        }
+
+        .uber-sidebar-item {
+            display: block;
+            padding: 8px 24px 8px 40px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .uber-sidebar-item:hover {
+            color: var(--text-primary);
+            background: var(--hover-bg);
+        }
+
+        .uber-sidebar-item.active {
+            color: var(--accent-color);
+            border-left-color: var(--accent-color);
+            background: rgba(17, 147, 154, 0.05);
+        }
+
+        /* Child category items */
+        .uber-sidebar-child-section {
+            margin-left: 16px;
+        }
+
+        .uber-sidebar-child-header {
+            padding: 8px 24px 8px 40px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .uber-sidebar-child-header:hover {
+            color: var(--text-primary);
+        }
+
+        .uber-sidebar-child-items .uber-sidebar-item {
+            padding-left: 56px;
+            font-size: 13px;
         }
 
         /* Main Content */
-        .manual-main {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 3rem 2rem;
-        }
-
-        /* Back Link */
-        .manual-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            margin-bottom: 2rem;
-        }
-
-        .manual-back:hover {
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-
-        /* Category Card */
-        .manual-category {
-            background: var(--bg-card);
-            border-radius: 12px;
-            padding: 1.75rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid var(--border-color);
-            transition: all 0.2s;
-        }
-
-        .manual-category:hover {
-            border-color: var(--primary-color);
-            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.1);
-        }
-
-        .manual-category-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.25rem;
-        }
-
-        .manual-category-icon {
-            width: 44px;
-            height: 44px;
-            background: var(--primary-color);
-            color: white;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
-            font-size: 1.25rem;
-        }
-
-        .manual-category-info {
+        .uber-main {
             flex: 1;
+            padding: 48px 64px;
+            max-width: 900px;
         }
 
-        .manual-category-name {
-            font-size: 1.25rem;
+        .uber-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 24px;
+        }
+
+        .uber-breadcrumb a {
+            color: var(--text-light);
+        }
+
+        .uber-breadcrumb a:hover {
+            color: var(--accent-color);
+        }
+
+        .uber-breadcrumb-separator {
+            font-size: 12px;
+        }
+
+        .uber-content-title {
+            font-size: 36px;
             font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 0.125rem;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
         }
 
-        .manual-category-count {
-            font-size: 0.8125rem;
+        .uber-content-description {
+            font-size: 18px;
             color: var(--text-secondary);
+            margin-bottom: 40px;
+            line-height: 1.6;
         }
 
-        /* Article List */
-        .manual-articles {
+        /* Category Cards */
+        .uber-categories {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 32px;
         }
 
-        .manual-article {
+        .uber-category {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 32px;
+        }
+
+        .uber-category:last-child {
+            border-bottom: none;
+        }
+
+        .uber-category-header {
+            margin-bottom: 16px;
+        }
+
+        .uber-category-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .uber-category-count {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .uber-category-articles {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .uber-article-link {
             display: flex;
             align-items: center;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
+            padding: 12px 0;
             color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
             transition: all 0.2s;
         }
 
-        .manual-article:hover {
-            background: rgba(88, 101, 242, 0.05);
-            color: var(--primary-color);
-            text-decoration: none;
+        .uber-article-link:last-child {
+            border-bottom: none;
         }
 
-        .manual-article-icon {
-            color: var(--text-light);
-            margin-right: 0.75rem;
-            font-size: 1.125rem;
+        .uber-article-link:hover {
+            color: var(--accent-color);
         }
 
-        .manual-article:hover .manual-article-icon {
-            color: var(--primary-color);
+        .uber-article-link:hover .uber-article-arrow {
+            transform: translateX(4px);
+            opacity: 1;
         }
 
-        .manual-article-title {
+        .uber-article-title {
+            font-size: 16px;
             font-weight: 500;
         }
 
-        .manual-article-arrow {
+        .uber-article-arrow {
             margin-left: auto;
-            color: var(--text-light);
-            font-size: 1rem;
+            font-size: 16px;
+            color: var(--accent-color);
             opacity: 0;
-            transform: translateX(-4px);
             transition: all 0.2s;
         }
 
-        .manual-article:hover .manual-article-arrow {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
         /* Empty State */
-        .manual-empty {
+        .uber-empty {
             text-align: center;
-            padding: 4rem 2rem;
-            background: var(--bg-card);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
+            padding: 80px 40px;
+            background: var(--hover-bg);
+            border-radius: 8px;
         }
 
-        .manual-empty-icon {
-            font-size: 4rem;
+        .uber-empty-icon {
+            font-size: 48px;
             color: var(--border-color);
-            margin-bottom: 1rem;
+            margin-bottom: 16px;
         }
 
-        .manual-empty-title {
-            font-size: 1.25rem;
+        .uber-empty-title {
+            font-size: 20px;
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 0.5rem;
+            margin-bottom: 8px;
         }
 
-        .manual-empty-text {
+        .uber-empty-text {
             color: var(--text-secondary);
+            font-size: 14px;
         }
 
         /* Footer */
-        .manual-footer {
+        .uber-footer {
+            background: var(--header-bg);
+            color: rgba(255,255,255,0.7);
+            padding: 40px 64px;
+            font-size: 14px;
             text-align: center;
-            padding: 2rem;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            border-top: 1px solid var(--border-color);
-            margin-top: 2rem;
+        }
+
+        /* Mobile Sidebar Toggle */
+        .uber-mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 16px;
         }
 
         /* Responsive */
-        @media (max-width: 640px) {
-            .manual-title {
-                font-size: 1.75rem;
+        @media (max-width: 1024px) {
+            .uber-main {
+                padding: 32px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .uber-mobile-toggle {
+                display: block;
             }
 
-            .manual-main {
-                padding: 2rem 1rem;
+            .uber-header-nav {
+                display: none;
             }
 
-            .manual-category {
-                padding: 1.25rem;
+            .uber-header-search {
+                width: 200px;
+            }
+
+            .uber-layout {
+                flex-direction: column;
+            }
+
+            .uber-sidebar {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                bottom: 0;
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+                z-index: 99;
+                background: var(--sidebar-bg);
+            }
+
+            .uber-sidebar.open {
+                transform: translateX(0);
+            }
+
+            .uber-main {
+                padding: 24px 16px;
+            }
+
+            .uber-footer {
+                padding: 24px 16px;
+            }
+
+            .uber-content-title {
+                font-size: 28px;
+            }
+
+            .uber-category-name {
+                font-size: 20px;
             }
         }
     </style>
 </head>
 <body>
     <!-- Header -->
-    <header class="manual-header">
-        <div class="manual-header-inner">
-            <div class="manual-brand">
-                @if($settings->logo)
-                    <img src="{{ asset('storage/' . $settings->logo) }}" alt="{{ $settings->product_name }}" class="manual-brand-logo">
-                @else
-                    <div class="manual-brand-logo" style="display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.25rem;">
-                        {{ strtoupper(substr($settings->product_name ?? 'D', 0, 1)) }}
-                    </div>
-                @endif
-                <span class="manual-brand-name">{{ $settings->product_name ?? 'Documentation' }}</span>
-            </div>
+    <header class="uber-header">
+        <button class="uber-mobile-toggle" id="mobileToggle">
+            <i class="ti ti-menu-2"></i>
+        </button>
 
-            <h1 class="manual-title">{{ $knowledgeBoard->name }}</h1>
-            <p class="manual-description">{{ $knowledgeBoard->short_description }}</p>
+        <a href="{{ route('public.knowledge', $settings->unique_url) }}" class="uber-header-brand">
+            @if($settings->logo)
+                <img src="{{ asset('storage/' . $settings->logo) }}" alt="{{ $settings->product_name }}" class="uber-header-logo">
+            @else
+                <div class="uber-header-logo" style="display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">
+                    {{ strtoupper(substr($settings->product_name ?? 'D', 0, 1)) }}
+                </div>
+            @endif
+            <span class="uber-header-title">{{ $settings->product_name ?? 'Docs' }}</span>
+        </a>
 
-            <div class="manual-search">
-                <i class="ti ti-search manual-search-icon"></i>
-                <input type="text" class="manual-search-input" id="searchInput" placeholder="Search documentation..." autocomplete="off">
-                <div class="manual-search-results" id="searchResults"></div>
-            </div>
+        <nav class="uber-header-nav">
+            <a href="{{ route('public.knowledge.show', [$settings->unique_url, $knowledgeBoard->id]) }}" class="uber-header-nav-link active">Docs</a>
+        </nav>
+
+        <div class="uber-header-search">
+            <i class="ti ti-search uber-header-search-icon"></i>
+            <input type="text" class="uber-header-search-input" id="searchInput" placeholder="Search..." autocomplete="off">
+            <div class="uber-search-results" id="searchResults"></div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="manual-main">
-        <a href="{{ route('public.knowledge', $settings->unique_url) }}" class="manual-back">
-            <i class="ti ti-arrow-left"></i>
-            Back to all documentation
-        </a>
-
-        @php
-            $hasArticles = false;
-            foreach($articles as $categoryArticles) {
-                if($categoryArticles->count() > 0) {
-                    $hasArticles = true;
-                    break;
-                }
-            }
-        @endphp
-
-        @if($hasArticles)
+    <!-- Layout -->
+    <div class="uber-layout">
+        <!-- Sidebar -->
+        <aside class="uber-sidebar" id="sidebar">
             @foreach($categories as $category)
                 @if(isset($articles[$category->id]) && $articles[$category->id]->count() > 0)
-                    <div class="manual-category">
-                        <div class="manual-category-header">
-                            <div class="manual-category-icon">
-                                <i class="{{ $category->category_icon ?: 'ti ti-folder' }}"></i>
-                            </div>
-                            <div class="manual-category-info">
-                                <h2 class="manual-category-name">{{ $category->category_name }}</h2>
-                                <span class="manual-category-count">{{ $articles[$category->id]->count() }} articles</span>
-                            </div>
+                    <div class="uber-sidebar-section">
+                        <div class="uber-sidebar-header" onclick="toggleSection(this)">
+                            <span class="uber-sidebar-title">{{ $category->category_name }}</span>
+                            <i class="ti ti-chevron-down uber-sidebar-chevron"></i>
                         </div>
-
-                        <div class="manual-articles">
+                        <div class="uber-sidebar-items">
                             @foreach($articles[$category->id] as $article)
-                                <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $article->id]) }}" class="manual-article">
-                                    <i class="ti ti-file-text manual-article-icon"></i>
-                                    <span class="manual-article-title">{{ $article->article_title }}</span>
-                                    <i class="ti ti-chevron-right manual-article-arrow"></i>
+                                <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $article->id]) }}" class="uber-sidebar-item">
+                                    {{ $article->article_title }}
                                 </a>
                             @endforeach
                         </div>
@@ -435,23 +581,15 @@
                 {{-- Child categories --}}
                 @foreach($category->childCategories as $childCategory)
                     @if(isset($articles[$childCategory->id]) && $articles[$childCategory->id]->count() > 0)
-                        <div class="manual-category">
-                            <div class="manual-category-header">
-                                <div class="manual-category-icon">
-                                    <i class="{{ $childCategory->category_icon ?: 'ti ti-folder' }}"></i>
-                                </div>
-                                <div class="manual-category-info">
-                                    <h2 class="manual-category-name">{{ $childCategory->category_name }}</h2>
-                                    <span class="manual-category-count">{{ $articles[$childCategory->id]->count() }} articles</span>
-                                </div>
+                        <div class="uber-sidebar-section uber-sidebar-child-section">
+                            <div class="uber-sidebar-header" onclick="toggleSection(this)">
+                                <span class="uber-sidebar-title">{{ $childCategory->category_name }}</span>
+                                <i class="ti ti-chevron-down uber-sidebar-chevron"></i>
                             </div>
-
-                            <div class="manual-articles">
+                            <div class="uber-sidebar-items uber-sidebar-child-items">
                                 @foreach($articles[$childCategory->id] as $article)
-                                    <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $article->id]) }}" class="manual-article">
-                                        <i class="ti ti-file-text manual-article-icon"></i>
-                                        <span class="manual-article-title">{{ $article->article_title }}</span>
-                                        <i class="ti ti-chevron-right manual-article-arrow"></i>
+                                    <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $article->id]) }}" class="uber-sidebar-item">
+                                        {{ $article->article_title }}
                                     </a>
                                 @endforeach
                             </div>
@@ -459,21 +597,116 @@
                     @endif
                 @endforeach
             @endforeach
-        @else
-            <div class="manual-empty">
-                <i class="ti ti-files-off manual-empty-icon"></i>
-                <h3 class="manual-empty-title">No documentation yet</h3>
-                <p class="manual-empty-text">Check back later for helpful guides and documentation!</p>
-            </div>
-        @endif
-    </main>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="uber-main">
+            <a href="{{ route('public.knowledge', $settings->unique_url) }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: var(--hover-bg); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 14px; font-weight: 500; margin-bottom: 24px; transition: all 0.2s;" onmouseover="this.style.background='var(--accent-color)'; this.style.color='white'; this.style.borderColor='var(--accent-color)';" onmouseout="this.style.background='var(--hover-bg)'; this.style.color='var(--text-primary)'; this.style.borderColor='var(--border-color)';">
+                <i class="ti ti-arrow-left"></i>
+                Back to Knowledge Board
+            </a>
+
+            <nav class="uber-breadcrumb">
+                <a href="{{ route('public.knowledge', $settings->unique_url) }}">Documentation</a>
+                <i class="ti ti-chevron-right uber-breadcrumb-separator"></i>
+                <span>{{ $knowledgeBoard->name }}</span>
+            </nav>
+
+            <h1 class="uber-content-title">{{ $knowledgeBoard->name }}</h1>
+            @if($knowledgeBoard->short_description)
+                <p class="uber-content-description">{{ $knowledgeBoard->short_description }}</p>
+            @endif
+
+            @php
+                $hasArticles = false;
+                foreach($articles as $categoryArticles) {
+                    if($categoryArticles->count() > 0) {
+                        $hasArticles = true;
+                        break;
+                    }
+                }
+            @endphp
+
+            @if($hasArticles)
+                <div class="uber-categories">
+                    @foreach($categories as $category)
+                        @if(isset($articles[$category->id]) && $articles[$category->id]->count() > 0)
+                            <div class="uber-category">
+                                <div class="uber-category-header">
+                                    <h2 class="uber-category-name">{{ $category->category_name }}</h2>
+                                    <span class="uber-category-count">{{ $articles[$category->id]->count() }} {{ Str::plural('article', $articles[$category->id]->count()) }}</span>
+                                </div>
+                                <div class="uber-category-articles">
+                                    @foreach($articles[$category->id] as $article)
+                                        <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $article->id]) }}" class="uber-article-link">
+                                            <span class="uber-article-title">{{ $article->article_title }}</span>
+                                            <i class="ti ti-arrow-right uber-article-arrow"></i>
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- Child categories --}}
+                        @foreach($category->childCategories as $childCategory)
+                            @if(isset($articles[$childCategory->id]) && $articles[$childCategory->id]->count() > 0)
+                                <div class="uber-category">
+                                    <div class="uber-category-header">
+                                        <h2 class="uber-category-name">{{ $childCategory->category_name }}</h2>
+                                        <span class="uber-category-count">{{ $articles[$childCategory->id]->count() }} {{ Str::plural('article', $articles[$childCategory->id]->count()) }}</span>
+                                    </div>
+                                    <div class="uber-category-articles">
+                                        @foreach($articles[$childCategory->id] as $article)
+                                            <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $article->id]) }}" class="uber-article-link">
+                                                <span class="uber-article-title">{{ $article->article_title }}</span>
+                                                <i class="ti ti-arrow-right uber-article-arrow"></i>
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
+                    @endforeach
+                </div>
+            @else
+                <div class="uber-empty">
+                    <i class="ti ti-files-off uber-empty-icon"></i>
+                    <h3 class="uber-empty-title">No documentation yet</h3>
+                    <p class="uber-empty-text">Check back later for helpful guides and documentation!</p>
+                </div>
+            @endif
+        </main>
+    </div>
 
     <!-- Footer -->
-    <footer class="manual-footer">
+    <footer class="uber-footer">
         <p>&copy; {{ date('Y') }} {{ $settings->product_name ?? 'Documentation' }}. All rights reserved.</p>
     </footer>
 
     <script>
+        // Toggle sidebar sections
+        function toggleSection(header) {
+            const section = header.parentElement;
+            section.classList.toggle('collapsed');
+        }
+
+        // Mobile sidebar toggle
+        const mobileToggle = document.getElementById('mobileToggle');
+        const sidebar = document.getElementById('sidebar');
+
+        mobileToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('open');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                if (!e.target.closest('.uber-sidebar') && !e.target.closest('.uber-mobile-toggle')) {
+                    sidebar.classList.remove('open');
+                }
+            }
+        });
+
         // Search functionality
         const searchInput = document.getElementById('searchInput');
         const searchResults = document.getElementById('searchResults');
@@ -494,14 +727,14 @@
                     .then(data => {
                         if (data.results.length > 0) {
                             searchResults.innerHTML = data.results.map(item => `
-                                <a href="${item.url}" class="manual-search-result-item">
-                                    <div class="manual-search-result-category">${item.category}</div>
-                                    <div class="manual-search-result-title">${item.title}</div>
-                                    <div class="manual-search-result-excerpt">${item.excerpt}</div>
+                                <a href="${item.url}" class="uber-search-result-item">
+                                    <div class="uber-search-result-category">${item.category}</div>
+                                    <div class="uber-search-result-title">${item.title}</div>
+                                    <div class="uber-search-result-excerpt">${item.excerpt}</div>
                                 </a>
                             `).join('');
                         } else {
-                            searchResults.innerHTML = '<div class="manual-search-no-results">No results found</div>';
+                            searchResults.innerHTML = '<div class="uber-search-no-results">No results found</div>';
                         }
                         searchResults.classList.add('active');
                     })
@@ -513,7 +746,7 @@
 
         // Close search results when clicking outside
         document.addEventListener('click', function(e) {
-            if (!e.target.closest('.manual-search')) {
+            if (!e.target.closest('.uber-header-search')) {
                 searchResults.classList.remove('active');
             }
         });

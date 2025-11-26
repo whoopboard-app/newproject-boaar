@@ -18,6 +18,8 @@ use App\Models\Testimonial;
 use App\Models\KnowledgeBoard;
 use App\Models\BoardArticle;
 use App\Models\BoardCategory;
+use App\Models\RatingSettings;
+use App\Models\ArticleRating;
 use App\Notifications\SubscriberVerificationNotification;
 use App\Notifications\FeedbackSubmissionNotification;
 use App\Notifications\VoteOtpNotification;
@@ -225,7 +227,14 @@ class PublicController extends Controller
             ->having('changelogs_count', '>', 0)
             ->get();
 
-        return view('public.changelog-detail', compact('settings', 'changelog', 'allChangelogs', 'categories'));
+        // Get rating settings
+        $ratingSettings = RatingSettings::forTeam($settings->team_id);
+
+        // Get ratings for this changelog
+        $ratings = ArticleRating::forChangelog($changelogId, $settings->team_id);
+        $ratingStats = ArticleRating::getAverageRating('changelog', $changelogId, $settings->team_id);
+
+        return view('public.changelog-detail', compact('settings', 'changelog', 'allChangelogs', 'categories', 'ratingSettings', 'ratings', 'ratingStats'));
     }
 
     /**
@@ -382,12 +391,73 @@ class PublicController extends Controller
         $prevArticle = $currentIndex > 0 ? $categoryArticles[$currentIndex - 1] : null;
         $nextArticle = $currentIndex < $categoryArticles->count() - 1 ? $categoryArticles[$currentIndex + 1] : null;
 
+        // Get rating settings for this team
+        $ratingSettings = RatingSettings::forTeam($settings->team_id);
+
+        // Get ratings for this article
+        $ratings = ArticleRating::forArticle($articleId, $settings->team_id);
+        $ratingStats = ArticleRating::getAverageRating('article', $articleId, $settings->team_id);
+
         // Determine view based on document_type
         $view = $knowledgeBoard->document_type === 'manual'
             ? 'public.knowledge-board.article-manual'
             : 'public.knowledge-board.article-help';
 
-        return view($view, compact('settings', 'knowledgeBoard', 'article', 'categories', 'allArticles', 'prevArticle', 'nextArticle'));
+        return view($view, compact('settings', 'knowledgeBoard', 'article', 'categories', 'allArticles', 'prevArticle', 'nextArticle', 'ratingSettings', 'ratings', 'ratingStats'));
+    }
+
+    /**
+     * Display knowledge board category page with articles
+     */
+    public function showKnowledgeCategory($uniqueUrl, $knowledgeBoardId, $categoryId)
+    {
+        // Find the app settings by unique URL
+        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+
+        // Get the knowledge board
+        $knowledgeBoard = KnowledgeBoard::where('team_id', $settings->team_id)
+            ->where('visibility_type', 'public')
+            ->where('status', 'published')
+            ->where('id', $knowledgeBoardId)
+            ->firstOrFail();
+
+        // Get the category
+        $category = BoardCategory::where('knowledge_board_id', $knowledgeBoard->id)
+            ->where('status', 'active')
+            ->where('id', $categoryId)
+            ->with(['parentCategory'])
+            ->firstOrFail();
+
+        // Get articles in this category
+        $articles = BoardArticle::where('knowledge_board_id', $knowledgeBoard->id)
+            ->where('board_category_id', $category->id)
+            ->where('status', 'published')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Get all categories for sidebar navigation
+        $categories = BoardCategory::where('knowledge_board_id', $knowledgeBoard->id)
+            ->where('status', 'active')
+            ->whereNull('parent_category_id')
+            ->with(['childCategories' => function($query) {
+                $query->where('status', 'active')->orderBy('order');
+            }])
+            ->orderBy('order')
+            ->get();
+
+        // Get all articles grouped by category for sidebar
+        $allArticles = BoardArticle::where('knowledge_board_id', $knowledgeBoard->id)
+            ->where('status', 'published')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->groupBy('board_category_id');
+
+        // Determine view based on document_type
+        $view = $knowledgeBoard->document_type === 'manual'
+            ? 'public.knowledge-board.category-manual'
+            : 'public.knowledge-board.category-help';
+
+        return view($view, compact('settings', 'knowledgeBoard', 'category', 'articles', 'categories', 'allArticles'));
     }
 
     /**
@@ -999,5 +1069,172 @@ class PublicController extends Controller
         $resultJson = json_decode($result, true);
 
         return $resultJson['success'] ?? false;
+    }
+
+    /**
+     * Submit a rating for a changelog or article
+     */
+    public function submitRating(Request $request, $uniqueUrl)
+    {
+        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+
+        $validator = Validator::make($request->all(), [
+            'rateable_type' => 'required|in:changelog,article',
+            'rateable_id' => 'required|integer',
+            'rating_value' => 'required|string',
+            'rating_type' => 'required|in:yes_no,emoji,star,numeric,comment_only',
+            'comment' => 'nullable|string|max:2000',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $ip = $request->ip();
+        $fingerprint = $request->header('X-Device-Fingerprint');
+
+        // Check if already rated (by IP and fingerprint)
+        $existingRating = ArticleRating::where('team_id', $settings->team_id)
+            ->where('rateable_type', $request->rateable_type)
+            ->where('rateable_id', $request->rateable_id)
+            ->where(function($query) use ($ip, $fingerprint) {
+                $query->where('voter_ip', $ip);
+                if ($fingerprint) {
+                    $query->orWhere('voter_fingerprint', $fingerprint);
+                }
+            })
+            ->first();
+
+        if ($existingRating) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You have already rated this item.'
+            ], 400);
+        }
+
+        // Create rating
+        $rating = ArticleRating::create([
+            'team_id' => $settings->team_id,
+            'rateable_type' => $request->rateable_type,
+            'rateable_id' => $request->rateable_id,
+            'rating_value' => $request->rating_value,
+            'rating_type' => $request->rating_type,
+            'comment' => $request->comment,
+            'voter_ip' => $ip,
+            'voter_fingerprint' => $fingerprint,
+        ]);
+
+        // Get updated stats
+        $stats = ArticleRating::getAverageRating(
+            $request->rateable_type,
+            $request->rateable_id,
+            $settings->team_id
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Thank you for your feedback!',
+            'rating_id' => $rating->id,
+            'stats' => $stats
+        ]);
+    }
+
+    /**
+     * Submit additional comment for an existing rating
+     */
+    public function submitRatingComment(Request $request, $uniqueUrl)
+    {
+        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+
+        $validator = Validator::make($request->all(), [
+            'rateable_type' => 'required|in:changelog,article',
+            'rateable_id' => 'required|integer',
+            'comment' => 'required|string|max:2000',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $ip = $request->ip();
+        $fingerprint = $request->header('X-Device-Fingerprint');
+
+        // Find the existing rating by this user
+        $rating = ArticleRating::where('team_id', $settings->team_id)
+            ->where('rateable_type', $request->rateable_type)
+            ->where('rateable_id', $request->rateable_id)
+            ->where(function($query) use ($ip, $fingerprint) {
+                $query->where('voter_ip', $ip);
+                if ($fingerprint) {
+                    $query->orWhere('voter_fingerprint', $fingerprint);
+                }
+            })
+            ->first();
+
+        if (!$rating) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No rating found. Please rate first.'
+            ], 404);
+        }
+
+        // Update with comment
+        $rating->update(['comment' => $request->comment]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Comment added successfully!'
+        ]);
+    }
+
+    /**
+     * Get ratings for a changelog or article
+     */
+    public function getRatings(Request $request, $uniqueUrl)
+    {
+        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+
+        $rateableType = $request->query('type', 'changelog');
+        $rateableId = $request->query('id');
+
+        if (!$rateableId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Missing rateable ID.'
+            ], 400);
+        }
+
+        // Get ratings
+        $ratings = ArticleRating::where('team_id', $settings->team_id)
+            ->where('rateable_type', $rateableType)
+            ->where('rateable_id', $rateableId)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function($rating) {
+                return [
+                    'id' => $rating->id,
+                    'rating_value' => $rating->rating_value,
+                    'rating_type' => $rating->rating_type,
+                    'comment' => $rating->comment,
+                    'created_at' => $rating->created_at->diffForHumans(),
+                ];
+            });
+
+        // Get stats
+        $stats = ArticleRating::getAverageRating($rateableType, $rateableId, $settings->team_id);
+
+        return response()->json([
+            'success' => true,
+            'ratings' => $ratings,
+            'stats' => $stats
+        ]);
     }
 }

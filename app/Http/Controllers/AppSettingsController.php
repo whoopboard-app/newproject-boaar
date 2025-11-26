@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AppSettings;
+use App\Models\RatingSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -112,5 +113,52 @@ class AppSettingsController extends Controller
         }
 
         return $slug;
+    }
+
+    /**
+     * Show rating settings form
+     */
+    public function rating()
+    {
+        // Only Owner, Admin, and Moderator can access app settings
+        if (!Auth::user()->canAccessAppSettings()) {
+            return redirect()->route('dashboard')
+                ->with('error', 'You do not have permission to access app settings.');
+        }
+
+        $settings = RatingSettings::forTeam(Auth::user()->current_team_id);
+
+        return view('settings.rating', compact('settings'));
+    }
+
+    /**
+     * Update rating settings
+     */
+    public function updateRating(Request $request)
+    {
+        // Only Owner, Admin, and Moderator can access app settings
+        if (!Auth::user()->canAccessAppSettings()) {
+            return redirect()->route('dashboard')
+                ->with('error', 'You do not have permission to access app settings.');
+        }
+
+        $validated = $request->validate([
+            'question_text' => 'required|string|max:255',
+            'rating_type' => 'required|in:yes_no,emoji,star,numeric,comment_only',
+            'apply_to_changelog' => 'nullable|boolean',
+            'apply_to_knowledge_board' => 'nullable|boolean',
+        ]);
+
+        $settings = RatingSettings::forTeam(Auth::user()->current_team_id);
+
+        $settings->question_text = $validated['question_text'];
+        $settings->rating_type = $validated['rating_type'];
+        $settings->apply_to_changelog = $request->has('apply_to_changelog');
+        $settings->apply_to_knowledge_board = $request->has('apply_to_knowledge_board');
+
+        $settings->save();
+
+        return redirect()->route('settings.rating')
+            ->with('success', 'Rating settings updated successfully!');
     }
 }

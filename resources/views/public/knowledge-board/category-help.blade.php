@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $knowledgeBoard->name }} - {{ $settings->product_name ?? 'Help Center' }}</title>
+    <title>{{ $category->category_name }} - {{ $knowledgeBoard->name }}</title>
 
     <!-- Tabler Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
@@ -46,7 +46,7 @@
         /* Header Hero Section */
         .hs-hero {
             background: var(--header-bg);
-            padding: 48px 24px 64px;
+            padding: 32px 24px 48px;
             text-align: center;
         }
 
@@ -59,7 +59,7 @@
             display: inline-flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 32px;
+            margin-bottom: 24px;
             text-decoration: none;
         }
 
@@ -78,17 +78,11 @@
         }
 
         .hs-hero-title {
-            font-size: 36px;
+            font-size: 28px;
             font-weight: 700;
             color: white;
-            margin-bottom: 16px;
+            margin-bottom: 24px;
             letter-spacing: -0.5px;
-        }
-
-        .hs-hero-subtitle {
-            font-size: 18px;
-            color: rgba(255,255,255,0.85);
-            margin-bottom: 32px;
         }
 
         /* Search Box */
@@ -100,10 +94,10 @@
 
         .hs-search-input {
             width: 100%;
-            padding: 18px 24px 18px 56px;
+            padding: 16px 20px 16px 52px;
             border: none;
             border-radius: 12px;
-            font-size: 17px;
+            font-size: 16px;
             background: white;
             color: var(--text-dark);
             box-shadow: 0 4px 16px rgba(0,0,0,0.1);
@@ -120,11 +114,11 @@
 
         .hs-search-icon {
             position: absolute;
-            left: 20px;
+            left: 18px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-light);
-            font-size: 22px;
+            font-size: 20px;
         }
 
         /* Search Results */
@@ -149,7 +143,7 @@
         }
 
         .hs-search-result-item {
-            padding: 16px 20px;
+            padding: 14px 18px;
             border-bottom: 1px solid var(--border-color);
             display: block;
             color: var(--text-primary);
@@ -164,187 +158,233 @@
         }
 
         .hs-search-result-category {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             color: var(--primary-color);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .hs-search-result-title {
             font-weight: 600;
             color: var(--text-dark);
-            font-size: 15px;
-            margin-bottom: 4px;
+            font-size: 14px;
+            margin-bottom: 3px;
         }
 
         .hs-search-result-excerpt {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-light);
         }
 
         .hs-search-no-results {
-            padding: 24px;
+            padding: 20px;
             text-align: center;
             color: var(--text-light);
         }
 
         /* Main Content */
         .hs-main {
-            max-width: 1100px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 48px 24px;
+            padding: 40px 24px;
         }
 
-        /* Back Link */
-        .hs-back {
-            display: inline-flex;
+        /* Breadcrumb */
+        .hs-breadcrumb {
+            display: flex;
             align-items: center;
-            gap: 6px;
-            color: var(--text-light);
+            gap: 8px;
             font-size: 14px;
-            margin-bottom: 32px;
+            color: var(--text-light);
+            margin-bottom: 24px;
+            flex-wrap: wrap;
         }
 
-        .hs-back:hover {
+        .hs-breadcrumb a {
+            color: var(--text-light);
+        }
+
+        .hs-breadcrumb a:hover {
             color: var(--primary-color);
         }
 
-        /* Collections Grid */
-        .hs-collections {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 24px;
+        .hs-breadcrumb-separator {
+            font-size: 12px;
         }
 
-        .hs-collection {
+        .hs-breadcrumb-current {
+            color: var(--text-primary);
+        }
+
+        /* Category Header */
+        .hs-category-header {
             background: var(--bg-white);
-            border-radius: 12px;
+            border-radius: 16px;
             border: 1px solid var(--border-color);
-            overflow: hidden;
-            transition: all 0.2s;
+            padding: 32px;
+            margin-bottom: 24px;
+            text-align: center;
         }
 
-        .hs-collection:hover {
-            border-color: var(--primary-color);
-            box-shadow: 0 4px 16px rgba(49, 151, 214, 0.12);
-        }
-
-        .hs-collection-header {
-            display: block;
-            padding: 24px 24px 20px;
-            border-bottom: 1px solid var(--border-color);
-            text-decoration: none;
-            transition: background 0.2s;
-        }
-
-        .hs-collection-header:hover {
-            background: var(--bg-page);
-        }
-
-        .hs-collection-icon {
-            width: 48px;
-            height: 48px;
+        .hs-category-icon {
+            width: 64px;
+            height: 64px;
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            color: white;
-            border-radius: 12px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 16px;
-            font-size: 24px;
+            margin: 0 auto 16px;
         }
 
-        .hs-collection-name {
-            font-size: 18px;
+        .hs-category-icon i {
+            font-size: 28px;
+            color: white;
+        }
+
+        .hs-category-title {
+            font-size: 28px;
             font-weight: 700;
             color: var(--text-dark);
-            margin-bottom: 4px;
+            margin-bottom: 8px;
         }
 
-        .hs-collection-count {
+        .hs-category-description {
+            font-size: 16px;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .hs-category-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 16px;
+            padding: 6px 14px;
+            background: var(--bg-page);
+            border-radius: 20px;
             font-size: 13px;
             color: var(--text-light);
         }
 
-        .hs-collection-articles {
-            padding: 8px 0;
+        /* Articles List */
+        .hs-articles-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 16px;
         }
 
-        .hs-collection-article {
+        .hs-articles-list {
+            background: var(--bg-white);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .hs-article-item {
             display: flex;
             align-items: center;
-            padding: 12px 24px;
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border-color);
             color: var(--text-primary);
-            font-size: 14px;
             transition: all 0.2s;
         }
 
-        .hs-collection-article:hover {
+        .hs-article-item:last-child {
+            border-bottom: none;
+        }
+
+        .hs-article-item:hover {
             background: var(--bg-page);
+        }
+
+        .hs-article-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-page);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+
+        .hs-article-icon i {
+            font-size: 18px;
             color: var(--primary-color);
         }
 
-        .hs-collection-article-icon {
-            color: var(--text-light);
-            margin-right: 10px;
-            font-size: 16px;
-        }
-
-        .hs-collection-article:hover .hs-collection-article-icon {
-            color: var(--primary-color);
-        }
-
-        .hs-collection-article-title {
+        .hs-article-content {
             flex: 1;
+            min-width: 0;
         }
 
-        .hs-collection-article-arrow {
+        .hs-article-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .hs-article-item:hover .hs-article-title {
+            color: var(--primary-color);
+        }
+
+        .hs-article-excerpt {
+            font-size: 13px;
             color: var(--text-light);
-            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .hs-article-meta {
+            font-size: 12px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+            margin-left: 16px;
+        }
+
+        .hs-article-arrow {
+            color: var(--text-light);
+            font-size: 18px;
+            margin-left: 12px;
             opacity: 0;
             transform: translateX(-4px);
             transition: all 0.2s;
         }
 
-        .hs-collection-article:hover .hs-collection-article-arrow {
+        .hs-article-item:hover .hs-article-arrow {
             opacity: 1;
             transform: translateX(0);
-        }
-
-        .hs-collection-more {
-            display: block;
-            padding: 14px 24px;
-            text-align: center;
-            font-size: 13px;
-            font-weight: 600;
             color: var(--primary-color);
-            border-top: 1px solid var(--border-color);
-            background: var(--bg-page);
-        }
-
-        .hs-collection-more:hover {
-            background: rgba(49, 151, 214, 0.1);
         }
 
         /* Empty State */
         .hs-empty {
             text-align: center;
-            padding: 80px 40px;
+            padding: 60px 24px;
             background: var(--bg-white);
-            border-radius: 12px;
+            border-radius: 16px;
             border: 1px solid var(--border-color);
         }
 
         .hs-empty-icon {
-            font-size: 64px;
-            color: var(--border-color);
-            margin-bottom: 20px;
+            font-size: 48px;
+            color: var(--text-light);
+            margin-bottom: 16px;
         }
 
         .hs-empty-title {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: 600;
             color: var(--text-dark);
             margin-bottom: 8px;
@@ -352,6 +392,25 @@
 
         .hs-empty-text {
             color: var(--text-light);
+        }
+
+        /* Back Link */
+        .hs-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-light);
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 24px;
+            padding: 10px 0;
+        }
+
+        .hs-back:hover {
+            color: var(--primary-color);
+        }
+
+        .hs-back i {
             font-size: 16px;
         }
 
@@ -365,39 +424,38 @@
             margin-top: 48px;
         }
 
-        .hs-footer a {
-            color: rgba(255,255,255,0.7);
-        }
-
-        .hs-footer a:hover {
-            color: var(--primary-color);
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
             .hs-hero {
-                padding: 32px 16px 48px;
+                padding: 24px 16px 36px;
             }
 
             .hs-hero-title {
-                font-size: 28px;
-            }
-
-            .hs-hero-subtitle {
-                font-size: 16px;
-            }
-
-            .hs-search-input {
-                padding: 16px 20px 16px 48px;
-                font-size: 16px;
+                font-size: 24px;
             }
 
             .hs-main {
-                padding: 32px 16px;
+                padding: 24px 16px;
             }
 
-            .hs-collections {
-                grid-template-columns: 1fr;
+            .hs-category-header {
+                padding: 24px;
+            }
+
+            .hs-category-title {
+                font-size: 24px;
+            }
+
+            .hs-article-item {
+                padding: 14px 16px;
+            }
+
+            .hs-article-meta {
+                display: none;
+            }
+
+            .hs-article-excerpt {
+                display: none;
             }
         }
     </style>
@@ -418,7 +476,6 @@
             </a>
 
             <h1 class="hs-hero-title">{{ $knowledgeBoard->name }}</h1>
-            <p class="hs-hero-subtitle">{{ $knowledgeBoard->short_description ?: 'How can we help you today?' }}</p>
 
             <div class="hs-search">
                 <i class="ti ti-search hs-search-icon"></i>
@@ -430,87 +487,72 @@
 
     <!-- Main Content -->
     <main class="hs-main">
-        <a href="{{ route('public.knowledge', $settings->unique_url) }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: white; border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-dark); font-size: 14px; font-weight: 500; margin-bottom: 24px; transition: all 0.2s;" onmouseover="this.style.background='var(--primary-color)'; this.style.color='white'; this.style.borderColor='var(--primary-color)';" onmouseout="this.style.background='white'; this.style.color='var(--text-dark)'; this.style.borderColor='var(--border-color)';">
-            <i class="ti ti-arrow-left"></i>
-            Back to Knowledge Board
-        </a>
+        <!-- Breadcrumb -->
+        <nav class="hs-breadcrumb">
+            <a href="{{ route('public.knowledge', $settings->unique_url) }}">
+                <i class="ti ti-home" style="font-size: 14px;"></i>
+            </a>
+            <i class="ti ti-chevron-right hs-breadcrumb-separator"></i>
+            <a href="{{ route('public.knowledge.show', [$settings->unique_url, $knowledgeBoard->id]) }}">{{ $knowledgeBoard->name }}</a>
+            @if($category->parentCategory)
+                <i class="ti ti-chevron-right hs-breadcrumb-separator"></i>
+                <a href="{{ route('public.knowledge.category', [$settings->unique_url, $knowledgeBoard->id, $category->parentCategory->id]) }}">{{ $category->parentCategory->category_name }}</a>
+            @endif
+            <i class="ti ti-chevron-right hs-breadcrumb-separator"></i>
+            <span class="hs-breadcrumb-current">{{ $category->category_name }}</span>
+        </nav>
 
-        @php
-            $hasArticles = false;
-            foreach($articles as $categoryArticles) {
-                if($categoryArticles->count() > 0) {
-                    $hasArticles = true;
-                    break;
-                }
-            }
-        @endphp
+        <!-- Category Header -->
+        <div class="hs-category-header">
+            <div class="hs-category-icon">
+                <i class="{{ $category->category_icon ?: 'ti ti-folder' }}"></i>
+            </div>
+            <h1 class="hs-category-title">{{ $category->category_name }}</h1>
+            @if($category->category_description)
+                <p class="hs-category-description">{{ $category->category_description }}</p>
+            @endif
+            <div class="hs-category-count">
+                <i class="ti ti-file-text"></i>
+                {{ $articles->count() }} {{ Str::plural('article', $articles->count()) }}
+            </div>
+        </div>
 
-        @if($hasArticles)
-            <div class="hs-collections">
-                @foreach($categories as $category)
-                    @if(isset($articles[$category->id]) && $articles[$category->id]->count() > 0)
-                        <div class="hs-collection">
-                            <a href="{{ route('public.knowledge.category', [$settings->unique_url, $knowledgeBoard->id, $category->id]) }}" class="hs-collection-header">
-                                <div class="hs-collection-icon">
-                                    <i class="{{ $category->category_icon ?: 'ti ti-folder' }}"></i>
-                                </div>
-                                <h2 class="hs-collection-name">{{ $category->category_name }}</h2>
-                                <span class="hs-collection-count">{{ $articles[$category->id]->count() }} {{ Str::plural('article', $articles[$category->id]->count()) }}</span>
-                            </a>
-                            <div class="hs-collection-articles">
-                                @foreach($articles[$category->id]->take(5) as $article)
-                                    <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $article->id]) }}" class="hs-collection-article">
-                                        <i class="ti ti-file-text hs-collection-article-icon"></i>
-                                        <span class="hs-collection-article-title">{{ $article->article_title }}</span>
-                                        <i class="ti ti-chevron-right hs-collection-article-arrow"></i>
-                                    </a>
-                                @endforeach
-                            </div>
-                            @if($articles[$category->id]->count() > 5)
-                                <a href="{{ route('public.knowledge.category', [$settings->unique_url, $knowledgeBoard->id, $category->id]) }}" class="hs-collection-more">
-                                    See all {{ $articles[$category->id]->count() }} articles
-                                </a>
+        <!-- Articles List -->
+        @if($articles->count() > 0)
+            <h2 class="hs-articles-title">Articles in this category</h2>
+            <div class="hs-articles-list">
+                @foreach($articles as $article)
+                    <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $article->id]) }}" class="hs-article-item">
+                        <div class="hs-article-icon">
+                            <i class="ti ti-file-text"></i>
+                        </div>
+                        <div class="hs-article-content">
+                            <div class="hs-article-title">{{ $article->article_title }}</div>
+                            @if($article->detailed_post)
+                                <div class="hs-article-excerpt">{{ Str::limit(strip_tags($article->detailed_post), 80) }}</div>
                             @endif
                         </div>
-                    @endif
-
-                    {{-- Child categories --}}
-                    @foreach($category->childCategories as $childCategory)
-                        @if(isset($articles[$childCategory->id]) && $articles[$childCategory->id]->count() > 0)
-                            <div class="hs-collection">
-                                <a href="{{ route('public.knowledge.category', [$settings->unique_url, $knowledgeBoard->id, $childCategory->id]) }}" class="hs-collection-header">
-                                    <div class="hs-collection-icon">
-                                        <i class="{{ $childCategory->category_icon ?: 'ti ti-folder' }}"></i>
-                                    </div>
-                                    <h2 class="hs-collection-name">{{ $childCategory->category_name }}</h2>
-                                    <span class="hs-collection-count">{{ $articles[$childCategory->id]->count() }} {{ Str::plural('article', $articles[$childCategory->id]->count()) }}</span>
-                                </a>
-                                <div class="hs-collection-articles">
-                                    @foreach($articles[$childCategory->id]->take(5) as $article)
-                                        <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $article->id]) }}" class="hs-collection-article">
-                                            <i class="ti ti-file-text hs-collection-article-icon"></i>
-                                            <span class="hs-collection-article-title">{{ $article->article_title }}</span>
-                                            <i class="ti ti-chevron-right hs-collection-article-arrow"></i>
-                                        </a>
-                                    @endforeach
-                                </div>
-                                @if($articles[$childCategory->id]->count() > 5)
-                                    <a href="{{ route('public.knowledge.category', [$settings->unique_url, $knowledgeBoard->id, $childCategory->id]) }}" class="hs-collection-more">
-                                        See all {{ $articles[$childCategory->id]->count() }} articles
-                                    </a>
-                                @endif
-                            </div>
-                        @endif
-                    @endforeach
+                        <div class="hs-article-meta">
+                            <i class="ti ti-clock"></i>
+                            {{ $article->created_at->format('M d, Y') }}
+                        </div>
+                        <i class="ti ti-chevron-right hs-article-arrow"></i>
+                    </a>
                 @endforeach
             </div>
         @else
             <div class="hs-empty">
                 <i class="ti ti-files-off hs-empty-icon"></i>
                 <h3 class="hs-empty-title">No articles yet</h3>
-                <p class="hs-empty-text">Check back later for helpful documentation!</p>
+                <p class="hs-empty-text">There are no articles in this category yet. Check back later!</p>
             </div>
         @endif
+
+        <!-- Back Link -->
+        <a href="{{ route('public.knowledge.show', [$settings->unique_url, $knowledgeBoard->id]) }}" class="hs-back">
+            <i class="ti ti-arrow-left"></i>
+            Back to {{ $knowledgeBoard->name }}
+        </a>
     </main>
 
     <!-- Footer -->

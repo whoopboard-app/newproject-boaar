@@ -23,7 +23,10 @@
       "Bash(nul)",
       "Bash(\"C:\\wamp64\\bin\\php\\php8.1.0\\php.exe\" artisan view:clear)",
       "Bash(\"C:\\wamp64\\bin\\php\\php8.1.0\\php.exe\" artisan make:migration add_public_user_id_to_feedback_comments_table --path=C:wamp64wwwwhoopboard)",
-      "Bash(cmd.exe:*)"
+      "Bash(cmd.exe:*)",
+      "WebFetch(domain:developer.uber.com)",
+      "Bash(\"C:\\wamp64\\bin\\php\\php8.1.0\\php.exe\" artisan migrate --path=database/migrations/2025_11_26_000001_create_rating_settings_table.php)",
+      "Bash(/c/wamp64/bin/php/php8.1.0/php.exe artisan migrate:*)"
     ],
     "deny": [],
     "ask": []

@@ -11,6 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Drop table if it already exists to prevent migration failure
+        Schema::dropIfExists('feedback_votes');
+
         Schema::create('feedback_votes', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('feedback_id');

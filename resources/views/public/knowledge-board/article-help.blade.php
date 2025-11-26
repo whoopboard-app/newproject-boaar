@@ -10,15 +10,15 @@
 
     <style>
         :root {
-            --primary-color: #3197d6;
-            --primary-hover: #2980b9;
+            --primary-color: #11939A;
+            --primary-dark: #0d7a80;
+            --header-bg: #11939A;
             --text-primary: #585858;
-            --text-secondary: #888;
-            --text-dark: #333;
+            --text-dark: #333333;
+            --text-light: #888888;
             --bg-page: #f7f9fa;
             --bg-white: #ffffff;
             --border-color: #e1e5e8;
-            --sidebar-width: 280px;
         }
 
         * {
@@ -40,651 +40,728 @@
         }
 
         a:hover {
-            color: var(--primary-hover);
-            text-decoration: underline;
+            color: var(--primary-dark);
         }
 
-        /* Header */
-        .kb-header {
-            background: var(--primary-color);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+        /* Header Hero Section */
+        .hs-hero {
+            background: var(--header-bg);
+            padding: 32px 24px 48px;
+            text-align: center;
         }
 
-        .kb-header-inner {
-            max-width: 1400px;
+        .hs-hero-inner {
+            max-width: 720px;
             margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 2rem;
         }
 
-        .kb-brand {
-            display: flex;
+        .hs-brand {
+            display: inline-flex;
             align-items: center;
-            gap: 1rem;
-            color: white;
+            gap: 12px;
+            margin-bottom: 24px;
             text-decoration: none;
         }
 
-        .kb-brand:hover {
-            color: white;
-            text-decoration: none;
-        }
-
-        .kb-brand-logo {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
+        .hs-brand-logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
             object-fit: contain;
             background: rgba(255,255,255,0.2);
         }
 
-        .kb-brand-text {
-            display: flex;
-            flex-direction: column;
+        .hs-brand-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
         }
 
-        .kb-brand-name {
-            font-size: 1.125rem;
-            font-weight: 600;
+        .hs-hero-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 24px;
+            letter-spacing: -0.5px;
         }
 
-        .kb-brand-tagline {
-            font-size: 0.75rem;
-            opacity: 0.8;
-        }
-
-        /* Search */
-        .kb-search {
-            flex: 1;
-            max-width: 500px;
+        /* Search Box */
+        .hs-search {
             position: relative;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
-        .kb-search-input {
+        .hs-search-input {
             width: 100%;
-            padding: 0.75rem 1rem 0.75rem 2.75rem;
+            padding: 16px 20px 16px 52px;
             border: none;
-            border-radius: 8px;
-            font-size: 0.9375rem;
-            background: rgba(255,255,255,0.95);
-            color: var(--text-primary);
+            border-radius: 12px;
+            font-size: 16px;
+            background: white;
+            color: var(--text-dark);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
         }
 
-        .kb-search-input:focus {
+        .hs-search-input:focus {
             outline: none;
-            box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.15);
         }
 
-        .kb-search-icon {
+        .hs-search-input::placeholder {
+            color: var(--text-light);
+        }
+
+        .hs-search-icon {
             position: absolute;
-            left: 1rem;
+            left: 18px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--text-secondary);
-            font-size: 1.125rem;
+            color: var(--text-light);
+            font-size: 20px;
         }
 
         /* Search Results */
-        .kb-search-results {
+        .hs-search-results {
             position: absolute;
             top: 100%;
             left: 0;
             right: 0;
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            margin-top: 0.5rem;
-            max-height: 400px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            margin-top: 8px;
+            max-height: 420px;
             overflow-y: auto;
             display: none;
             z-index: 1000;
+            text-align: left;
         }
 
-        .kb-search-results.active {
+        .hs-search-results.active {
             display: block;
         }
 
-        .kb-search-result-item {
-            padding: 1rem;
+        .hs-search-result-item {
+            padding: 14px 18px;
             border-bottom: 1px solid var(--border-color);
             display: block;
             color: var(--text-primary);
         }
 
-        .kb-search-result-item:hover {
+        .hs-search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .hs-search-result-item:hover {
             background: var(--bg-page);
-            text-decoration: none;
         }
 
-        .kb-search-result-title {
+        .hs-search-result-category {
+            font-size: 11px;
             font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .kb-search-result-category {
-            font-size: 0.75rem;
             color: var(--primary-color);
-        }
-
-        .kb-search-result-excerpt {
-            font-size: 0.8125rem;
-            color: var(--text-secondary);
-        }
-
-        /* Layout */
-        .kb-layout {
-            display: flex;
-            max-width: 1400px;
-            margin: 0 auto;
-            min-height: calc(100vh - 70px);
-        }
-
-        /* Sidebar */
-        .kb-sidebar {
-            width: var(--sidebar-width);
-            background: var(--bg-white);
-            border-right: 1px solid var(--border-color);
-            padding: 1.5rem 0;
-            position: sticky;
-            top: 70px;
-            height: calc(100vh - 70px);
-            overflow-y: auto;
-        }
-
-        .kb-sidebar-title {
-            font-size: 0.6875rem;
-            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: var(--text-secondary);
-            padding: 0 1.5rem;
-            margin-bottom: 0.75rem;
+            margin-bottom: 3px;
         }
 
-        .kb-nav-category {
-            margin-bottom: 0.5rem;
-        }
-
-        .kb-nav-category-header {
-            display: flex;
-            align-items: center;
-            padding: 0.5rem 1.5rem;
-            cursor: pointer;
+        .hs-search-result-title {
+            font-weight: 600;
             color: var(--text-dark);
-            font-weight: 500;
-            font-size: 0.9375rem;
-            transition: background 0.2s;
+            font-size: 14px;
+            margin-bottom: 3px;
         }
 
-        .kb-nav-category-header:hover {
-            background: var(--bg-page);
+        .hs-search-result-excerpt {
+            font-size: 12px;
+            color: var(--text-light);
         }
 
-        .kb-nav-category-icon {
-            margin-right: 0.5rem;
-            font-size: 1.125rem;
-            color: var(--text-secondary);
-        }
-
-        .kb-nav-category-toggle {
-            margin-left: auto;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            transition: transform 0.2s;
-        }
-
-        .kb-nav-category.expanded .kb-nav-category-toggle {
-            transform: rotate(90deg);
-        }
-
-        .kb-nav-articles {
-            display: none;
-            padding-left: 2.5rem;
-        }
-
-        .kb-nav-category.expanded .kb-nav-articles {
-            display: block;
-        }
-
-        .kb-nav-article {
-            display: block;
-            padding: 0.375rem 1.5rem 0.375rem 1rem;
-            color: var(--text-primary);
-            font-size: 0.875rem;
-            border-left: 2px solid transparent;
-            transition: all 0.2s;
-        }
-
-        .kb-nav-article:hover {
-            color: var(--primary-color);
-            background: var(--bg-page);
-            text-decoration: none;
-        }
-
-        .kb-nav-article.active {
-            color: var(--primary-color);
-            border-left-color: var(--primary-color);
-            background: rgba(49, 151, 214, 0.05);
-            font-weight: 500;
+        .hs-search-no-results {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-light);
         }
 
         /* Main Content */
-        .kb-main {
-            flex: 1;
-            padding: 2rem 3rem;
-            max-width: calc(100% - var(--sidebar-width));
+        .hs-main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
         }
 
         /* Breadcrumb */
-        .kb-breadcrumb {
+        .hs-breadcrumb {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 24px;
+            flex-wrap: wrap;
         }
 
-        .kb-breadcrumb a {
-            color: var(--text-secondary);
+        .hs-breadcrumb a {
+            color: var(--text-light);
         }
 
-        .kb-breadcrumb a:hover {
+        .hs-breadcrumb a:hover {
             color: var(--primary-color);
         }
 
-        .kb-breadcrumb-sep {
-            color: var(--border-color);
+        .hs-breadcrumb-separator {
+            font-size: 12px;
         }
 
-        /* Article */
-        .kb-article {
+        .hs-breadcrumb-current {
+            color: var(--text-primary);
+        }
+
+        /* Article Card */
+        .hs-article {
             background: var(--bg-white);
-            border-radius: 12px;
-            padding: 2.5rem;
+            border-radius: 16px;
             border: 1px solid var(--border-color);
+            overflow: hidden;
         }
 
-        .kb-article-header {
-            margin-bottom: 2rem;
-            padding-bottom: 1.5rem;
+        .hs-article-header {
+            padding: 32px 32px 24px;
             border-bottom: 1px solid var(--border-color);
         }
 
-        .kb-article-category {
+        .hs-article-category {
             display: inline-flex;
             align-items: center;
-            gap: 0.375rem;
-            font-size: 0.75rem;
+            gap: 8px;
+            padding: 6px 14px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--primary-color);
-            margin-bottom: 0.75rem;
+            margin-bottom: 16px;
         }
 
-        .kb-article-title {
-            font-size: 2rem;
+        .hs-article-category i {
+            font-size: 14px;
+        }
+
+        .hs-article-title {
+            font-size: 32px;
             font-weight: 700;
             color: var(--text-dark);
-            margin-bottom: 1rem;
+            margin-bottom: 16px;
             line-height: 1.3;
+            letter-spacing: -0.5px;
         }
 
-        .kb-article-meta {
+        .hs-article-meta {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
+            gap: 20px;
+            font-size: 14px;
+            color: var(--text-light);
         }
 
-        .kb-article-meta-item {
+        .hs-article-meta-item {
             display: flex;
             align-items: center;
-            gap: 0.375rem;
+            gap: 6px;
+        }
+
+        .hs-article-meta-item i {
+            font-size: 16px;
         }
 
         /* Article Content */
-        .kb-article-content {
-            font-size: 1rem;
+        .hs-article-content {
+            padding: 32px;
+            font-size: 16px;
             line-height: 1.8;
             color: var(--text-primary);
         }
 
-        .kb-article-content h1,
-        .kb-article-content h2,
-        .kb-article-content h3,
-        .kb-article-content h4,
-        .kb-article-content h5,
-        .kb-article-content h6 {
+        .hs-article-content h1 {
+            font-size: 26px;
+            font-weight: 700;
             color: var(--text-dark);
-            margin-top: 2rem;
-            margin-bottom: 1rem;
+            margin: 36px 0 16px;
+            letter-spacing: -0.3px;
+        }
+
+        .hs-article-content h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 28px 0 12px;
+            letter-spacing: -0.3px;
+        }
+
+        .hs-article-content h3 {
+            font-size: 18px;
             font-weight: 600;
+            color: var(--text-dark);
+            margin: 24px 0 10px;
         }
 
-        .kb-article-content h2 {
-            font-size: 1.5rem;
+        .hs-article-content h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 20px 0 8px;
         }
 
-        .kb-article-content h3 {
-            font-size: 1.25rem;
+        .hs-article-content p {
+            margin-bottom: 16px;
         }
 
-        .kb-article-content p {
-            margin-bottom: 1rem;
+        .hs-article-content ul,
+        .hs-article-content ol {
+            margin: 16px 0;
+            padding-left: 24px;
         }
 
-        .kb-article-content ul,
-        .kb-article-content ol {
-            margin-bottom: 1rem;
-            padding-left: 1.5rem;
+        .hs-article-content li {
+            margin-bottom: 8px;
         }
 
-        .kb-article-content li {
-            margin-bottom: 0.5rem;
-        }
-
-        .kb-article-content a {
+        .hs-article-content a {
             color: var(--primary-color);
         }
 
-        .kb-article-content img {
+        .hs-article-content a:hover {
+            text-decoration: underline;
+        }
+
+        .hs-article-content img {
             max-width: 100%;
             height: auto;
-            border-radius: 8px;
-            margin: 1rem 0;
+            border-radius: 12px;
+            margin: 24px 0;
+            border: 1px solid var(--border-color);
         }
 
-        .kb-article-content blockquote {
+        .hs-article-content blockquote {
             border-left: 4px solid var(--primary-color);
-            padding-left: 1rem;
-            margin: 1rem 0;
-            color: var(--text-secondary);
-            font-style: italic;
-        }
-
-        .kb-article-content pre,
-        .kb-article-content code {
+            padding: 16px 20px;
+            margin: 24px 0;
             background: var(--bg-page);
-            border-radius: 4px;
-            font-family: 'Monaco', 'Menlo', monospace;
-            font-size: 0.875rem;
+            color: var(--text-primary);
+            border-radius: 0 12px 12px 0;
         }
 
-        .kb-article-content pre {
-            padding: 1rem;
+        .hs-article-content pre {
+            background: #2d2d2d;
+            color: #e6e6e6;
+            padding: 20px 24px;
+            border-radius: 12px;
             overflow-x: auto;
-            margin: 1rem 0;
+            margin: 24px 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
         }
 
-        .kb-article-content code {
-            padding: 0.125rem 0.375rem;
+        .hs-article-content code {
+            background: var(--bg-page);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--text-dark);
+        }
+
+        .hs-article-content pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        .hs-article-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .hs-article-content th,
+        .hs-article-content td {
+            border: 1px solid var(--border-color);
+            padding: 12px 16px;
+            text-align: left;
+        }
+
+        .hs-article-content th {
+            background: var(--bg-page);
+            font-weight: 600;
+            color: var(--text-dark);
         }
 
         /* Article Navigation */
-        .kb-article-nav {
+        .hs-article-nav {
             display: flex;
-            justify-content: space-between;
-            margin-top: 2rem;
-            padding-top: 2rem;
+            gap: 16px;
+            padding: 24px 32px;
             border-top: 1px solid var(--border-color);
+            background: var(--bg-page);
         }
 
-        .kb-article-nav-link {
+        .hs-article-nav-link {
+            flex: 1;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 1rem 1.5rem;
-            background: var(--bg-page);
-            border-radius: 8px;
+            gap: 12px;
+            padding: 16px 20px;
+            background: var(--bg-white);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
             color: var(--text-primary);
-            max-width: 45%;
             transition: all 0.2s;
         }
 
-        .kb-article-nav-link:hover {
-            background: var(--primary-color);
-            color: white;
-            text-decoration: none;
+        .hs-article-nav-link:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 16px rgba(49, 151, 214, 0.12);
         }
 
-        .kb-article-nav-label {
-            font-size: 0.75rem;
+        .hs-article-nav-link--prev {
+            flex-direction: row;
+        }
+
+        .hs-article-nav-link--next {
+            flex-direction: row-reverse;
+            text-align: right;
+        }
+
+        .hs-article-nav-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .hs-article-nav-label {
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: var(--text-secondary);
+            color: var(--text-light);
+            margin-bottom: 4px;
         }
 
-        .kb-article-nav-link:hover .kb-article-nav-label {
-            color: rgba(255,255,255,0.8);
-        }
-
-        .kb-article-nav-title {
+        .hs-article-nav-title {
             font-weight: 600;
+            font-size: 14px;
+            color: var(--text-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .hs-article-nav-link:hover .hs-article-nav-title {
+            color: var(--primary-color);
+        }
+
+        .hs-article-nav-icon {
+            font-size: 20px;
+            color: var(--text-light);
+            flex-shrink: 0;
+        }
+
+        .hs-article-nav-link:hover .hs-article-nav-icon {
+            color: var(--primary-color);
+        }
+
+        .hs-article-nav-spacer {
+            flex: 1;
+        }
+
+        /* Back Link */
+        .hs-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-light);
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 24px;
+            padding: 10px 0;
+        }
+
+        .hs-back:hover {
+            color: var(--primary-color);
+        }
+
+        .hs-back i {
+            font-size: 16px;
+        }
+
+        /* Related Articles */
+        .hs-related {
+            margin-top: 32px;
+        }
+
+        .hs-related-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+        }
+
+        .hs-related-list {
+            background: var(--bg-white);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .hs-related-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+
+        .hs-related-item:last-child {
+            border-bottom: none;
+        }
+
+        .hs-related-item:hover {
+            background: var(--bg-page);
+            color: var(--primary-color);
+        }
+
+        .hs-related-item-icon {
+            color: var(--text-light);
+            margin-right: 12px;
+            font-size: 16px;
+        }
+
+        .hs-related-item:hover .hs-related-item-icon {
+            color: var(--primary-color);
+        }
+
+        .hs-related-item-title {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .hs-related-item-arrow {
+            color: var(--text-light);
+            font-size: 14px;
+            opacity: 0;
+            transform: translateX(-4px);
+            transition: all 0.2s;
+        }
+
+        .hs-related-item:hover .hs-related-item-arrow {
+            opacity: 1;
+            transform: translateX(0);
         }
 
         /* Footer */
-        .kb-footer {
+        .hs-footer {
             text-align: center;
-            padding: 2rem;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            border-top: 1px solid var(--border-color);
-            background: var(--bg-white);
+            padding: 40px 24px;
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+            background: var(--header-bg);
+            margin-top: 48px;
         }
 
         /* Responsive */
-        @media (max-width: 900px) {
-            .kb-layout {
+        @media (max-width: 768px) {
+            .hs-hero {
+                padding: 24px 16px 36px;
+            }
+
+            .hs-hero-title {
+                font-size: 24px;
+            }
+
+            .hs-search-input {
+                padding: 14px 16px 14px 44px;
+                font-size: 15px;
+            }
+
+            .hs-main {
+                padding: 24px 16px;
+            }
+
+            .hs-article-header {
+                padding: 24px 20px;
+            }
+
+            .hs-article-title {
+                font-size: 24px;
+            }
+
+            .hs-article-content {
+                padding: 24px 20px;
+            }
+
+            .hs-article-nav {
                 flex-direction: column;
+                padding: 20px;
             }
 
-            .kb-sidebar {
-                width: 100%;
-                position: relative;
-                top: 0;
-                height: auto;
-                border-right: none;
-                border-bottom: 1px solid var(--border-color);
+            .hs-article-nav-link--next {
+                flex-direction: row;
+                text-align: left;
             }
 
-            .kb-main {
-                max-width: 100%;
-                padding: 1.5rem;
-            }
-
-            .kb-article {
-                padding: 1.5rem;
-            }
-
-            .kb-article-title {
-                font-size: 1.5rem;
-            }
-
-            .kb-header-inner {
+            .hs-article-meta {
                 flex-direction: column;
-                gap: 1rem;
-            }
-
-            .kb-search {
-                max-width: 100%;
-            }
-
-            .kb-article-nav {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .kb-article-nav-link {
-                max-width: 100%;
+                align-items: flex-start;
+                gap: 8px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="kb-header">
-        <div class="kb-header-inner">
-            <a href="{{ route('public.knowledge.show', [$settings->unique_url, $knowledgeBoard->id]) }}" class="kb-brand">
+    <!-- Hero Section -->
+    <header class="hs-hero">
+        <div class="hs-hero-inner">
+            <a href="{{ route('public.knowledge', $settings->unique_url) }}" class="hs-brand">
                 @if($settings->logo)
-                    <img src="{{ asset('storage/' . $settings->logo) }}" alt="{{ $settings->product_name }}" class="kb-brand-logo">
+                    <img src="{{ asset('storage/' . $settings->logo) }}" alt="{{ $settings->product_name }}" class="hs-brand-logo">
                 @else
-                    <div class="kb-brand-logo" style="display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">
-                        {{ strtoupper(substr($settings->product_name ?? 'K', 0, 1)) }}
+                    <div class="hs-brand-logo" style="display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 18px;">
+                        {{ strtoupper(substr($settings->product_name ?? 'H', 0, 1)) }}
                     </div>
                 @endif
-                <div class="kb-brand-text">
-                    <span class="kb-brand-name">{{ $knowledgeBoard->name }}</span>
-                    <span class="kb-brand-tagline">{{ $settings->product_name ?? 'Knowledge Base' }}</span>
-                </div>
+                <span class="hs-brand-name">{{ $settings->product_name ?? 'Help Center' }}</span>
             </a>
 
-            <div class="kb-search">
-                <i class="ti ti-search kb-search-icon"></i>
-                <input type="text" class="kb-search-input" id="searchInput" placeholder="Search articles..." autocomplete="off">
-                <div class="kb-search-results" id="searchResults"></div>
+            <h1 class="hs-hero-title">{{ $knowledgeBoard->name }}</h1>
+
+            <div class="hs-search">
+                <i class="ti ti-search hs-search-icon"></i>
+                <input type="text" class="hs-search-input" id="searchInput" placeholder="Search for articles..." autocomplete="off">
+                <div class="hs-search-results" id="searchResults"></div>
             </div>
         </div>
     </header>
 
-    <!-- Layout -->
-    <div class="kb-layout">
-        <!-- Sidebar -->
-        <aside class="kb-sidebar">
-            <div class="kb-sidebar-title">Categories</div>
+    <!-- Main Content -->
+    <main class="hs-main">
+        <!-- Breadcrumb -->
+        <nav class="hs-breadcrumb">
+            <a href="{{ route('public.knowledge', $settings->unique_url) }}">
+                <i class="ti ti-home" style="font-size: 14px;"></i>
+            </a>
+            <i class="ti ti-chevron-right hs-breadcrumb-separator"></i>
+            <a href="{{ route('public.knowledge.show', [$settings->unique_url, $knowledgeBoard->id]) }}">{{ $knowledgeBoard->name }}</a>
+            @if($article->boardCategory)
+                @if($article->boardCategory->parentCategory)
+                    <i class="ti ti-chevron-right hs-breadcrumb-separator"></i>
+                    <a href="{{ route('public.knowledge.category', [$settings->unique_url, $knowledgeBoard->id, $article->boardCategory->parentCategory->id]) }}">{{ $article->boardCategory->parentCategory->category_name }}</a>
+                @endif
+                <i class="ti ti-chevron-right hs-breadcrumb-separator"></i>
+                <a href="{{ route('public.knowledge.category', [$settings->unique_url, $knowledgeBoard->id, $article->boardCategory->id]) }}">{{ $article->boardCategory->category_name }}</a>
+            @endif
+            <i class="ti ti-chevron-right hs-breadcrumb-separator"></i>
+            <span class="hs-breadcrumb-current">{{ Str::limit($article->article_title, 40) }}</span>
+        </nav>
 
-            @foreach($categories as $category)
-                @php
-                    $isCurrentCategory = isset($allArticles[$category->id]) && $allArticles[$category->id]->contains('id', $article->id);
-                @endphp
-                <div class="kb-nav-category{{ $isCurrentCategory || (isset($allArticles[$category->id]) && $allArticles[$category->id]->count() > 0) ? ' expanded' : '' }}">
-                    <div class="kb-nav-category-header" onclick="toggleCategory(this)">
-                        <i class="{{ $category->category_icon ?: 'ti ti-folder' }} kb-nav-category-icon"></i>
-                        <span>{{ $category->category_name }}</span>
-                        <i class="ti ti-chevron-right kb-nav-category-toggle"></i>
-                    </div>
-                    <div class="kb-nav-articles">
-                        @if(isset($allArticles[$category->id]))
-                            @foreach($allArticles[$category->id] as $navArticle)
-                                <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $navArticle->id]) }}" class="kb-nav-article{{ $navArticle->id === $article->id ? ' active' : '' }}">
-                                    {{ $navArticle->article_title }}
-                                </a>
-                            @endforeach
-                        @endif
-                    </div>
-                </div>
-
-                @foreach($category->childCategories as $childCategory)
-                    @php
-                        $isCurrentChildCategory = isset($allArticles[$childCategory->id]) && $allArticles[$childCategory->id]->contains('id', $article->id);
-                    @endphp
-                    <div class="kb-nav-category{{ $isCurrentChildCategory ? ' expanded' : '' }}" style="margin-left: 1rem;">
-                        <div class="kb-nav-category-header" onclick="toggleCategory(this)">
-                            <i class="{{ $childCategory->category_icon ?: 'ti ti-folder' }} kb-nav-category-icon"></i>
-                            <span>{{ $childCategory->category_name }}</span>
-                            <i class="ti ti-chevron-right kb-nav-category-toggle"></i>
-                        </div>
-                        <div class="kb-nav-articles">
-                            @if(isset($allArticles[$childCategory->id]))
-                                @foreach($allArticles[$childCategory->id] as $navArticle)
-                                    <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $navArticle->id]) }}" class="kb-nav-article{{ $navArticle->id === $article->id ? ' active' : '' }}">
-                                        {{ $navArticle->article_title }}
-                                    </a>
-                                @endforeach
-                            @endif
-                        </div>
-                    </div>
-                @endforeach
-            @endforeach
-        </aside>
-
-        <!-- Main Content -->
-        <main class="kb-main">
-            <!-- Breadcrumb -->
-            <nav class="kb-breadcrumb">
-                <a href="{{ route('public.knowledge.show', [$settings->unique_url, $knowledgeBoard->id]) }}">{{ $knowledgeBoard->name }}</a>
-                <span class="kb-breadcrumb-sep"><i class="ti ti-chevron-right"></i></span>
-                <a href="{{ route('public.knowledge.show', [$settings->unique_url, $knowledgeBoard->id]) }}#category-{{ $article->boardCategory->id }}">{{ $article->boardCategory->category_name }}</a>
-                <span class="kb-breadcrumb-sep"><i class="ti ti-chevron-right"></i></span>
-                <span>{{ $article->article_title }}</span>
-            </nav>
-
-            <!-- Article -->
-            <article class="kb-article">
-                <header class="kb-article-header">
-                    <div class="kb-article-category">
+        <!-- Article Card -->
+        <article class="hs-article">
+            <header class="hs-article-header">
+                @if($article->boardCategory)
+                    <div class="hs-article-category">
                         <i class="{{ $article->boardCategory->category_icon ?: 'ti ti-folder' }}"></i>
                         {{ $article->boardCategory->category_name }}
                     </div>
-                    <h1 class="kb-article-title">{{ $article->article_title }}</h1>
-                    <div class="kb-article-meta">
-                        @if($article->author)
-                            <div class="kb-article-meta-item">
-                                <i class="ti ti-user"></i>
-                                {{ $article->author->name }}
-                            </div>
-                        @endif
-                        <div class="kb-article-meta-item">
-                            <i class="ti ti-calendar"></i>
-                            {{ $article->created_at->format('M d, Y') }}
-                        </div>
-                    </div>
-                </header>
-
-                <div class="kb-article-content">
-                    {!! $article->detailed_post !!}
-                </div>
-
-                <!-- Navigation -->
-                @if($prevArticle || $nextArticle)
-                    <nav class="kb-article-nav">
-                        @if($prevArticle)
-                            <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $prevArticle->id]) }}" class="kb-article-nav-link">
-                                <i class="ti ti-arrow-left"></i>
-                                <div>
-                                    <div class="kb-article-nav-label">Previous</div>
-                                    <div class="kb-article-nav-title">{{ Str::limit($prevArticle->article_title, 40) }}</div>
-                                </div>
-                            </a>
-                        @else
-                            <div></div>
-                        @endif
-
-                        @if($nextArticle)
-                            <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $nextArticle->id]) }}" class="kb-article-nav-link" style="text-align: right; margin-left: auto;">
-                                <div>
-                                    <div class="kb-article-nav-label">Next</div>
-                                    <div class="kb-article-nav-title">{{ Str::limit($nextArticle->article_title, 40) }}</div>
-                                </div>
-                                <i class="ti ti-arrow-right"></i>
-                            </a>
-                        @endif
-                    </nav>
                 @endif
-            </article>
-        </main>
-    </div>
+                <h1 class="hs-article-title">{{ $article->article_title }}</h1>
+                <div class="hs-article-meta">
+                    <div class="hs-article-meta-item">
+                        <i class="ti ti-calendar"></i>
+                        {{ $article->created_at->format('M d, Y') }}
+                    </div>
+                    @if($article->updated_at != $article->created_at)
+                        <div class="hs-article-meta-item">
+                            <i class="ti ti-refresh"></i>
+                            Updated {{ $article->updated_at->format('M d, Y') }}
+                        </div>
+                    @endif
+                </div>
+            </header>
+
+            <div class="hs-article-content">
+                {!! $article->detailed_post !!}
+            </div>
+
+            <!-- Rating Widget -->
+            @if(isset($ratingSettings))
+                @include('public.knowledge-board.partials.rating-widget')
+            @endif
+
+            <!-- Navigation -->
+            <nav class="hs-article-nav">
+                @if($prevArticle)
+                    <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $prevArticle->id]) }}" class="hs-article-nav-link hs-article-nav-link--prev">
+                        <i class="ti ti-arrow-left hs-article-nav-icon"></i>
+                        <div class="hs-article-nav-content">
+                            <div class="hs-article-nav-label">Previous</div>
+                            <div class="hs-article-nav-title">{{ Str::limit($prevArticle->article_title, 40) }}</div>
+                        </div>
+                    </a>
+                @else
+                    <div class="hs-article-nav-spacer"></div>
+                @endif
+
+                @if($nextArticle)
+                    <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $nextArticle->id]) }}" class="hs-article-nav-link hs-article-nav-link--next">
+                        <i class="ti ti-arrow-right hs-article-nav-icon"></i>
+                        <div class="hs-article-nav-content">
+                            <div class="hs-article-nav-label">Next</div>
+                            <div class="hs-article-nav-title">{{ Str::limit($nextArticle->article_title, 40) }}</div>
+                        </div>
+                    </a>
+                @else
+                    <div class="hs-article-nav-spacer"></div>
+                @endif
+            </nav>
+        </article>
+
+        <!-- Related Articles (from same category) -->
+        @if($article->boardCategory && isset($allArticles[$article->boardCategory->id]))
+            @php
+                $relatedArticles = $allArticles[$article->boardCategory->id]->where('id', '!=', $article->id)->take(5);
+            @endphp
+            @if($relatedArticles->count() > 0)
+                <div class="hs-related">
+                    <h2 class="hs-related-title">Related Articles</h2>
+                    <div class="hs-related-list">
+                        @foreach($relatedArticles as $relatedArticle)
+                            <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $relatedArticle->id]) }}" class="hs-related-item">
+                                <i class="ti ti-file-text hs-related-item-icon"></i>
+                                <span class="hs-related-item-title">{{ $relatedArticle->article_title }}</span>
+                                <i class="ti ti-chevron-right hs-related-item-arrow"></i>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+        @endif
+
+        <!-- Back Link -->
+        <a href="{{ route('public.knowledge.show', [$settings->unique_url, $knowledgeBoard->id]) }}" class="hs-back">
+            <i class="ti ti-arrow-left"></i>
+            Back to {{ $knowledgeBoard->name }}
+        </a>
+    </main>
 
     <!-- Footer -->
-    <footer class="kb-footer">
-        <p>&copy; {{ date('Y') }} {{ $settings->product_name ?? 'Knowledge Base' }}. All rights reserved.</p>
+    <footer class="hs-footer">
+        <p>&copy; {{ date('Y') }} {{ $settings->product_name ?? 'Help Center' }}. All rights reserved.</p>
     </footer>
 
     <script>
-        // Toggle category expansion
-        function toggleCategory(element) {
-            const category = element.closest('.kb-nav-category');
-            category.classList.toggle('expanded');
-        }
-
         // Search functionality
         const searchInput = document.getElementById('searchInput');
         const searchResults = document.getElementById('searchResults');
@@ -705,22 +782,26 @@
                     .then(data => {
                         if (data.results.length > 0) {
                             searchResults.innerHTML = data.results.map(item => `
-                                <a href="${item.url}" class="kb-search-result-item">
-                                    <div class="kb-search-result-category">${item.category}</div>
-                                    <div class="kb-search-result-title">${item.title}</div>
-                                    <div class="kb-search-result-excerpt">${item.excerpt}</div>
+                                <a href="${item.url}" class="hs-search-result-item">
+                                    <div class="hs-search-result-category">${item.category}</div>
+                                    <div class="hs-search-result-title">${item.title}</div>
+                                    <div class="hs-search-result-excerpt">${item.excerpt}</div>
                                 </a>
                             `).join('');
                         } else {
-                            searchResults.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-secondary);">No results found</div>';
+                            searchResults.innerHTML = '<div class="hs-search-no-results">No results found</div>';
                         }
                         searchResults.classList.add('active');
+                    })
+                    .catch(error => {
+                        console.error('Search error:', error);
                     });
             }, 300);
         });
 
+        // Close search results when clicking outside
         document.addEventListener('click', function(e) {
-            if (!e.target.closest('.kb-search')) {
+            if (!e.target.closest('.hs-search')) {
                 searchResults.classList.remove('active');
             }
         });

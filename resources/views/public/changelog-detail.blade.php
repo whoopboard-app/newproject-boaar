@@ -542,6 +542,11 @@
                             @endforeach
                         </div>
                     @endif
+
+                    <!-- Rating Widget -->
+                    @if(isset($ratingSettings))
+                        @include('public.partials.changelog-rating-widget')
+                    @endif
                 </div>
             </main>
         </div>

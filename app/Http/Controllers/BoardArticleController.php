@@ -7,6 +7,7 @@ use App\Models\KnowledgeBoard;
 use App\Models\BoardCategory;
 use App\Models\Category;
 use App\Models\User;
+use App\Models\ArticleRating;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -49,7 +50,14 @@ class BoardArticleController extends Controller
     public function show(KnowledgeBoard $knowledgeBoard, BoardArticle $article)
     {
         $article->load('boardCategory', 'author', 'changelogCategories');
-        return view('board-article.show', compact('knowledgeBoard', 'article'));
+
+        // Get ratings for this article
+        $ratings = ArticleRating::forArticle($article->id, $knowledgeBoard->team_id);
+
+        // Get rating stats/average
+        $ratingStats = ArticleRating::getAverageRating('article', $article->id, $knowledgeBoard->team_id);
+
+        return view('board-article.show', compact('knowledgeBoard', 'article', 'ratings', 'ratingStats'));
     }
 
     public function edit(KnowledgeBoard $knowledgeBoard, BoardArticle $article)

@@ -360,7 +360,7 @@
 
     <!-- Main Content -->
     <div class="content-container">
-        <a href="{{ route('public.knowledge', $settings->unique_url) }}" class="back-link">
+        <a href="{{ route('public.knowledge', $settings->unique_url) }}" class="btn btn-outline-secondary mb-3" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 500;">
             <i class="ti ti-arrow-left"></i>
             Back to Knowledge Board
         </a>

@@ -125,6 +125,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings', [AppSettingsController::class, 'index'])->name('settings.index');
     Route::get('/settings/general', [AppSettingsController::class, 'general'])->name('settings.general');
     Route::put('/settings/general', [AppSettingsController::class, 'updateGeneral'])->name('settings.general.update');
+    Route::get('/settings/rating', [AppSettingsController::class, 'rating'])->name('settings.rating');
+    Route::put('/settings/rating', [AppSettingsController::class, 'updateRating'])->name('settings.rating.update');
 
     // App Configuration (Module Settings)
     Route::get('/configuration', [AppConfigurationController::class, 'index'])->name('configuration.index');
@@ -224,6 +226,7 @@ Route::get('/{unique_url}/testimonials', [PublicController::class, 'testimonials
 Route::get('/{unique_url}/testimonials/{testimonial}', [PublicController::class, 'showTestimonial'])->name('public.testimonials.show');
 Route::get('/{unique_url}/knowledge', [PublicController::class, 'knowledge'])->name('public.knowledge');
 Route::get('/{unique_url}/knowledge/{knowledgeBoard}', [PublicController::class, 'showKnowledge'])->name('public.knowledge.show');
+Route::get('/{unique_url}/knowledge/{knowledgeBoard}/category/{category}', [PublicController::class, 'showKnowledgeCategory'])->name('public.knowledge.category');
 Route::get('/{unique_url}/knowledge/{knowledgeBoard}/article/{article}', [PublicController::class, 'showKnowledgeArticle'])->name('public.knowledge.article');
 Route::get('/{unique_url}/knowledge/{knowledgeBoard}/search', [PublicController::class, 'searchKnowledgeArticles'])->name('public.knowledge.search');
 Route::get('/{unique_url}/subscribe', [PublicController::class, 'subscribe'])->name('public.subscribe');
@@ -237,5 +240,10 @@ Route::post('/{unique_url}/feedback/{feedback}/unvote', [PublicController::class
 Route::post('/{unique_url}/feedback/{feedback}/request-otp', [PublicController::class, 'requestVoteOtp'])->name('public.feedback.request-otp');
 Route::post('/{unique_url}/feedback/{feedback}/verify-otp', [PublicController::class, 'verifyVoteOtp'])->name('public.feedback.verify-otp');
 Route::post('/{unique_url}/feedback/{feedback}/comment', [PublicController::class, 'storePublicComment'])->name('public.feedback.comment');
+
+// Public Rating Submission
+Route::post('/{unique_url}/rating/submit', [PublicController::class, 'submitRating'])->name('public.rating.submit');
+Route::post('/{unique_url}/rating/comment', [PublicController::class, 'submitRatingComment'])->name('public.rating.comment');
+Route::get('/{unique_url}/ratings', [PublicController::class, 'getRatings'])->name('public.ratings.get');
 
 Route::get('/{unique_url}', [PublicController::class, 'home'])->name('public.home');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Changelog;
 use App\Models\Category;
+use App\Models\ArticleRating;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -32,7 +33,12 @@ class ChangelogController extends Controller
     public function show(Changelog $changelog)
     {
         $changelog->load('category');
-        return view('changelog.show', compact('changelog'));
+
+        // Get ratings for this changelog
+        $ratings = ArticleRating::forChangelog($changelog->id, $changelog->team_id);
+        $ratingStats = ArticleRating::getAverageRating('changelog', $changelog->id, $changelog->team_id);
+
+        return view('changelog.show', compact('changelog', 'ratings', 'ratingStats'));
     }
 
     public function edit(Changelog $changelog)

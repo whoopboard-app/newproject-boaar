@@ -10,15 +10,18 @@
 
     <style>
         :root {
-            --primary-color: #5865F2;
-            --primary-hover: #4752c4;
-            --text-primary: #333;
-            --text-secondary: #666;
-            --text-light: #888;
-            --bg-dark: #1a1a2e;
-            --bg-page: #ffffff;
-            --bg-card: #f8f9fa;
-            --border-color: #e5e7eb;
+            --header-bg: #11939A;
+            --sidebar-bg: #ffffff;
+            --sidebar-width: 300px;
+            --content-bg: #ffffff;
+            --text-primary: #000000;
+            --text-secondary: #545454;
+            --text-light: #757575;
+            --accent-color: #11939A;
+            --accent-hover: #0d7a80;
+            --border-color: #e5e5e5;
+            --hover-bg: #f5f5f5;
+            --code-bg: #2d2d2d;
         }
 
         * {
@@ -29,562 +32,824 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: var(--bg-page);
+            background-color: var(--content-bg);
             color: var(--text-primary);
-            line-height: 1.7;
+            line-height: 1.6;
         }
 
         a {
-            color: var(--primary-color);
+            color: var(--accent-color);
             text-decoration: none;
         }
 
         a:hover {
-            color: var(--primary-hover);
-            text-decoration: underline;
+            color: var(--accent-hover);
         }
 
         /* Header */
-        .article-header {
-            background: var(--bg-dark);
-            padding: 2rem 0;
-        }
-
-        .article-header-inner {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        .article-brand {
+        .uber-header {
+            background: var(--header-bg);
+            height: 70px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            padding: 0 24px;
         }
 
-        .article-brand-logo {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
+        .uber-header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .uber-header-logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
             object-fit: contain;
             background: rgba(255,255,255,0.1);
         }
 
-        .article-brand-name {
-            font-size: 1.25rem;
+        .uber-header-title {
+            font-size: 18px;
             font-weight: 700;
             color: white;
         }
 
-        /* Search */
-        .article-search {
-            max-width: 500px;
-            margin: 0 auto;
+        .uber-header-nav {
+            margin-left: 40px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .uber-header-nav-link {
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .uber-header-nav-link:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .uber-header-nav-link.active {
+            color: white;
+        }
+
+        .uber-header-search {
+            margin-left: auto;
             position: relative;
+            width: 280px;
         }
 
-        .article-search-input {
+        .uber-header-search-input {
             width: 100%;
-            padding: 0.875rem 1rem 0.875rem 2.75rem;
-            border: none;
+            padding: 10px 16px 10px 40px;
+            border: 1px solid rgba(255,255,255,0.2);
             border-radius: 8px;
-            font-size: 0.9375rem;
-            background: rgba(255,255,255,0.95);
-            color: var(--text-primary);
+            font-size: 14px;
+            background: rgba(255,255,255,0.05);
+            color: white;
+            transition: all 0.2s;
         }
 
-        .article-search-input:focus {
+        .uber-header-search-input:focus {
             outline: none;
-            box-shadow: 0 0 0 4px rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.4);
+            background: rgba(255,255,255,0.1);
         }
 
-        .article-search-input::placeholder {
-            color: var(--text-light);
+        .uber-header-search-input::placeholder {
+            color: rgba(255,255,255,0.5);
         }
 
-        .article-search-icon {
+        .uber-header-search-icon {
             position: absolute;
-            left: 1rem;
+            left: 14px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--text-light);
-            font-size: 1.125rem;
+            color: rgba(255,255,255,0.5);
+            font-size: 16px;
         }
 
-        /* Search Results */
-        .article-search-results {
+        /* Search Results Dropdown */
+        .uber-search-results {
             position: absolute;
             top: 100%;
             left: 0;
             right: 0;
             background: white;
             border-radius: 8px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            margin-top: 0.5rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            margin-top: 8px;
             max-height: 400px;
             overflow-y: auto;
             display: none;
             z-index: 1000;
-            text-align: left;
         }
 
-        .article-search-results.active {
+        .uber-search-results.active {
             display: block;
         }
 
-        .article-search-result-item {
-            padding: 1rem 1.25rem;
+        .uber-search-result-item {
+            padding: 12px 16px;
             border-bottom: 1px solid var(--border-color);
             display: block;
             color: var(--text-primary);
         }
 
-        .article-search-result-item:last-child {
+        .uber-search-result-item:last-child {
             border-bottom: none;
         }
 
-        .article-search-result-item:hover {
-            background: var(--bg-card);
-            text-decoration: none;
+        .uber-search-result-item:hover {
+            background: var(--hover-bg);
         }
 
-        .article-search-result-title {
+        .uber-search-result-category {
+            font-size: 11px;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .uber-search-result-title {
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 0.25rem;
+            font-size: 14px;
         }
 
-        .article-search-result-category {
-            font-size: 0.75rem;
-            color: var(--primary-color);
-            margin-bottom: 0.25rem;
-        }
-
-        .article-search-result-excerpt {
-            font-size: 0.8125rem;
+        .uber-search-result-excerpt {
+            font-size: 12px;
             color: var(--text-secondary);
+            margin-top: 2px;
         }
 
-        .article-search-no-results {
-            padding: 1.5rem;
+        .uber-search-no-results {
+            padding: 20px;
             text-align: center;
             color: var(--text-secondary);
+            font-size: 14px;
         }
 
-        /* Main Content */
-        .article-main {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2rem 2rem 3rem;
-        }
-
-        /* Breadcrumb */
-        .article-breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .article-breadcrumb a {
-            color: var(--text-secondary);
-        }
-
-        .article-breadcrumb a:hover {
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-
-        .article-breadcrumb-separator {
-            color: var(--text-light);
-        }
-
-        .article-breadcrumb-current {
-            color: var(--text-primary);
-            font-weight: 500;
-        }
-
-        /* Article Content */
-        .article-card {
-            background: var(--bg-card);
-            border-radius: 12px;
-            padding: 2.5rem;
-            border: 1px solid var(--border-color);
-        }
-
-        .article-title {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-            letter-spacing: -0.02em;
-            line-height: 1.3;
-        }
-
-        .article-meta {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .article-meta-item {
-            display: flex;
-            align-items: center;
-            gap: 0.375rem;
-        }
-
-        .article-meta-item i {
-            font-size: 1rem;
-            color: var(--text-light);
-        }
-
-        .article-body {
-            font-size: 1rem;
-            line-height: 1.8;
-            color: var(--text-primary);
-        }
-
-        /* Article body styles */
-        .article-body h1 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin: 2rem 0 1rem;
-            color: var(--text-primary);
-        }
-
-        .article-body h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin: 1.75rem 0 0.875rem;
-            color: var(--text-primary);
-        }
-
-        .article-body h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin: 1.5rem 0 0.75rem;
-            color: var(--text-primary);
-        }
-
-        .article-body p {
-            margin-bottom: 1rem;
-        }
-
-        .article-body ul,
-        .article-body ol {
-            margin: 1rem 0;
-            padding-left: 1.5rem;
-        }
-
-        .article-body li {
-            margin-bottom: 0.5rem;
-        }
-
-        .article-body pre {
-            background: #1e1e1e;
-            color: #d4d4d4;
-            padding: 1rem 1.25rem;
-            border-radius: 8px;
-            overflow-x: auto;
-            margin: 1rem 0;
-            font-family: 'Monaco', 'Menlo', monospace;
-            font-size: 0.875rem;
-        }
-
-        .article-body code {
-            background: #f1f1f1;
-            padding: 0.125rem 0.375rem;
-            border-radius: 4px;
-            font-family: 'Monaco', 'Menlo', monospace;
-            font-size: 0.875em;
-        }
-
-        .article-body pre code {
+        /* Mobile Sidebar Toggle */
+        .uber-mobile-toggle {
+            display: none;
             background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 16px;
+        }
+
+        /* Layout */
+        .uber-layout {
+            display: flex;
+            padding-top: 70px;
+            min-height: calc(100vh - 70px - 100px);
+        }
+
+        /* Sidebar */
+        .uber-sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            flex-shrink: 0;
+            padding: 24px 0;
+            min-height: 100%;
+            overflow-y: auto;
+        }
+
+        .uber-sidebar-section {
+            margin-bottom: 8px;
+        }
+
+        .uber-sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 24px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        .uber-sidebar-header:hover {
+            background: var(--hover-bg);
+        }
+
+        .uber-sidebar-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .uber-sidebar-chevron {
+            font-size: 14px;
+            color: var(--text-light);
+            transition: transform 0.2s;
+        }
+
+        .uber-sidebar-section.collapsed .uber-sidebar-chevron {
+            transform: rotate(-90deg);
+        }
+
+        .uber-sidebar-section.collapsed .uber-sidebar-items {
+            display: none;
+        }
+
+        .uber-sidebar-items {
             padding: 0;
         }
 
-        .article-body blockquote {
-            border-left: 4px solid var(--primary-color);
-            padding-left: 1rem;
-            margin: 1rem 0;
+        .uber-sidebar-item {
+            display: block;
+            padding: 8px 24px 8px 40px;
+            font-size: 14px;
             color: var(--text-secondary);
-            font-style: italic;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
         }
 
-        .article-body img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin: 1rem 0;
+        .uber-sidebar-item:hover {
+            color: var(--text-primary);
+            background: var(--hover-bg);
         }
 
-        .article-body a {
-            color: var(--primary-color);
+        .uber-sidebar-item.active {
+            color: var(--accent-color);
+            border-left-color: var(--accent-color);
+            background: rgba(17, 147, 154, 0.05);
         }
 
-        .article-body a:hover {
+        /* Child category items */
+        .uber-sidebar-child-section {
+            margin-left: 16px;
+        }
+
+        .uber-sidebar-child-header {
+            padding: 8px 24px 8px 40px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .uber-sidebar-child-header:hover {
+            color: var(--text-primary);
+        }
+
+        .uber-sidebar-child-items .uber-sidebar-item {
+            padding-left: 56px;
+            font-size: 13px;
+        }
+
+        /* Main Content */
+        .uber-main {
+            flex: 1;
+            padding: 48px 64px;
+            max-width: 900px;
+        }
+
+        .uber-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 24px;
+        }
+
+        .uber-breadcrumb a {
+            color: var(--text-light);
+        }
+
+        .uber-breadcrumb a:hover {
+            color: var(--accent-color);
+        }
+
+        .uber-breadcrumb-separator {
+            font-size: 12px;
+        }
+
+        /* Article */
+        .uber-article {
+            background: var(--content-bg);
+        }
+
+        .uber-article-header {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .uber-article-category {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--accent-color);
+            margin-bottom: 12px;
+        }
+
+        .uber-article-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .uber-article-meta {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .uber-article-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .uber-article-meta-item i {
+            font-size: 16px;
+        }
+
+        /* Article Content */
+        .uber-article-content {
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .uber-article-content h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 40px 0 16px;
+            letter-spacing: -0.3px;
+        }
+
+        .uber-article-content h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 32px 0 12px;
+            letter-spacing: -0.3px;
+        }
+
+        .uber-article-content h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 24px 0 10px;
+        }
+
+        .uber-article-content h4 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 20px 0 8px;
+        }
+
+        .uber-article-content p {
+            margin-bottom: 16px;
+        }
+
+        .uber-article-content ul,
+        .uber-article-content ol {
+            margin: 16px 0;
+            padding-left: 24px;
+        }
+
+        .uber-article-content li {
+            margin-bottom: 8px;
+        }
+
+        .uber-article-content a {
+            color: var(--accent-color);
+        }
+
+        .uber-article-content a:hover {
             text-decoration: underline;
         }
 
-        .article-body table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
+        .uber-article-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 24px 0;
         }
 
-        .article-body th,
-        .article-body td {
+        .uber-article-content blockquote {
+            border-left: 4px solid var(--accent-color);
+            padding: 16px 20px;
+            margin: 24px 0;
+            background: var(--hover-bg);
+            color: var(--text-secondary);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .uber-article-content pre {
+            background: var(--code-bg);
+            color: #e6e6e6;
+            padding: 20px 24px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 24px 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .uber-article-content code {
+            background: var(--hover-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: var(--text-primary);
+        }
+
+        .uber-article-content pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        .uber-article-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+        }
+
+        .uber-article-content th,
+        .uber-article-content td {
             border: 1px solid var(--border-color);
-            padding: 0.75rem;
+            padding: 12px 16px;
             text-align: left;
         }
 
-        .article-body th {
-            background: var(--bg-card);
+        .uber-article-content th {
+            background: var(--hover-bg);
             font-weight: 600;
-        }
-
-        /* Navigation */
-        .article-nav {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .article-nav-link {
-            flex: 1;
-            padding: 1.25rem;
-            background: white;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
             color: var(--text-primary);
+        }
+
+        /* Article Navigation */
+        .uber-article-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 48px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border-color);
+            gap: 24px;
+        }
+
+        .uber-article-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background: var(--hover-bg);
+            border-radius: 8px;
+            color: var(--text-primary);
+            max-width: 48%;
             transition: all 0.2s;
         }
 
-        .article-nav-link:hover {
-            border-color: var(--primary-color);
-            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.1);
-            text-decoration: none;
+        .uber-article-nav-link:hover {
+            background: var(--accent-color);
+            color: white;
         }
 
-        .article-nav-link--prev {
-            text-align: left;
+        .uber-article-nav-link--prev {
+            flex-direction: row;
         }
 
-        .article-nav-link--next {
+        .uber-article-nav-link--next {
+            flex-direction: row-reverse;
             text-align: right;
+            margin-left: auto;
         }
 
-        .article-nav-label {
-            display: flex;
-            align-items: center;
-            gap: 0.375rem;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.375rem;
-        }
-
-        .article-nav-link--next .article-nav-label {
-            justify-content: flex-end;
-        }
-
-        .article-nav-title {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .article-nav-link:hover .article-nav-title {
-            color: var(--primary-color);
-        }
-
-        .article-nav-spacer {
+        .uber-article-nav-content {
             flex: 1;
+            min-width: 0;
         }
 
-        /* Back Link */
-        .article-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            margin-top: 2rem;
+        .uber-article-nav-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+            margin-bottom: 4px;
         }
 
-        .article-back:hover {
-            color: var(--primary-color);
-            text-decoration: none;
+        .uber-article-nav-link:hover .uber-article-nav-label {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .uber-article-nav-title {
+            font-weight: 600;
+            font-size: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .uber-article-nav-icon {
+            font-size: 20px;
+            flex-shrink: 0;
         }
 
         /* Footer */
-        .article-footer {
+        .uber-footer {
+            background: var(--header-bg);
+            color: rgba(255,255,255,0.7);
+            padding: 40px 64px;
+            font-size: 14px;
             text-align: center;
-            padding: 2rem;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            border-top: 1px solid var(--border-color);
-            margin-top: 2rem;
         }
 
         /* Responsive */
-        @media (max-width: 640px) {
-            .article-card {
-                padding: 1.5rem;
+        @media (max-width: 1024px) {
+            .uber-main {
+                padding: 32px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .uber-mobile-toggle {
+                display: block;
             }
 
-            .article-title {
-                font-size: 1.5rem;
+            .uber-header-nav {
+                display: none;
             }
 
-            .article-main {
-                padding: 1.5rem 1rem;
+            .uber-header-search {
+                width: 200px;
             }
 
-            .article-nav {
+            .uber-layout {
                 flex-direction: column;
             }
 
-            .article-nav-link--next {
+            .uber-sidebar {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                bottom: 0;
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+                z-index: 99;
+                background: var(--sidebar-bg);
+            }
+
+            .uber-sidebar.open {
+                transform: translateX(0);
+            }
+
+            .uber-main {
+                padding: 24px 16px;
+            }
+
+            .uber-footer {
+                padding: 24px 16px;
+            }
+
+            .uber-article-title {
+                font-size: 28px;
+            }
+
+            .uber-article-nav {
+                flex-direction: column;
+            }
+
+            .uber-article-nav-link {
+                max-width: 100%;
+            }
+
+            .uber-article-nav-link--next {
+                flex-direction: row;
                 text-align: left;
             }
 
-            .article-nav-link--next .article-nav-label {
-                justify-content: flex-start;
-            }
-
-            .article-meta {
+            .uber-article-meta {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 0.5rem;
+                gap: 8px;
             }
         }
     </style>
 </head>
 <body>
     <!-- Header -->
-    <header class="article-header">
-        <div class="article-header-inner">
-            <a href="{{ route('public.knowledge.show', [$settings->unique_url, $knowledgeBoard->id]) }}" class="article-brand" style="text-decoration: none;">
-                @if($settings->logo)
-                    <img src="{{ asset('storage/' . $settings->logo) }}" alt="{{ $settings->product_name }}" class="article-brand-logo">
-                @else
-                    <div class="article-brand-logo" style="display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1rem;">
-                        {{ strtoupper(substr($settings->product_name ?? 'D', 0, 1)) }}
-                    </div>
-                @endif
-                <span class="article-brand-name">{{ $knowledgeBoard->name }}</span>
-            </a>
+    <header class="uber-header">
+        <button class="uber-mobile-toggle" id="mobileToggle">
+            <i class="ti ti-menu-2"></i>
+        </button>
 
-            <div class="article-search">
-                <i class="ti ti-search article-search-icon"></i>
-                <input type="text" class="article-search-input" id="searchInput" placeholder="Search documentation..." autocomplete="off">
-                <div class="article-search-results" id="searchResults"></div>
-            </div>
+        <a href="{{ route('public.knowledge', $settings->unique_url) }}" class="uber-header-brand">
+            @if($settings->logo)
+                <img src="{{ asset('storage/' . $settings->logo) }}" alt="{{ $settings->product_name }}" class="uber-header-logo">
+            @else
+                <div class="uber-header-logo" style="display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">
+                    {{ strtoupper(substr($settings->product_name ?? 'D', 0, 1)) }}
+                </div>
+            @endif
+            <span class="uber-header-title">{{ $settings->product_name ?? 'Docs' }}</span>
+        </a>
+
+        <nav class="uber-header-nav">
+            <a href="{{ route('public.knowledge.show', [$settings->unique_url, $knowledgeBoard->id]) }}" class="uber-header-nav-link active">Docs</a>
+        </nav>
+
+        <div class="uber-header-search">
+            <i class="ti ti-search uber-header-search-icon"></i>
+            <input type="text" class="uber-header-search-input" id="searchInput" placeholder="Search..." autocomplete="off">
+            <div class="uber-search-results" id="searchResults"></div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="article-main">
-        <!-- Breadcrumb -->
-        <nav class="article-breadcrumb">
-            <a href="{{ route('public.knowledge.show', [$settings->unique_url, $knowledgeBoard->id]) }}">
-                <i class="ti ti-home" style="font-size: 1rem;"></i>
-            </a>
-            <span class="article-breadcrumb-separator">
-                <i class="ti ti-chevron-right" style="font-size: 0.875rem;"></i>
-            </span>
-            @if($article->boardCategory)
-                <a href="{{ route('public.knowledge.show', [$settings->unique_url, $knowledgeBoard->id]) }}">{{ $article->boardCategory->category_name }}</a>
-                <span class="article-breadcrumb-separator">
-                    <i class="ti ti-chevron-right" style="font-size: 0.875rem;"></i>
-                </span>
-            @endif
-            <span class="article-breadcrumb-current">{{ $article->article_title }}</span>
-        </nav>
+    <!-- Layout -->
+    <div class="uber-layout">
+        <!-- Sidebar -->
+        <aside class="uber-sidebar" id="sidebar">
+            @foreach($categories as $category)
+                @php
+                    $isCurrentCategory = isset($allArticles[$category->id]) && $allArticles[$category->id]->contains('id', $article->id);
+                    $hasArticlesInCategory = isset($allArticles[$category->id]) && $allArticles[$category->id]->count() > 0;
+                @endphp
+                @if($hasArticlesInCategory)
+                    <div class="uber-sidebar-section{{ $isCurrentCategory ? '' : ' collapsed' }}">
+                        <div class="uber-sidebar-header" onclick="toggleSection(this)">
+                            <span class="uber-sidebar-title">{{ $category->category_name }}</span>
+                            <i class="ti ti-chevron-down uber-sidebar-chevron"></i>
+                        </div>
+                        <div class="uber-sidebar-items">
+                            @foreach($allArticles[$category->id] as $navArticle)
+                                <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $navArticle->id]) }}" class="uber-sidebar-item{{ $navArticle->id === $article->id ? ' active' : '' }}">
+                                    {{ $navArticle->article_title }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
 
-        <!-- Article Card -->
-        <article class="article-card">
-            <h1 class="article-title">{{ $article->article_title }}</h1>
+                {{-- Child categories --}}
+                @foreach($category->childCategories as $childCategory)
+                    @php
+                        $isCurrentChildCategory = isset($allArticles[$childCategory->id]) && $allArticles[$childCategory->id]->contains('id', $article->id);
+                        $hasArticlesInChild = isset($allArticles[$childCategory->id]) && $allArticles[$childCategory->id]->count() > 0;
+                    @endphp
+                    @if($hasArticlesInChild)
+                        <div class="uber-sidebar-section uber-sidebar-child-section{{ $isCurrentChildCategory ? '' : ' collapsed' }}">
+                            <div class="uber-sidebar-header" onclick="toggleSection(this)">
+                                <span class="uber-sidebar-title">{{ $childCategory->category_name }}</span>
+                                <i class="ti ti-chevron-down uber-sidebar-chevron"></i>
+                            </div>
+                            <div class="uber-sidebar-items uber-sidebar-child-items">
+                                @foreach($allArticles[$childCategory->id] as $navArticle)
+                                    <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $navArticle->id]) }}" class="uber-sidebar-item{{ $navArticle->id === $article->id ? ' active' : '' }}">
+                                        {{ $navArticle->article_title }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                @endforeach
+            @endforeach
+        </aside>
 
-            <div class="article-meta">
+        <!-- Main Content -->
+        <main class="uber-main">
+            <!-- Breadcrumb -->
+            <nav class="uber-breadcrumb">
+                <a href="{{ route('public.knowledge', $settings->unique_url) }}">Documentation</a>
+                <i class="ti ti-chevron-right uber-breadcrumb-separator"></i>
+                <a href="{{ route('public.knowledge.show', [$settings->unique_url, $knowledgeBoard->id]) }}">{{ $knowledgeBoard->name }}</a>
                 @if($article->boardCategory)
-                    <span class="article-meta-item">
-                        <i class="ti ti-folder"></i>
-                        {{ $article->boardCategory->category_name }}
-                    </span>
-                @endif
-                <span class="article-meta-item">
-                    <i class="ti ti-calendar"></i>
-                    {{ $article->created_at->format('M d, Y') }}
-                </span>
-                @if($article->updated_at != $article->created_at)
-                    <span class="article-meta-item">
-                        <i class="ti ti-refresh"></i>
-                        Updated {{ $article->updated_at->format('M d, Y') }}
-                    </span>
-                @endif
-            </div>
-
-            <div class="article-body">
-                {!! $article->detailed_post !!}
-            </div>
-
-            <!-- Navigation -->
-            <nav class="article-nav">
-                @if($prevArticle)
-                    <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $prevArticle->id]) }}" class="article-nav-link article-nav-link--prev">
-                        <div class="article-nav-label">
-                            <i class="ti ti-arrow-left" style="font-size: 0.875rem;"></i>
-                            Previous
-                        </div>
-                        <div class="article-nav-title">{{ $prevArticle->article_title }}</div>
-                    </a>
-                @else
-                    <div class="article-nav-spacer"></div>
-                @endif
-
-                @if($nextArticle)
-                    <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $nextArticle->id]) }}" class="article-nav-link article-nav-link--next">
-                        <div class="article-nav-label">
-                            Next
-                            <i class="ti ti-arrow-right" style="font-size: 0.875rem;"></i>
-                        </div>
-                        <div class="article-nav-title">{{ $nextArticle->article_title }}</div>
-                    </a>
-                @else
-                    <div class="article-nav-spacer"></div>
+                    <i class="ti ti-chevron-right uber-breadcrumb-separator"></i>
+                    <span>{{ $article->boardCategory->category_name }}</span>
                 @endif
             </nav>
-        </article>
 
-        <!-- Back Link -->
-        <a href="{{ route('public.knowledge.show', [$settings->unique_url, $knowledgeBoard->id]) }}" class="article-back">
-            <i class="ti ti-arrow-left"></i>
-            Back to all documentation
-        </a>
-    </main>
+            <!-- Article -->
+            <article class="uber-article">
+                <header class="uber-article-header">
+                    @if($article->boardCategory)
+                        <div class="uber-article-category">
+                            <i class="{{ $article->boardCategory->category_icon ?: 'ti ti-folder' }}"></i>
+                            {{ $article->boardCategory->category_name }}
+                        </div>
+                    @endif
+                    <h1 class="uber-article-title">{{ $article->article_title }}</h1>
+                    <div class="uber-article-meta">
+                        <div class="uber-article-meta-item">
+                            <i class="ti ti-calendar"></i>
+                            {{ $article->created_at->format('M d, Y') }}
+                        </div>
+                        @if($article->updated_at != $article->created_at)
+                            <div class="uber-article-meta-item">
+                                <i class="ti ti-refresh"></i>
+                                Updated {{ $article->updated_at->format('M d, Y') }}
+                            </div>
+                        @endif
+                    </div>
+                </header>
+
+                <div class="uber-article-content">
+                    {!! $article->detailed_post !!}
+                </div>
+
+                <!-- Rating Widget -->
+                @if(isset($ratingSettings))
+                    @include('public.knowledge-board.partials.rating-widget')
+                @endif
+
+                <!-- Navigation -->
+                @if($prevArticle || $nextArticle)
+                    <nav class="uber-article-nav">
+                        @if($prevArticle)
+                            <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $prevArticle->id]) }}" class="uber-article-nav-link uber-article-nav-link--prev">
+                                <i class="ti ti-arrow-left uber-article-nav-icon"></i>
+                                <div class="uber-article-nav-content">
+                                    <div class="uber-article-nav-label">Previous</div>
+                                    <div class="uber-article-nav-title">{{ Str::limit($prevArticle->article_title, 40) }}</div>
+                                </div>
+                            </a>
+                        @endif
+
+                        @if($nextArticle)
+                            <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $nextArticle->id]) }}" class="uber-article-nav-link uber-article-nav-link--next">
+                                <i class="ti ti-arrow-right uber-article-nav-icon"></i>
+                                <div class="uber-article-nav-content">
+                                    <div class="uber-article-nav-label">Next</div>
+                                    <div class="uber-article-nav-title">{{ Str::limit($nextArticle->article_title, 40) }}</div>
+                                </div>
+                            </a>
+                        @endif
+                    </nav>
+                @endif
+            </article>
+        </main>
+    </div>
 
     <!-- Footer -->
-    <footer class="article-footer">
+    <footer class="uber-footer">
         <p>&copy; {{ date('Y') }} {{ $settings->product_name ?? 'Documentation' }}. All rights reserved.</p>
     </footer>
 
     <script>
+        // Toggle sidebar sections
+        function toggleSection(header) {
+            const section = header.parentElement;
+            section.classList.toggle('collapsed');
+        }
+
+        // Mobile sidebar toggle
+        const mobileToggle = document.getElementById('mobileToggle');
+        const sidebar = document.getElementById('sidebar');
+
+        mobileToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('open');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                if (!e.target.closest('.uber-sidebar') && !e.target.closest('.uber-mobile-toggle')) {
+                    sidebar.classList.remove('open');
+                }
+            }
+        });
+
         // Search functionality
         const searchInput = document.getElementById('searchInput');
         const searchResults = document.getElementById('searchResults');
@@ -605,14 +870,14 @@
                     .then(data => {
                         if (data.results.length > 0) {
                             searchResults.innerHTML = data.results.map(item => `
-                                <a href="${item.url}" class="article-search-result-item">
-                                    <div class="article-search-result-category">${item.category}</div>
-                                    <div class="article-search-result-title">${item.title}</div>
-                                    <div class="article-search-result-excerpt">${item.excerpt}</div>
+                                <a href="${item.url}" class="uber-search-result-item">
+                                    <div class="uber-search-result-category">${item.category}</div>
+                                    <div class="uber-search-result-title">${item.title}</div>
+                                    <div class="uber-search-result-excerpt">${item.excerpt}</div>
                                 </a>
                             `).join('');
                         } else {
-                            searchResults.innerHTML = '<div class="article-search-no-results">No results found</div>';
+                            searchResults.innerHTML = '<div class="uber-search-no-results">No results found</div>';
                         }
                         searchResults.classList.add('active');
                     })
@@ -624,7 +889,7 @@
 
         // Close search results when clicking outside
         document.addEventListener('click', function(e) {
-            if (!e.target.closest('.article-search')) {
+            if (!e.target.closest('.uber-header-search')) {
                 searchResults.classList.remove('active');
             }
         });
