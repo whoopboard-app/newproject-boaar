@@ -85,6 +85,14 @@ class TestimonialController extends Controller
     public function show(Testimonial $testimonial)
     {
         $testimonial->load('template', 'campaign', 'campaignSubscriber.subscriber.segments');
+
+        // If this is a video testimonial with Mux, check/update status
+        if ($testimonial->type === 'video' && $testimonial->mux_upload_id && $testimonial->mux_status !== 'ready') {
+            $muxService = app(\App\Services\MuxService::class);
+            $muxService->updateTestimonialFromUpload($testimonial);
+            $testimonial->refresh();
+        }
+
         return view('testimonials.show', compact('testimonial'));
     }
 
@@ -102,6 +110,12 @@ class TestimonialController extends Controller
      */
     public function update(Request $request, Testimonial $testimonial)
     {
+        // For Mux videos, video_url is not required
+        $videoUrlRule = 'nullable|url';
+        if ($request->input('type') === 'video' && !$testimonial->mux_playback_id) {
+            $videoUrlRule = 'required|url';
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
@@ -109,7 +123,7 @@ class TestimonialController extends Controller
             'position' => 'nullable|string|max:255',
             'type' => 'required|in:text,video',
             'text_content' => 'required_if:type,text',
-            'video_url' => 'required_if:type,video|nullable|url',
+            'video_url' => $videoUrlRule,
             'rating' => 'nullable|integer|min:1|max:5',
             'source' => 'required|in:email,website,script,manual',
             'status' => 'required|in:published,pending_review,under_review,draft,active,inactive',
@@ -175,7 +189,20 @@ class TestimonialController extends Controller
         // Get tracking token if provided
         $trackingToken = $request->query('tracking_token');
 
-        return view('testimonials.public-form', compact('template', 'trackingToken'));
+        // Get subscriber email from tracking token for prepopulation
+        $subscriberEmail = null;
+        $subscriberName = null;
+        if ($trackingToken) {
+            $campaignSubscriber = \App\Models\CampaignSubscriber::where('tracking_token', $trackingToken)
+                ->with('subscriber')
+                ->first();
+            if ($campaignSubscriber && $campaignSubscriber->subscriber) {
+                $subscriberEmail = $campaignSubscriber->subscriber->email;
+                $subscriberName = $campaignSubscriber->subscriber->full_name;
+            }
+        }
+
+        return view('testimonials.public-form', compact('template', 'trackingToken', 'subscriberEmail', 'subscriberName'));
     }
 
     /**
@@ -205,23 +232,56 @@ class TestimonialController extends Controller
             ->where('status', 'active')
             ->firstOrFail();
 
-        $validated = $request->validate([
+        // Log incoming request data for debugging
+        \Log::info('Testimonial submission request', [
+            'type' => $request->input('type'),
+            'mux_upload_id' => $request->input('mux_upload_id'),
+            'has_text_content' => !empty($request->input('text_content')),
+            'all_data' => $request->except(['avatar']),
+        ]);
+
+        // Build validation rules - video_url is only required if type is video AND no mux_upload_id
+        $rules = [
             'name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
             'company' => 'nullable|string|max:255',
             'position' => 'nullable|string|max:255',
             'type' => 'required|in:text,video',
-            'text_content' => 'required_if:type,text',
-            'video_url' => 'required_if:type,video|nullable|url',
+            'text_content' => 'nullable|string', // Made nullable, we'll validate manually
+            'video_url' => 'nullable|url',
+            'mux_upload_id' => 'nullable|string',
             'rating' => 'nullable|integer|min:1|max:5',
             'avatar' => 'nullable|image|max:2048',
             'tracking_token' => 'nullable|string',
-        ]);
+        ];
+
+        // Custom validation: if type is video, either video_url or mux_upload_id must be present
+        $validated = $request->validate($rules);
+
+        // Additional validation based on type
+        if ($validated['type'] === 'video') {
+            if (empty($validated['video_url']) && empty($validated['mux_upload_id'])) {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['video' => 'Please record a video or provide a video URL.']);
+            }
+        } elseif ($validated['type'] === 'text') {
+            if (empty($validated['text_content'])) {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['text_content' => 'Please enter your testimonial.']);
+            }
+        }
 
         $validated['team_id'] = $template->team_id;
         $validated['template_id'] = $template->id;
         $validated['source'] = 'website';
         $validated['status'] = 'pending_review';
+
+        // Handle Mux video upload
+        if ($validated['type'] === 'video' && !empty($validated['mux_upload_id'])) {
+            $validated['mux_status'] = 'processing';
+        }
 
         // Handle tracking token for campaign testimonials
         $campaignSubscriber = null;
@@ -240,6 +300,12 @@ class TestimonialController extends Controller
         }
 
         $testimonial = Testimonial::create($validated);
+
+        // If Mux video, start polling for status
+        if ($testimonial->mux_upload_id) {
+            // The MuxService will update the testimonial when the video is ready
+            // This happens via webhook or polling from the admin interface
+        }
 
         // Update campaign subscriber if applicable
         if ($campaignSubscriber) {

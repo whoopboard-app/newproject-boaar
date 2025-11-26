@@ -22,6 +22,13 @@ class Testimonial extends Model
         'text_content',
         'video_url',
         'video_thumbnail',
+        // Mux video fields
+        'mux_upload_id',
+        'mux_asset_id',
+        'mux_playback_id',
+        'mux_status',
+        'video_duration',
+        'mux_data',
         'rating',
         'source',
         'status',
@@ -31,8 +38,51 @@ class Testimonial extends Model
 
     protected $casts = [
         'custom_data' => 'array',
+        'mux_data' => 'array',
         'rating' => 'integer',
+        'video_duration' => 'integer',
     ];
+
+    /**
+     * Check if testimonial has a Mux video ready
+     */
+    public function hasMuxVideo(): bool
+    {
+        return $this->type === 'video' && $this->mux_playback_id && $this->mux_status === 'ready';
+    }
+
+    /**
+     * Get the Mux stream URL for playback
+     */
+    public function getMuxStreamUrl(): ?string
+    {
+        if (!$this->mux_playback_id) {
+            return null;
+        }
+        return "https://stream.mux.com/{$this->mux_playback_id}.m3u8";
+    }
+
+    /**
+     * Get the Mux thumbnail URL
+     */
+    public function getMuxThumbnailUrl(int $width = 640, int $height = 360): ?string
+    {
+        if (!$this->mux_playback_id) {
+            return null;
+        }
+        return "https://image.mux.com/{$this->mux_playback_id}/thumbnail.jpg?width={$width}&height={$height}";
+    }
+
+    /**
+     * Get the Mux animated GIF URL
+     */
+    public function getMuxGifUrl(int $width = 320): ?string
+    {
+        if (!$this->mux_playback_id) {
+            return null;
+        }
+        return "https://image.mux.com/{$this->mux_playback_id}/animated.gif?width={$width}";
+    }
 
     /**
      * Get the template for this testimonial

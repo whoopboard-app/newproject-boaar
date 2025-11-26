@@ -421,11 +421,28 @@
 
                         <div class="mb-3">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="collect_video" name="collect_video" value="1" disabled>
+                                <input class="form-check-input" type="checkbox" id="collect_video" name="collect_video" value="1" onchange="updateTestimonialTypePreview()">
                                 <label class="form-check-label" for="collect_video">
-                                    <strong>Video Testimonials <span class="badge bg-warning">Coming Soon</span></strong>
-                                    <p class="text-muted mb-0 small">Allow users to submit video testimonials</p>
+                                    <strong>Video Testimonials</strong>
+                                    <p class="text-muted mb-0 small">Allow users to record and submit video testimonials (powered by Mux)</p>
                                 </label>
+                            </div>
+                            <div id="video-settings" class="mt-3 ms-4 p-3 bg-light rounded" style="display: none;">
+                                <div class="mb-2">
+                                    <label class="form-label small fw-bold">Max Video Duration</label>
+                                    <select class="form-select form-select-sm" name="max_video_duration" id="max_video_duration">
+                                        <option value="60">1 minute</option>
+                                        <option value="120" selected>2 minutes</option>
+                                        <option value="180">3 minutes</option>
+                                        <option value="300">5 minutes</option>
+                                    </select>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="allow_video_retake" name="allow_video_retake" value="1" checked>
+                                    <label class="form-check-label small" for="allow_video_retake">
+                                        Allow retake before submission
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
@@ -662,9 +679,18 @@
 
                         <!-- Video Testimonial -->
                         <div class="mb-3" id="preview-video-testimonial" style="display: none;">
-                            <label class="form-label">Video Testimonial URL *</label>
-                            <input type="url" class="form-control" placeholder="Paste your video URL (YouTube, Vimeo, etc.)" disabled>
-                            <small class="text-muted">Upload your video to YouTube or Vimeo and paste the link here</small>
+                            <label class="form-label">Record Video Testimonial *</label>
+                            <div style="background: #1a1a2e; border-radius: 12px; padding: 2rem; text-align: center;">
+                                <div style="width: 100%; aspect-ratio: 16/9; background: #16213e; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                                    <i class="ti ti-video" style="font-size: 3rem; color: #667eea;"></i>
+                                </div>
+                                <div style="display: flex; justify-content: center; gap: 1rem;">
+                                    <button type="button" class="btn btn-danger" disabled style="border-radius: 50%; width: 56px; height: 56px;">
+                                        <i class="ti ti-player-record" style="font-size: 1.5rem;"></i>
+                                    </button>
+                                </div>
+                                <p style="color: #999; font-size: 0.875rem; margin-top: 1rem;">Click to start recording</p>
+                            </div>
                         </div>
 
                         <button type="button" class="btn btn-primary w-100" disabled>
@@ -1011,6 +1037,12 @@
         const textField = document.getElementById('preview-text-testimonial');
         const videoField = document.getElementById('preview-video-testimonial');
         const videoOption = document.getElementById('preview-video-option');
+        const videoSettings = document.getElementById('video-settings');
+
+        // Toggle video settings visibility
+        if (videoSettings) {
+            videoSettings.style.display = collectVideo ? 'block' : 'none';
+        }
 
         // Show type selector if both are enabled
         if (collectText && collectVideo) {
@@ -1026,7 +1058,7 @@
             textField.style.display = 'block';
             videoField.style.display = 'none';
         }
-        // Show only video if only video is enabled (when it becomes available)
+        // Show only video if only video is enabled
         else if (!collectText && collectVideo) {
             typeSelector.style.display = 'none';
             textField.style.display = 'none';

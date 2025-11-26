@@ -297,6 +297,19 @@
                     <input type="hidden" name="tracking_token" value="{{ $trackingToken }}">
                 @endif
 
+                {{-- Display validation errors --}}
+                @if($errors->any())
+                    <div class="alert alert-danger mb-4">
+                        <i class="ti ti-alert-circle me-2"></i>
+                        <strong>Please fix the following errors:</strong>
+                        <ul class="mb-0 mt-2">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <!-- Step 1: Rating -->
                 <div class="step-content active" data-step="1">
                     <div class="rating-container">
@@ -352,36 +365,32 @@
                             <div class="type-option" onclick="selectType('video')">
                                 <i class="ti ti-video"></i>
                                 <div class="type-option-title">Video Testimonial</div>
-                                <small class="d-block mt-2 opacity-75">Share a video URL</small>
+                                <small class="d-block mt-2 opacity-75">Record your video</small>
                             </div>
                         </div>
                         <input type="hidden" name="type" id="testimonial-type" value="text">
                     @elseif($template->collect_video)
-                        <input type="hidden" name="type" value="video">
+                        <input type="hidden" name="type" id="testimonial-type" value="video">
                     @else
-                        <input type="hidden" name="type" value="text">
+                        <input type="hidden" name="type" id="testimonial-type" value="text">
                     @endif
 
                     <!-- Text Content -->
                     @if($template->collect_text)
-                        <div id="text-content-field" class="mb-3">
+                        <div id="text-content-field" class="mb-3" style="{{ $template->collect_video && !$template->collect_text ? 'display:none;' : '' }}">
                             <label for="text_content" class="form-label">Your Testimonial <span class="text-danger">*</span></label>
-                            <textarea class="form-control @error('text_content') is-invalid @enderror" id="text_content" name="text_content" rows="6" placeholder="Share your experience with us..." required>{{ old('text_content') }}</textarea>
+                            <textarea class="form-control @error('text_content') is-invalid @enderror" id="text_content" name="text_content" rows="6" placeholder="Share your experience with us..." {{ !$template->collect_video ? 'required' : '' }}>{{ old('text_content') }}</textarea>
                             @error('text_content')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                     @endif
 
-                    <!-- Video URL -->
+                    <!-- Video Recording -->
                     @if($template->collect_video)
-                        <div id="video-url-field" class="mb-3" style="display: {{ $template->collect_text ? 'none' : 'block' }};">
-                            <label for="video_url" class="form-label">Video URL (YouTube, Vimeo, etc.) <span class="text-danger">*</span></label>
-                            <input type="url" class="form-control @error('video_url') is-invalid @enderror" id="video_url" name="video_url" placeholder="https://youtube.com/watch?v=..." value="{{ old('video_url') }}">
-                            <small class="text-muted">Paste your video link from YouTube, Vimeo, or other platforms</small>
-                            @error('video_url')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <div id="video-recording-field" class="mb-3" style="display: {{ $template->collect_text ? 'none' : 'block' }};">
+                            <label class="form-label">Record Your Video Testimonial <span class="text-danger">*</span></label>
+                            @include('testimonials.partials.video-recorder')
                         </div>
                     @endif
 
@@ -399,39 +408,58 @@
                 <div class="step-content" data-step="3">
                     <h4 class="mb-4">Your Information</h4>
 
+                    @php
+                        $hasNameField = $template->field_full_name || $template->field_first_name || $template->field_last_name;
+                    @endphp
+
                     @if($template->field_full_name)
                         <div class="mb-3">
                             <label for="full_name" class="form-label">Full Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="full_name" name="name" required value="{{ old('name') }}" placeholder="John Doe">
+                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="full_name" name="name" required value="{{ old('name', $subscriberName ?? '') }}" placeholder="John Doe">
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                    @else
+                    @elseif($template->field_first_name || $template->field_last_name)
                         <div class="row">
                             @if($template->field_first_name)
                                 <div class="col-md-6 mb-3">
                                     <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="first_name" name="first_name" required placeholder="John">
+                                    <input type="text" class="form-control" id="first_name" name="first_name" required placeholder="John" value="{{ old('first_name', $subscriberName ? explode(' ', $subscriberName)[0] ?? '' : '') }}">
                                 </div>
                             @endif
                             @if($template->field_last_name)
                                 <div class="col-md-6 mb-3">
                                     <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="last_name" name="last_name" required placeholder="Doe">
+                                    <input type="text" class="form-control" id="last_name" name="last_name" required placeholder="Doe" value="{{ old('last_name', $subscriberName ? (explode(' ', $subscriberName)[1] ?? '') : '') }}">
                                 </div>
                             @endif
+                        </div>
+                    @elseif(isset($subscriberName) && $subscriberName)
+                        {{-- No name field configured but we have subscriber name from campaign - use hidden field --}}
+                        <input type="hidden" name="name" value="{{ $subscriberName }}">
+                    @else
+                        {{-- No name field configured and no subscriber data - show name field as fallback --}}
+                        <div class="mb-3">
+                            <label for="full_name" class="form-label">Your Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="full_name" name="name" required value="{{ old('name') }}" placeholder="Your Name">
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     @endif
 
                     @if($template->field_email)
                         <div class="mb-3">
                             <label for="email" class="form-label">Email Address</label>
-                            <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" placeholder="john@example.com">
+                            <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $subscriberEmail ?? '') }}" placeholder="john@example.com" {{ isset($subscriberEmail) && $subscriberEmail ? 'readonly' : '' }}>
                             @error('email')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+                    @elseif(isset($subscriberEmail) && $subscriberEmail)
+                        {{-- No email field configured but we have subscriber email from campaign - use hidden field --}}
+                        <input type="hidden" name="email" value="{{ $subscriberEmail }}">
                     @endif
 
                     <div class="row">
@@ -519,6 +547,27 @@
         // Navigate to next step
         function nextStep() {
             if (currentStep < totalSteps) {
+                // Validate step 2 (testimonial content)
+                if (currentStep === 2) {
+                    const typeField = document.getElementById('testimonial-type');
+                    const testimonialType = typeField ? typeField.value : 'text';
+
+                    if (testimonialType === 'text') {
+                        const textContent = document.getElementById('text_content');
+                        if (textContent && !textContent.value.trim()) {
+                            alert('Please enter your testimonial.');
+                            textContent.focus();
+                            return;
+                        }
+                    } else if (testimonialType === 'video') {
+                        const muxUploadId = document.getElementById('mux_upload_id');
+                        if (!muxUploadId || !muxUploadId.value) {
+                            alert('Please record and upload your video testimonial before proceeding.');
+                            return;
+                        }
+                    }
+                }
+
                 // Mark current step as completed
                 document.querySelector(`.wizard-step[data-step="${currentStep}"]`).classList.add('completed');
 
@@ -598,20 +647,26 @@
 
             // Show/hide fields
             const textField = document.getElementById('text-content-field');
-            const videoField = document.getElementById('video-url-field');
+            const videoField = document.getElementById('video-recording-field');
+            const videoRecorderContainer = document.getElementById('video-recorder-container');
 
             if (type === 'text') {
                 if (textField) textField.style.display = 'block';
                 if (videoField) videoField.style.display = 'none';
                 document.getElementById('text_content').required = true;
-                if (document.getElementById('video_url')) {
-                    document.getElementById('video_url').required = false;
-                }
             } else {
                 if (textField) textField.style.display = 'none';
                 if (videoField) videoField.style.display = 'block';
-                document.getElementById('text_content').required = false;
-                document.getElementById('video_url').required = true;
+                if (document.getElementById('text_content')) {
+                    document.getElementById('text_content').required = false;
+                }
+                // Initialize video recorder when selecting video
+                if (videoRecorderContainer) {
+                    videoRecorderContainer.style.display = 'block';
+                    if (typeof VideoRecorder !== 'undefined' && !VideoRecorder.stream) {
+                        VideoRecorder.init();
+                    }
+                }
             }
         }
 
@@ -645,7 +700,35 @@
                 nameInput.value = `${firstName.value} ${lastName.value}`.trim();
                 this.appendChild(nameInput);
             }
+
+            // For video testimonials, make sure text_content is not required
+            const typeField = document.getElementById('testimonial-type');
+            const textContent = document.getElementById('text_content');
+            if (typeField && typeField.value === 'video' && textContent) {
+                textContent.removeAttribute('required');
+            }
+
+            // Check if video is ready when submitting video testimonial
+            const muxUploadId = document.getElementById('mux_upload_id');
+            if (typeField && typeField.value === 'video') {
+                if (!muxUploadId || !muxUploadId.value) {
+                    e.preventDefault();
+                    alert('Please record and upload a video before submitting.');
+                    return false;
+                }
+            }
         });
+
+        // Initialize video recorder if video-only template
+        @if($template->collect_video && !$template->collect_text)
+        document.addEventListener('DOMContentLoaded', function() {
+            const videoRecorderContainer = document.getElementById('video-recorder-container');
+            if (videoRecorderContainer && typeof VideoRecorder !== 'undefined') {
+                videoRecorderContainer.style.display = 'block';
+                VideoRecorder.init();
+            }
+        });
+        @endif
     </script>
 </body>
 </html>

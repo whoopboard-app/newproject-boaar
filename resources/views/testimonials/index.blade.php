@@ -104,12 +104,14 @@
                                                             <img src="{{ asset('storage/' . $testimonial->avatar) }}" alt="{{ $testimonial->name }}" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
                                                         @else
                                                             <div class="rounded-circle me-2 bg-primary text-white d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 14px;">
-                                                                {{ strtoupper(substr($testimonial->name, 0, 1)) }}
+                                                                {{ strtoupper(substr($testimonial->name ?? 'T', 0, 1)) }}
                                                             </div>
                                                         @endif
                                                         <div>
                                                             <div class="fw-semibold">{{ Str::limit($testimonial->text_content ?? $testimonial->video_url, 50) }}</div>
-                                                            @if($testimonial->company)
+                                                            @if($testimonial->name)
+                                                                <small class="text-muted">{{ $testimonial->name }}</small>
+                                                            @elseif($testimonial->company)
                                                                 <small class="text-muted">{{ $testimonial->company }}</small>
                                                             @endif
                                                         </div>
@@ -118,6 +120,15 @@
                                                 <td>
                                                     @if($testimonial->type === 'video')
                                                         <span class="badge bg-info"><i class="ti ti-video me-1"></i> Video</span>
+                                                        @if($testimonial->mux_upload_id)
+                                                            @if($testimonial->mux_status === 'ready')
+                                                                <span class="badge bg-success ms-1" title="Video ready to play"><i class="ti ti-check"></i></span>
+                                                            @elseif($testimonial->mux_status === 'error')
+                                                                <span class="badge bg-danger ms-1" title="Video processing failed"><i class="ti ti-x"></i></span>
+                                                            @else
+                                                                <span class="badge bg-warning ms-1" title="Video processing"><i class="ti ti-loader"></i></span>
+                                                            @endif
+                                                        @endif
                                                     @else
                                                         <span class="badge bg-primary"><i class="ti ti-file-text me-1"></i> Text</span>
                                                     @endif

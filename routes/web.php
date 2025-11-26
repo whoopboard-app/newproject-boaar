@@ -217,6 +217,13 @@ require __DIR__.'/auth.php';
 Route::get('/testimonial/{uniqueUrl}', [TestimonialController::class, 'publicForm'])->name('testimonials.public.form');
 Route::post('/testimonial/{uniqueUrl}', [TestimonialController::class, 'publicStore'])->name('testimonials.public.store');
 
+// Mux Video API Routes (for video testimonials)
+Route::prefix('api/mux')->group(function () {
+    Route::post('/upload', [\App\Http\Controllers\Api\MuxVideoController::class, 'createUpload'])->name('api.mux.upload');
+    Route::get('/upload/{uploadId}/status', [\App\Http\Controllers\Api\MuxVideoController::class, 'getUploadStatus'])->name('api.mux.upload.status');
+    Route::post('/webhook', [\App\Http\Controllers\Api\MuxVideoController::class, 'handleWebhook'])->name('api.mux.webhook');
+});
+
 // Campaign Tracking Routes (No Authentication Required)
 Route::get('/testimonial-campaign/open/{trackingToken}', [\App\Http\Controllers\TestimonialCampaignController::class, 'trackOpen'])->name('testimonials.campaign-open');
 Route::get('/testimonial-campaign/click/{trackingToken}', [\App\Http\Controllers\TestimonialCampaignController::class, 'trackClick'])->name('testimonials.campaign-click');

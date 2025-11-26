@@ -70,10 +70,46 @@
                 @else
                     <!-- Video Testimonial -->
                     <div class="testimonial-video mb-4">
-                        @if($testimonial->video_thumbnail)
+                        @if($testimonial->hasMuxVideo())
+                            <!-- Mux Video Player -->
+                            <div class="mux-video-container">
+                                @if($testimonial->mux_status === 'ready')
+                                    <mux-player
+                                        playback-id="{{ $testimonial->mux_playback_id }}"
+                                        metadata-video-title="Testimonial from {{ $testimonial->name }}"
+                                        accent-color="#667eea"
+                                        style="width: 100%; aspect-ratio: 16/9; border-radius: 8px; overflow: hidden;"
+                                    ></mux-player>
+                                @else
+                                    <div class="video-processing-status p-4 text-center bg-light rounded">
+                                        <i class="ti ti-loader ti-spin mb-3" style="font-size: 2rem; color: #667eea;"></i>
+                                        <p class="mb-1"><strong>Video is processing...</strong></p>
+                                        <p class="text-muted mb-0 small">This may take a few minutes. Refresh to check status.</p>
+                                        <span class="badge bg-warning mt-2">Status: {{ ucfirst($testimonial->mux_status ?? 'Processing') }}</span>
+                                    </div>
+                                @endif
+
+                                @if($testimonial->video_duration)
+                                    <div class="mt-2">
+                                        <small class="text-muted">
+                                            <i class="ti ti-clock me-1"></i>
+                                            Duration: {{ gmdate("i:s", $testimonial->video_duration) }}
+                                        </small>
+                                    </div>
+                                @endif
+                            </div>
+                        @elseif($testimonial->mux_upload_id && $testimonial->mux_status !== 'ready')
+                            <!-- Video still processing -->
+                            <div class="video-processing-status p-4 text-center bg-light rounded">
+                                <i class="ti ti-loader ti-spin mb-3" style="font-size: 2rem; color: #667eea;"></i>
+                                <p class="mb-1"><strong>Video is being processed...</strong></p>
+                                <p class="text-muted mb-0 small">This may take a few minutes. Refresh to check status.</p>
+                                <span class="badge bg-warning mt-2">Status: {{ ucfirst($testimonial->mux_status ?? 'Uploading') }}</span>
+                            </div>
+                        @elseif($testimonial->video_thumbnail)
                             <img src="{{ asset('storage/' . $testimonial->video_thumbnail) }}" alt="Video Thumbnail" class="img-fluid rounded mb-3" style="max-width: 100%;">
                         @endif
-                        @if($testimonial->video_url)
+                        @if($testimonial->video_url && !$testimonial->mux_playback_id)
                             <div class="ratio ratio-16x9">
                                 <iframe src="{{ $testimonial->video_url }}" allowfullscreen class="rounded"></iframe>
                             </div>
@@ -266,3 +302,10 @@
 </div>
 
 @endsection
+
+@push('scripts')
+@if($testimonial->type === 'video' && $testimonial->mux_playback_id)
+    <!-- Mux Player Web Component -->
+    <script src="https://cdn.jsdelivr.net/npm/@mux/mux-player@2"></script>
+@endif
+@endpush

@@ -400,9 +400,12 @@ class TestimonialCampaignController extends Controller
         if ($campaignSubscriber) {
             $campaignSubscriber->markAsClicked();
 
-            // Redirect to the testimonial form
+            // Redirect to the testimonial form with tracking token for email prepopulation
             $template = $campaignSubscriber->campaign->template;
-            return redirect()->route('testimonials.public.form', $template->unique_url);
+            return redirect()->route('testimonials.public.form', [
+                'uniqueUrl' => $template->unique_url,
+                'tracking_token' => $trackingToken,
+            ]);
         }
 
         return redirect('/');

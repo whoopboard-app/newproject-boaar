@@ -438,31 +438,56 @@
                         </div>
                     @endif
 
-                    @if($testimonial->type === 'video' && $testimonial->video_url)
+                    @if($testimonial->type === 'video')
                         <div class="testimonial-video">
-                            @php
-                                $videoUrl = $testimonial->video_url;
-                                $isYoutube = strpos($videoUrl, 'youtube.com') !== false || strpos($videoUrl, 'youtu.be') !== false;
-                                $isVimeo = strpos($videoUrl, 'vimeo.com') !== false;
+                            @if($testimonial->hasMuxVideo())
+                                <!-- Mux Video Player -->
+                                <mux-player
+                                    playback-id="{{ $testimonial->mux_playback_id }}"
+                                    metadata-video-title="Testimonial from {{ $testimonial->name }}"
+                                    accent-color="#5865F2"
+                                    style="width: 100%; aspect-ratio: 16/9;"
+                                ></mux-player>
+                                @if($testimonial->video_duration)
+                                    <div class="mt-2 text-center">
+                                        <small class="text-muted">
+                                            <i class="ti ti-clock me-1"></i>
+                                            Duration: {{ gmdate("i:s", $testimonial->video_duration) }}
+                                        </small>
+                                    </div>
+                                @endif
+                            @elseif($testimonial->mux_upload_id && $testimonial->mux_status !== 'ready')
+                                <!-- Video still processing -->
+                                <div class="p-5 text-center" style="background: #f8f9fa; border-radius: 12px;">
+                                    <i class="ti ti-loader ti-spin mb-3" style="font-size: 3rem; color: #667eea;"></i>
+                                    <p class="mb-1"><strong>Video is being processed...</strong></p>
+                                    <p class="text-muted mb-0 small">Please check back in a few minutes.</p>
+                                </div>
+                            @elseif($testimonial->video_url)
+                                @php
+                                    $videoUrl = $testimonial->video_url;
+                                    $isYoutube = strpos($videoUrl, 'youtube.com') !== false || strpos($videoUrl, 'youtu.be') !== false;
+                                    $isVimeo = strpos($videoUrl, 'vimeo.com') !== false;
 
-                                if ($isYoutube) {
-                                    preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $videoUrl, $matches);
-                                    $youtubeId = $matches[1] ?? '';
-                                    $embedUrl = "https://www.youtube.com/embed/{$youtubeId}";
-                                } elseif ($isVimeo) {
-                                    preg_match('/vimeo\.com\/(\d+)/', $videoUrl, $matches);
-                                    $vimeoId = $matches[1] ?? '';
-                                    $embedUrl = "https://player.vimeo.com/video/{$vimeoId}";
-                                }
-                            @endphp
+                                    if ($isYoutube) {
+                                        preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $videoUrl, $matches);
+                                        $youtubeId = $matches[1] ?? '';
+                                        $embedUrl = "https://www.youtube.com/embed/{$youtubeId}";
+                                    } elseif ($isVimeo) {
+                                        preg_match('/vimeo\.com\/(\d+)/', $videoUrl, $matches);
+                                        $vimeoId = $matches[1] ?? '';
+                                        $embedUrl = "https://player.vimeo.com/video/{$vimeoId}";
+                                    }
+                                @endphp
 
-                            @if($isYoutube || $isVimeo)
-                                <iframe src="{{ $embedUrl }}" allowfullscreen></iframe>
-                            @else
-                                <video controls>
-                                    <source src="{{ $videoUrl }}" type="video/mp4">
-                                    Your browser does not support the video tag.
-                                </video>
+                                @if($isYoutube || $isVimeo)
+                                    <iframe src="{{ $embedUrl }}" allowfullscreen></iframe>
+                                @else
+                                    <video controls>
+                                        <source src="{{ $videoUrl }}" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                @endif
                             @endif
                         </div>
                     @endif
@@ -554,5 +579,10 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    @if($testimonial->type === 'video' && $testimonial->mux_playback_id)
+        <!-- Mux Player Web Component -->
+        <script src="https://cdn.jsdelivr.net/npm/@mux/mux-player@2"></script>
+    @endif
 </body>
 </html>

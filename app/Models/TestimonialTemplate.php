@@ -35,6 +35,8 @@ class TestimonialTemplate extends Model
         // Testimonial Type
         'collect_text',
         'collect_video',
+        'max_video_duration',
+        'allow_video_retake',
         'collect_rating',
         'rating_style',
         // Thank You Page
@@ -64,6 +66,8 @@ class TestimonialTemplate extends Model
         'collect_rating' => 'boolean',
         'collect_video' => 'boolean',
         'collect_text' => 'boolean',
+        'max_video_duration' => 'integer',
+        'allow_video_retake' => 'boolean',
         'enable_thankyou' => 'boolean',
         'custom_fields' => 'array',
     ];

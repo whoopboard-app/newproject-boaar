@@ -11,6 +11,9 @@
     <!-- Tabler Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 
+    <!-- Video.js for HLS playback -->
+    <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet">
+
     <style>
         :root {
             --primary-color: #5865F2;
@@ -435,31 +438,55 @@
                             </div>
                         @endif
 
-                        @if($testimonial->type === 'video' && $testimonial->video_url)
+                        @if($testimonial->type === 'video')
                             <div class="testimonial-video">
-                                @php
-                                    $videoUrl = $testimonial->video_url;
-                                    $isYoutube = strpos($videoUrl, 'youtube.com') !== false || strpos($videoUrl, 'youtu.be') !== false;
-                                    $isVimeo = strpos($videoUrl, 'vimeo.com') !== false;
+                                @if($testimonial->hasMuxVideo())
+                                    {{-- Mux Video Player --}}
+                                    <div class="mux-video-container" style="position: relative; aspect-ratio: 16/9;">
+                                        <video
+                                            id="mux-player-{{ $testimonial->id }}"
+                                            class="video-js vjs-default-skin"
+                                            controls
+                                            preload="metadata"
+                                            poster="{{ $testimonial->getMuxThumbnailUrl() }}"
+                                            style="width: 100%; height: 100%;"
+                                        >
+                                            <source src="{{ $testimonial->getMuxStreamUrl() }}" type="application/x-mpegURL">
+                                        </video>
+                                    </div>
+                                @elseif($testimonial->video_url)
+                                    @php
+                                        $videoUrl = $testimonial->video_url;
+                                        $isYoutube = strpos($videoUrl, 'youtube.com') !== false || strpos($videoUrl, 'youtu.be') !== false;
+                                        $isVimeo = strpos($videoUrl, 'vimeo.com') !== false;
 
-                                    if ($isYoutube) {
-                                        preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $videoUrl, $matches);
-                                        $youtubeId = $matches[1] ?? '';
-                                        $embedUrl = "https://www.youtube.com/embed/{$youtubeId}";
-                                    } elseif ($isVimeo) {
-                                        preg_match('/vimeo\.com\/(\d+)/', $videoUrl, $matches);
-                                        $vimeoId = $matches[1] ?? '';
-                                        $embedUrl = "https://player.vimeo.com/video/{$vimeoId}";
-                                    }
-                                @endphp
+                                        if ($isYoutube) {
+                                            preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $videoUrl, $matches);
+                                            $youtubeId = $matches[1] ?? '';
+                                            $embedUrl = "https://www.youtube.com/embed/{$youtubeId}";
+                                        } elseif ($isVimeo) {
+                                            preg_match('/vimeo\.com\/(\d+)/', $videoUrl, $matches);
+                                            $vimeoId = $matches[1] ?? '';
+                                            $embedUrl = "https://player.vimeo.com/video/{$vimeoId}";
+                                        }
+                                    @endphp
 
-                                @if($isYoutube || $isVimeo)
-                                    <iframe src="{{ $embedUrl }}" allowfullscreen></iframe>
-                                @elseif($testimonial->video_thumbnail)
-                                    <img src="{{ asset('storage/' . $testimonial->video_thumbnail) }}" alt="Video thumbnail">
-                                    <div class="video-play-overlay" onclick="window.open('{{ $videoUrl }}', '_blank')">
-                                        <div class="video-play-btn">
-                                            <i class="ti ti-player-play-filled"></i>
+                                    @if($isYoutube || $isVimeo)
+                                        <iframe src="{{ $embedUrl }}" allowfullscreen></iframe>
+                                    @elseif($testimonial->video_thumbnail)
+                                        <img src="{{ asset('storage/' . $testimonial->video_thumbnail) }}" alt="Video thumbnail">
+                                        <div class="video-play-overlay" onclick="window.open('{{ $videoUrl }}', '_blank')">
+                                            <div class="video-play-btn">
+                                                <i class="ti ti-player-play-filled"></i>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @elseif($testimonial->mux_status === 'processing')
+                                    {{-- Video is still processing --}}
+                                    <div style="aspect-ratio: 16/9; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
+                                        <div class="text-center text-muted">
+                                            <i class="ti ti-loader ti-spin" style="font-size: 2rem;"></i>
+                                            <p class="mt-2 mb-0">Video processing...</p>
                                         </div>
                                     </div>
                                 @endif
@@ -537,5 +564,20 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Video.js for HLS playback -->
+    <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
+    <script>
+        // Initialize all Video.js players for Mux videos
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.video-js').forEach(function(videoEl) {
+                videojs(videoEl, {
+                    controls: true,
+                    fluid: true,
+                    preload: 'metadata'
+                });
+            });
+        });
+    </script>
 </body>
 </html>

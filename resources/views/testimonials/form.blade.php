@@ -67,11 +67,39 @@
 
                     <!-- Video URL (shown when type is video) -->
                     <div class="mb-3" id="video_url_field" style="display: {{ old('type', $testimonial->type ?? 'text') === 'video' ? 'block' : 'none' }};">
-                        <label for="video_url" class="form-label">Video URL <span class="text-danger">*</span></label>
-                        <input type="url" class="form-control" id="video_url" name="video_url" value="{{ old('video_url', $testimonial->video_url ?? '') }}" placeholder="https://youtube.com/watch?v=...">
-                        @error('video_url')
-                            <div class="text-danger small">{{ $message }}</div>
-                        @enderror
+                        @if(isset($testimonial) && $testimonial->hasMuxVideo())
+                            {{-- Mux Video - Show preview and readonly URL --}}
+                            <label class="form-label">Video</label>
+                            <div class="mb-3">
+                                <div class="ratio ratio-16x9 mb-2" style="max-width: 400px; border-radius: 8px; overflow: hidden;">
+                                    <video controls poster="{{ $testimonial->getMuxThumbnailUrl() }}">
+                                        <source src="{{ $testimonial->getMuxStreamUrl() }}" type="application/x-mpegURL">
+                                        Your browser does not support HLS video.
+                                    </video>
+                                </div>
+                                <small class="text-muted">
+                                    <i class="ti ti-info-circle me-1"></i>
+                                    This video was recorded using the testimonial form and is hosted on Mux.
+                                </small>
+                            </div>
+                            <label for="video_url" class="form-label">Video Stream URL</label>
+                            <input type="url" class="form-control" id="video_url" value="{{ $testimonial->getMuxStreamUrl() }}" readonly style="background-color: #f8f9fa;">
+                            <small class="text-muted">Mux video URL (read-only)</small>
+                        @elseif(isset($testimonial) && $testimonial->mux_status === 'processing')
+                            {{-- Mux Video still processing --}}
+                            <label class="form-label">Video</label>
+                            <div class="alert alert-warning">
+                                <i class="ti ti-loader ti-spin me-2"></i>
+                                Video is still processing. Please check back later.
+                            </div>
+                        @else
+                            {{-- Regular video URL input --}}
+                            <label for="video_url" class="form-label">Video URL <span class="text-danger">*</span></label>
+                            <input type="url" class="form-control" id="video_url" name="video_url" value="{{ old('video_url', $testimonial->video_url ?? '') }}" placeholder="https://youtube.com/watch?v=...">
+                            @error('video_url')
+                                <div class="text-danger small">{{ $message }}</div>
+                            @enderror
+                        @endif
                     </div>
 
                     <!-- Rating -->
@@ -322,6 +350,33 @@ document.addEventListener('DOMContentLoaded', function() {
     if (companyInput.value) companyInput.dispatchEvent(new Event('input'));
     if (ratingSelect.value) ratingSelect.dispatchEvent(new Event('change'));
     if (textContentInput.value) textContentInput.dispatchEvent(new Event('input'));
+
+    // Initialize HLS.js for Mux video playback
+    function initMuxVideo() {
+        const video = document.querySelector('video[controls]');
+        if (video) {
+            const src = video.querySelector('source')?.src;
+            if (src && src.includes('.m3u8')) {
+                if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                    // Native HLS support (Safari)
+                    video.src = src;
+                } else if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+                    // Use HLS.js
+                    const hls = new Hls();
+                    hls.loadSource(src);
+                    hls.attachMedia(video);
+                }
+            }
+        }
+    }
+
+    // Load HLS.js if needed for Mux videos
+    @if(isset($testimonial) && $testimonial->hasMuxVideo())
+    const hlsScript = document.createElement('script');
+    hlsScript.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
+    hlsScript.onload = initMuxVideo;
+    document.head.appendChild(hlsScript);
+    @endif
 });
 </script>
 @endpush
