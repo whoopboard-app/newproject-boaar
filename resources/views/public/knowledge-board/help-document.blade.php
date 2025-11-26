@@ -3,16 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $knowledgeBoard->name }} - {{ $settings->product_name ?? 'Help Center' }}</title>
+    <title>{{ $theme->meta_title ?? ($knowledgeBoard->name . ' - ' . ($settings->product_name ?? 'Help Center')) }}</title>
+    @if($theme->meta_description)
+    <meta name="description" content="{{ $theme->meta_description }}">
+    @endif
+
+    @if($theme->google_analytics_id)
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ $theme->google_analytics_id }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ $theme->google_analytics_id }}');
+    </script>
+    @endif
 
     <!-- Tabler Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 
     <style>
         :root {
-            --primary-color: #11939A;
-            --primary-dark: #0d7a80;
-            --header-bg: #11939A;
+            --primary-color: {{ $theme->header_background_color ?? '#11939A' }};
+            --primary-dark: {{ $theme->header_background_color ?? '#11939A' }};
+            --header-bg: {{ $theme->header_background_color ?? '#11939A' }};
+            --header-text: {{ $theme->header_text_color ?? '#FFFFFF' }};
+            --footer-bg: {{ $theme->footer_background_color ?? '#11939A' }};
+            --footer-text: {{ $theme->footer_text_color ?? '#FFFFFF' }};
             --text-primary: #585858;
             --text-dark: #333333;
             --text-light: #888888;
@@ -74,20 +91,21 @@
         .hs-brand-name {
             font-size: 20px;
             font-weight: 700;
-            color: white;
+            color: var(--header-text);
         }
 
         .hs-hero-title {
             font-size: 36px;
             font-weight: 700;
-            color: white;
+            color: var(--header-text);
             margin-bottom: 16px;
             letter-spacing: -0.5px;
         }
 
         .hs-hero-subtitle {
             font-size: 18px;
-            color: rgba(255,255,255,0.85);
+            color: var(--header-text);
+            opacity: 0.85;
             margin-bottom: 32px;
         }
 
@@ -359,18 +377,19 @@
         .hs-footer {
             text-align: center;
             padding: 40px 24px;
-            color: rgba(255,255,255,0.7);
+            color: var(--footer-text);
             font-size: 14px;
-            background: var(--header-bg);
+            background: var(--footer-bg);
             margin-top: 48px;
         }
 
         .hs-footer a {
-            color: rgba(255,255,255,0.7);
+            color: var(--footer-text);
+            opacity: 0.8;
         }
 
         .hs-footer a:hover {
-            color: var(--primary-color);
+            opacity: 1;
         }
 
         /* Responsive */
@@ -417,8 +436,8 @@
                 <span class="hs-brand-name">{{ $settings->product_name ?? 'Help Center' }}</span>
             </a>
 
-            <h1 class="hs-hero-title">{{ $knowledgeBoard->name }}</h1>
-            <p class="hs-hero-subtitle">{{ $knowledgeBoard->short_description ?: 'How can we help you today?' }}</p>
+            <h1 class="hs-hero-title">{{ $theme->header_intro_text ?? $knowledgeBoard->name }}</h1>
+            <p class="hs-hero-subtitle">{{ $theme->header_short_description ?? ($knowledgeBoard->short_description ?: 'How can we help you today?') }}</p>
 
             <div class="hs-search">
                 <i class="ti ti-search hs-search-icon"></i>

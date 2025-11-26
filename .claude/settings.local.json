@@ -26,7 +26,8 @@
       "Bash(cmd.exe:*)",
       "WebFetch(domain:developer.uber.com)",
       "Bash(\"C:\\wamp64\\bin\\php\\php8.1.0\\php.exe\" artisan migrate --path=database/migrations/2025_11_26_000001_create_rating_settings_table.php)",
-      "Bash(/c/wamp64/bin/php/php8.1.0/php.exe artisan migrate:*)"
+      "Bash(/c/wamp64/bin/php/php8.1.0/php.exe artisan migrate:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

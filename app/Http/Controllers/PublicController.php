@@ -16,6 +16,7 @@ use App\Models\Subscriber;
 use App\Models\VoteOtp;
 use App\Models\Testimonial;
 use App\Models\KnowledgeBoard;
+use App\Models\KnowledgeBoardTheme;
 use App\Models\BoardArticle;
 use App\Models\BoardCategory;
 use App\Models\RatingSettings;
@@ -330,12 +331,15 @@ class PublicController extends Controller
             ->get()
             ->groupBy('board_category_id');
 
+        // Get theme for this knowledge board
+        $theme = KnowledgeBoardTheme::forKnowledgeBoard($knowledgeBoard->id, $settings->team_id);
+
         // Determine view based on document_type
         $view = $knowledgeBoard->document_type === 'manual'
             ? 'public.knowledge-board.manual'
             : 'public.knowledge-board.help-document';
 
-        return view($view, compact('settings', 'knowledgeBoard', 'categories', 'articles'));
+        return view($view, compact('settings', 'knowledgeBoard', 'categories', 'articles', 'theme'));
     }
 
     /**
@@ -398,12 +402,15 @@ class PublicController extends Controller
         $ratings = ArticleRating::forArticle($articleId, $settings->team_id);
         $ratingStats = ArticleRating::getAverageRating('article', $articleId, $settings->team_id);
 
+        // Get theme for this knowledge board
+        $theme = KnowledgeBoardTheme::forKnowledgeBoard($knowledgeBoard->id, $settings->team_id);
+
         // Determine view based on document_type
         $view = $knowledgeBoard->document_type === 'manual'
             ? 'public.knowledge-board.article-manual'
             : 'public.knowledge-board.article-help';
 
-        return view($view, compact('settings', 'knowledgeBoard', 'article', 'categories', 'allArticles', 'prevArticle', 'nextArticle', 'ratingSettings', 'ratings', 'ratingStats'));
+        return view($view, compact('settings', 'knowledgeBoard', 'article', 'categories', 'allArticles', 'prevArticle', 'nextArticle', 'ratingSettings', 'ratings', 'ratingStats', 'theme'));
     }
 
     /**
@@ -452,12 +459,15 @@ class PublicController extends Controller
             ->get()
             ->groupBy('board_category_id');
 
+        // Get theme for this knowledge board
+        $theme = KnowledgeBoardTheme::forKnowledgeBoard($knowledgeBoard->id, $settings->team_id);
+
         // Determine view based on document_type
         $view = $knowledgeBoard->document_type === 'manual'
             ? 'public.knowledge-board.category-manual'
             : 'public.knowledge-board.category-help';
 
-        return view($view, compact('settings', 'knowledgeBoard', 'category', 'articles', 'categories', 'allArticles'));
+        return view($view, compact('settings', 'knowledgeBoard', 'category', 'articles', 'categories', 'allArticles', 'theme'));
     }
 
     /**

@@ -3,22 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $knowledgeBoard->name }} - {{ $settings->product_name ?? 'Documentation' }}</title>
+    <title>{{ $theme->meta_title ?? ($knowledgeBoard->name . ' - ' . ($settings->product_name ?? 'Documentation')) }}</title>
+    @if($theme->meta_description)
+    <meta name="description" content="{{ $theme->meta_description }}">
+    @endif
+
+    @if($theme->google_analytics_id)
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ $theme->google_analytics_id }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ $theme->google_analytics_id }}');
+    </script>
+    @endif
 
     <!-- Tabler Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 
     <style>
         :root {
-            --header-bg: #11939A;
+            --header-bg: {{ $theme->header_background_color ?? '#11939A' }};
+            --header-text: {{ $theme->header_text_color ?? '#FFFFFF' }};
+            --footer-bg: {{ $theme->footer_background_color ?? '#11939A' }};
+            --footer-text: {{ $theme->footer_text_color ?? '#FFFFFF' }};
             --sidebar-bg: #ffffff;
             --sidebar-width: 300px;
             --content-bg: #ffffff;
             --text-primary: #000000;
             --text-secondary: #545454;
             --text-light: #757575;
-            --accent-color: #11939A;
-            --accent-hover: #0d7a80;
+            --accent-color: {{ $theme->header_background_color ?? '#11939A' }};
+            --accent-hover: {{ $theme->header_background_color ?? '#11939A' }};
             --border-color: #e5e5e5;
             --hover-bg: #f5f5f5;
             --code-bg: #2d2d2d;
@@ -78,7 +95,7 @@
         .uber-header-title {
             font-size: 18px;
             font-weight: 700;
-            color: white;
+            color: var(--header-text);
         }
 
         .uber-header-nav {
@@ -452,8 +469,8 @@
 
         /* Footer */
         .uber-footer {
-            background: var(--header-bg);
-            color: rgba(255,255,255,0.7);
+            background: var(--footer-bg);
+            color: var(--footer-text);
             padding: 40px 64px;
             font-size: 14px;
             text-align: center;

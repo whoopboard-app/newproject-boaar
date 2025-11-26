@@ -352,5 +352,38 @@
         </div>
     </div>
 
+    <!-- Themes (Public) Card -->
+    <div class="col-lg-3 col-md-6 mb-3 d-flex">
+        <div class="card h-100 w-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="avatar-lg">
+                        <span class="avatar-title rounded-circle" style="background-color: rgba(17, 147, 154, 0.18) !important;">
+                            <i class="ti ti-palette fs-2" style="color: #11939A;"></i>
+                        </span>
+                    </div>
+                </div>
+                <h5 class="card-title mb-2">Themes (Public)</h5>
+                <p class="text-muted fs-14 mb-3">
+                    Customize Knowledge Board appearance, header/footer colors, intro text, and SEO settings.
+                </p>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('settings.themes') }}" class="btn btn-sm" style="background-color: #11939A; color: white;">
+                        <i class="ti ti-eye me-1"></i>View
+                    </a>
+                    <a href="{{ route('settings.themes') }}" class="btn btn-sm btn-outline-secondary" style="border-color: #11939A; color: #11939A;">
+                        <i class="ti ti-palette me-1"></i>Customize
+                    </a>
+                </div>
+            </div>
+            <div class="card-footer border-top">
+                <div class="d-flex align-items-center text-muted">
+                    <i class="ti ti-brush me-2"></i>
+                    <small>Customize public pages</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 @endsection

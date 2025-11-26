@@ -128,6 +128,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings/rating', [AppSettingsController::class, 'rating'])->name('settings.rating');
     Route::put('/settings/rating', [AppSettingsController::class, 'updateRating'])->name('settings.rating.update');
 
+    // Theme Settings
+    Route::get('/settings/themes', [\App\Http\Controllers\KnowledgeBoardThemeController::class, 'index'])->name('settings.themes');
+    Route::get('/settings/themes/{knowledgeBoard}/edit', [\App\Http\Controllers\KnowledgeBoardThemeController::class, 'edit'])->name('settings.themes.edit');
+    Route::put('/settings/themes/{knowledgeBoard}', [\App\Http\Controllers\KnowledgeBoardThemeController::class, 'update'])->name('settings.themes.update');
+    Route::post('/settings/themes/{knowledgeBoard}/reset', [\App\Http\Controllers\KnowledgeBoardThemeController::class, 'reset'])->name('settings.themes.reset');
+    Route::post('/settings/themes/select/{theme}', [\App\Http\Controllers\KnowledgeBoardThemeController::class, 'selectTheme'])->name('settings.themes.select');
+
     // App Configuration (Module Settings)
     Route::get('/configuration', [AppConfigurationController::class, 'index'])->name('configuration.index');
     Route::post('/configuration/feedback-settings', [AppConfigurationController::class, 'updateFeedbackSettings'])->name('configuration.feedback-settings.update');

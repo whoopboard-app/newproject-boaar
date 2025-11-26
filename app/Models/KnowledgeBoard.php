@@ -42,4 +42,12 @@ class KnowledgeBoard extends Model
     {
         return $this->belongsTo(User::class, 'board_owner_id');
     }
+
+    /**
+     * Get the theme for this knowledge board.
+     */
+    public function theme()
+    {
+        return $this->hasOne(KnowledgeBoardTheme::class);
+    }
 }
