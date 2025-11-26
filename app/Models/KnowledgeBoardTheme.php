@@ -24,11 +24,27 @@ class KnowledgeBoardTheme extends Model
         'meta_title',
         'meta_description',
         'google_analytics_id',
+        'menu_order',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'menu_order' => 'array',
     ];
+
+    /**
+     * Default menu order
+     */
+    public static function getDefaultMenuOrder(): array
+    {
+        return [
+            ['key' => 'changelog', 'label' => 'Changelog', 'visible' => true, 'order' => 1],
+            ['key' => 'feedback', 'label' => 'Feedback', 'visible' => true, 'order' => 2],
+            ['key' => 'roadmap', 'label' => 'Roadmap', 'visible' => true, 'order' => 3],
+            ['key' => 'testimonial', 'label' => 'Testimonials', 'visible' => true, 'order' => 4],
+            ['key' => 'knowledge_board', 'label' => 'Knowledge Board', 'visible' => true, 'order' => 5],
+        ];
+    }
 
     /**
      * Default theme values
@@ -46,7 +62,30 @@ class KnowledgeBoardTheme extends Model
             'meta_title' => null,
             'meta_description' => null,
             'google_analytics_id' => null,
+            'menu_order' => self::getDefaultMenuOrder(),
         ];
+    }
+
+    /**
+     * Get menu order (returns saved or default)
+     */
+    public function getMenuOrder(): array
+    {
+        return $this->menu_order ?? self::getDefaultMenuOrder();
+    }
+
+    /**
+     * Get sorted visible menu items
+     */
+    public function getSortedMenuItems(): array
+    {
+        $menuOrder = $this->getMenuOrder();
+
+        // Filter visible and sort by order
+        $visibleItems = array_filter($menuOrder, fn($item) => $item['visible'] ?? true);
+        usort($visibleItems, fn($a, $b) => ($a['order'] ?? 0) - ($b['order'] ?? 0));
+
+        return $visibleItems;
     }
 
     /**

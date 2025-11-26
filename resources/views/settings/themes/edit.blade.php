@@ -125,6 +125,33 @@
         padding: 15px;
         text-align: center;
     }
+    /* Menu sortable styles */
+    #menuSortable .menu-item {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        transition: all 0.2s ease;
+    }
+    #menuSortable .menu-item:hover {
+        border-color: #11939A;
+        box-shadow: 0 2px 8px rgba(17, 147, 154, 0.1);
+    }
+    #menuSortable .menu-item.dragging {
+        opacity: 0.5;
+        border-color: #11939A;
+        box-shadow: 0 4px 12px rgba(17, 147, 154, 0.2);
+    }
+    #menuSortable .drag-handle:hover {
+        color: #11939A !important;
+    }
+    #menuSortable .drag-handle i {
+        font-size: 18px;
+    }
+    .menu-item .form-check-input:checked {
+        background-color: #11939A;
+        border-color: #11939A;
+    }
 </style>
 @endpush
 
@@ -427,6 +454,54 @@
                     </div>
                 </div>
 
+                <!-- Menu Order Settings -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="ti ti-menu-order me-2"></i>Menu Order
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small mb-3">Drag and drop to reorder menu items. Toggle visibility to show/hide items in the public navigation.</p>
+
+                        @php
+                            $menuOrder = $theme->menu_order ?? \App\Models\KnowledgeBoardTheme::getDefaultMenuOrder();
+                            // Sort by order for display
+                            usort($menuOrder, fn($a, $b) => ($a['order'] ?? 0) - ($b['order'] ?? 0));
+                        @endphp
+
+                        <div id="menuSortable" class="list-group">
+                            @foreach($menuOrder as $index => $item)
+                                <div class="list-group-item d-flex align-items-center gap-3 menu-item" data-key="{{ $item['key'] }}">
+                                    <div class="drag-handle" style="cursor: grab;">
+                                        <i class="ti ti-grip-vertical text-muted"></i>
+                                    </div>
+                                    <div class="form-check form-switch mb-0">
+                                        <input class="form-check-input menu-visible" type="checkbox"
+                                               id="menu_visible_{{ $item['key'] }}"
+                                               {{ ($item['visible'] ?? true) ? 'checked' : '' }}>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <input type="text" class="form-control form-control-sm menu-label"
+                                               value="{{ $item['label'] }}" placeholder="Menu label" maxlength="50">
+                                    </div>
+                                    <span class="badge bg-light text-muted">{{ $item['key'] }}</span>
+
+                                    <!-- Hidden inputs for form submission -->
+                                    <input type="hidden" name="menu_order[{{ $index }}][key]" value="{{ $item['key'] }}" class="menu-key-input">
+                                    <input type="hidden" name="menu_order[{{ $index }}][label]" value="{{ $item['label'] }}" class="menu-label-input">
+                                    <input type="hidden" name="menu_order[{{ $index }}][visible]" value="{{ ($item['visible'] ?? true) ? '1' : '0' }}" class="menu-visible-input">
+                                    <input type="hidden" name="menu_order[{{ $index }}][order]" value="{{ $index + 1 }}" class="menu-order-input">
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <small class="text-muted d-block mt-2">
+                            <i class="ti ti-info-circle me-1"></i>Menu items will appear in this order on your public website navigation.
+                        </small>
+                    </div>
+                </div>
+
                 <!-- Action Buttons -->
                 <div class="d-flex gap-2 mb-4">
                     <button type="submit" class="btn btn-primary">
@@ -648,6 +723,83 @@ document.addEventListener('DOMContentLoaded', function() {
             updatePreview();
         });
     });
+
+    // Menu sortable functionality
+    const menuSortable = document.getElementById('menuSortable');
+    if (menuSortable) {
+        let draggedItem = null;
+
+        menuSortable.querySelectorAll('.menu-item').forEach(item => {
+            const dragHandle = item.querySelector('.drag-handle');
+
+            dragHandle.addEventListener('mousedown', function() {
+                item.setAttribute('draggable', 'true');
+            });
+
+            item.addEventListener('dragstart', function(e) {
+                draggedItem = this;
+                this.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+            });
+
+            item.addEventListener('dragend', function() {
+                this.classList.remove('dragging');
+                this.removeAttribute('draggable');
+                draggedItem = null;
+                updateMenuOrder();
+            });
+
+            item.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+
+                if (draggedItem && draggedItem !== this) {
+                    const rect = this.getBoundingClientRect();
+                    const midY = rect.top + rect.height / 2;
+
+                    if (e.clientY < midY) {
+                        this.parentNode.insertBefore(draggedItem, this);
+                    } else {
+                        this.parentNode.insertBefore(draggedItem, this.nextSibling);
+                    }
+                }
+            });
+        });
+
+        // Update hidden inputs when order changes
+        function updateMenuOrder() {
+            const items = menuSortable.querySelectorAll('.menu-item');
+            items.forEach((item, index) => {
+                // Update order input
+                const orderInput = item.querySelector('.menu-order-input');
+                if (orderInput) orderInput.value = index + 1;
+
+                // Update array index in name attributes
+                item.querySelector('.menu-key-input').name = `menu_order[${index}][key]`;
+                item.querySelector('.menu-label-input').name = `menu_order[${index}][label]`;
+                item.querySelector('.menu-visible-input').name = `menu_order[${index}][visible]`;
+                item.querySelector('.menu-order-input').name = `menu_order[${index}][order]`;
+            });
+        }
+
+        // Sync label input to hidden input
+        menuSortable.querySelectorAll('.menu-label').forEach(input => {
+            input.addEventListener('input', function() {
+                const menuItem = this.closest('.menu-item');
+                const hiddenInput = menuItem.querySelector('.menu-label-input');
+                if (hiddenInput) hiddenInput.value = this.value;
+            });
+        });
+
+        // Sync visibility checkbox to hidden input
+        menuSortable.querySelectorAll('.menu-visible').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const menuItem = this.closest('.menu-item');
+                const hiddenInput = menuItem.querySelector('.menu-visible-input');
+                if (hiddenInput) hiddenInput.value = this.checked ? '1' : '0';
+            });
+        });
+    }
     @endif
 
     // Auto-dismiss alerts

@@ -469,27 +469,13 @@
                 @foreach($categories as $category)
                     @if(isset($articles[$category->id]) && $articles[$category->id]->count() > 0)
                         <div class="hs-collection">
-                            <a href="{{ route('public.knowledge.category', [$settings->unique_url, $knowledgeBoard->id, $category->id]) }}" class="hs-collection-header">
+                            <a href="{{ route('public.knowledge.category', [$settings->unique_url, $knowledgeBoard->id, $category->id]) }}" class="hs-collection-header" style="border-bottom: none;">
                                 <div class="hs-collection-icon">
                                     <i class="{{ $category->category_icon ?: 'ti ti-folder' }}"></i>
                                 </div>
                                 <h2 class="hs-collection-name">{{ $category->category_name }}</h2>
                                 <span class="hs-collection-count">{{ $articles[$category->id]->count() }} {{ Str::plural('article', $articles[$category->id]->count()) }}</span>
                             </a>
-                            <div class="hs-collection-articles">
-                                @foreach($articles[$category->id]->take(5) as $article)
-                                    <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $article->id]) }}" class="hs-collection-article">
-                                        <i class="ti ti-file-text hs-collection-article-icon"></i>
-                                        <span class="hs-collection-article-title">{{ $article->article_title }}</span>
-                                        <i class="ti ti-chevron-right hs-collection-article-arrow"></i>
-                                    </a>
-                                @endforeach
-                            </div>
-                            @if($articles[$category->id]->count() > 5)
-                                <a href="{{ route('public.knowledge.category', [$settings->unique_url, $knowledgeBoard->id, $category->id]) }}" class="hs-collection-more">
-                                    See all {{ $articles[$category->id]->count() }} articles
-                                </a>
-                            @endif
                         </div>
                     @endif
 
@@ -497,27 +483,13 @@
                     @foreach($category->childCategories as $childCategory)
                         @if(isset($articles[$childCategory->id]) && $articles[$childCategory->id]->count() > 0)
                             <div class="hs-collection">
-                                <a href="{{ route('public.knowledge.category', [$settings->unique_url, $knowledgeBoard->id, $childCategory->id]) }}" class="hs-collection-header">
+                                <a href="{{ route('public.knowledge.category', [$settings->unique_url, $knowledgeBoard->id, $childCategory->id]) }}" class="hs-collection-header" style="border-bottom: none;">
                                     <div class="hs-collection-icon">
                                         <i class="{{ $childCategory->category_icon ?: 'ti ti-folder' }}"></i>
                                     </div>
                                     <h2 class="hs-collection-name">{{ $childCategory->category_name }}</h2>
                                     <span class="hs-collection-count">{{ $articles[$childCategory->id]->count() }} {{ Str::plural('article', $articles[$childCategory->id]->count()) }}</span>
                                 </a>
-                                <div class="hs-collection-articles">
-                                    @foreach($articles[$childCategory->id]->take(5) as $article)
-                                        <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $article->id]) }}" class="hs-collection-article">
-                                            <i class="ti ti-file-text hs-collection-article-icon"></i>
-                                            <span class="hs-collection-article-title">{{ $article->article_title }}</span>
-                                            <i class="ti ti-chevron-right hs-collection-article-arrow"></i>
-                                        </a>
-                                    @endforeach
-                                </div>
-                                @if($articles[$childCategory->id]->count() > 5)
-                                    <a href="{{ route('public.knowledge.category', [$settings->unique_url, $knowledgeBoard->id, $childCategory->id]) }}" class="hs-collection-more">
-                                        See all {{ $articles[$childCategory->id]->count() }} articles
-                                    </a>
-                                @endif
                             </div>
                         @endif
                     @endforeach

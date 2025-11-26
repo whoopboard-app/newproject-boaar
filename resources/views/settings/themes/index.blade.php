@@ -100,7 +100,7 @@
         <div class="page-title-box d-flex justify-content-between align-items-center">
             <div>
                 <h4 class="page-title">Themes (Public)</h4>
-                <p class="text-muted fs-14 mb-0">Customize the appearance of your public Knowledge Board pages</p>
+                <p class="text-muted fs-14 mb-4">Customize the appearance of your public Knowledge Board pages</p>
             </div>
             <a href="{{ route('settings.index') }}" class="btn btn-secondary">
                 <i class="ti ti-arrow-left me-1"></i>Back to Settings

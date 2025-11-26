@@ -152,6 +152,11 @@ class KnowledgeBoardThemeController extends Controller
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
             'google_analytics_id' => 'nullable|string|max:50',
+            'menu_order' => 'nullable|array',
+            'menu_order.*.key' => 'required|string',
+            'menu_order.*.label' => 'required|string|max:50',
+            'menu_order.*.visible' => 'required|boolean',
+            'menu_order.*.order' => 'required|integer|min:1',
         ]);
 
         unset($validated['apply_to']);

@@ -421,23 +421,7 @@
                 </a>
             </div>
 
-            <nav class="public-nav">
-                <a href="{{ route('public.home', $settings->unique_url) }}" class="nav-tab">
-                    <i class="ti ti-message-2"></i> Feedback
-                </a>
-                <a href="{{ route('public.roadmap', $settings->unique_url) }}" class="nav-tab">
-                    <i class="ti ti-route"></i> Roadmap
-                </a>
-                <a href="{{ route('public.changelog', $settings->unique_url) }}" class="nav-tab active">
-                    <i class="ti ti-clipboard-list"></i> Changelog
-                </a>
-                <a href="{{ route('public.testimonials', $settings->unique_url) }}" class="nav-tab">
-                    <i class="ti ti-star"></i> Testimonials
-                </a>
-                <a href="{{ route('public.knowledge', $settings->unique_url) }}" class="nav-tab">
-                    <i class="ti ti-book"></i> Knowledge
-                </a>
-            </nav>
+            @include('public.partials.navigation')
         </div>
     </header>
 
