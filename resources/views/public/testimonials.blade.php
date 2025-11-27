@@ -14,80 +14,17 @@
     <!-- Video.js for HLS playback -->
     <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet">
 
+    @include('public.partials.public-styles')
+
     <style>
+        /* Testimonials Page Specific Styles */
         :root {
-            --primary-color: #5865F2;
-            --border-color: #e5e7eb;
-            --text-primary: #1f2937;
-            --text-secondary: #6b7280;
-            --bg-hover: #f9fafb;
             --card-bg: #ffffff;
             --page-bg: #f3f4f6;
         }
 
-        * {
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background-color: var(--page-bg);
-            color: var(--text-primary);
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Header */
-        .public-header {
-            border-bottom: 1px solid var(--border-color);
-            background: white;
-            padding: 1rem 0;
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-img {
-            width: 192px;
-            height: 75px;
-            object-fit: contain;
-            border-radius: 8px;
-        }
-
-        .product-name {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin: 0;
-        }
-
-        /* Navigation */
-        .public-nav {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .nav-tab {
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            text-decoration: none;
-            color: var(--text-secondary);
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .nav-tab:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-        }
-
-        .nav-tab.active {
-            background: var(--primary-color);
-            color: white;
         }
 
         /* Page Header */
@@ -323,34 +260,6 @@
             border-left: 3px solid #0A66C2;
         }
 
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 6rem 2rem;
-            background: white;
-            border-radius: 16px;
-            max-width: 500px;
-            margin: 2rem auto;
-        }
-
-        .empty-icon {
-            font-size: 4rem;
-            color: #E5E7EB;
-            margin-bottom: 1.5rem;
-        }
-
-        .empty-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .empty-text {
-            color: var(--text-secondary);
-            font-size: 1rem;
-        }
-
         /* Pagination */
         .pagination-wrapper {
             padding: 2rem 1rem 3rem;
@@ -384,28 +293,7 @@
 </head>
 <body>
     <!-- Header -->
-    <header class="public-header pt-0">
-        <div class="container">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="logo-section">
-                    @if($settings->logo)
-                        <img src="{{ asset('storage/' . $settings->logo) }}" alt="{{ $settings->product_name }}" class="logo-img">
-                    @else
-                        <div class="logo-img" style="background: var(--primary-color); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.25rem;">
-                            {{ strtoupper(substr($settings->product_name ?? 'F', 0, 1)) }}
-                        </div>
-                        <h1 class="product-name">{{ $settings->product_name ?? 'Feedback Board' }}</h1>
-                    @endif
-                </div>
-
-                <a href="{{ route('public.subscribe', $settings->unique_url) }}" class="btn btn-primary" style="background: var(--primary-color); border: none; padding: 0.5rem 1.5rem; border-radius: 6px; text-decoration: none; color: white; font-weight: 500;">
-                    <i class="ti ti-bell-ringing me-1"></i> Subscribe
-                </a>
-            </div>
-
-            @include('public.partials.navigation')
-        </div>
-    </header>
+    @include('public.partials.top-navbar')
 
     <!-- Page Header -->
     <div class="page-header">

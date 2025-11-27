@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
@@ -21,8 +22,15 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
+        $teamId = auth()->user()->current_team_id;
+
         $validated = $request->validate([
-            'category_name' => 'required|string|max:255|unique:categories,name',
+            'category_name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('categories', 'name')->where('team_id', $teamId),
+            ],
             'status' => 'required|in:active,inactive',
         ], [
             'category_name.required' => 'Category name is required.',
@@ -48,8 +56,15 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
+        $teamId = auth()->user()->current_team_id;
+
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('categories', 'name')->where('team_id', $teamId)->ignore($category->id),
+            ],
             'status' => 'required|in:active,inactive',
         ]);
 

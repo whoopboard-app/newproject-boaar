@@ -32,7 +32,8 @@
       "Bash(more:*)",
       "Bash(/c/wamp64/bin/php/php8.1.0/php.exe artisan migrate:status:*)",
       "Bash(findstr:*)",
-      "Bash(/c/wamp64/bin/php/php8.1.0/php.exe artisan:*)"
+      "Bash(/c/wamp64/bin/php/php8.1.0/php.exe artisan:*)",
+      "Bash(\"C:\\wamp64\\bin\\php\\php8.1.0\\php.exe\" artisan make:migration update_categories_unique_constraint_to_include_team_id --path=database/migrations)"
     ],
     "deny": [],
     "ask": []

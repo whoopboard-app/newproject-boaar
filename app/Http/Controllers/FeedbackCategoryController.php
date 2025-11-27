@@ -22,8 +22,15 @@ class FeedbackCategoryController extends Controller
      */
     public function store(Request $request)
     {
+        $teamId = auth()->user()->current_team_id;
+
         $validated = $request->validate([
-            'name' => 'required|string|max:60|unique:feedback_categories,name',
+            'name' => [
+                'required',
+                'string',
+                'max:60',
+                Rule::unique('feedback_categories', 'name')->where('team_id', $teamId),
+            ],
             'is_active' => 'boolean',
         ]);
 
@@ -52,12 +59,14 @@ class FeedbackCategoryController extends Controller
      */
     public function update(Request $request, FeedbackCategory $feedbackCategory)
     {
+        $teamId = auth()->user()->current_team_id;
+
         $validated = $request->validate([
             'name' => [
                 'required',
                 'string',
                 'max:60',
-                Rule::unique('feedback_categories', 'name')->ignore($feedbackCategory->id),
+                Rule::unique('feedback_categories', 'name')->where('team_id', $teamId)->ignore($feedbackCategory->id),
             ],
             'is_active' => 'required|boolean',
         ]);
@@ -105,6 +114,8 @@ class FeedbackCategoryController extends Controller
      */
     public function bulkUpdate(Request $request)
     {
+        $teamId = auth()->user()->current_team_id;
+
         $validated = $request->validate([
             'categories' => 'required|array',
             'categories.*.name' => 'required|string|max:60',
@@ -118,7 +129,7 @@ class FeedbackCategoryController extends Controller
             $processedNames = [];
 
             foreach ($validated['categories'] as $categoryData) {
-                // Check for duplicate names
+                // Check for duplicate names within this request
                 if (in_array($categoryData['name'], $processedNames)) {
                     return response()->json([
                         'success' => false,

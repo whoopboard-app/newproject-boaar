@@ -43,9 +43,14 @@
 @section('content')
 <div class="row">
     <div class="col-12">
-        <div class="page-title-box">
-            <h4 class="page-title">Category Management</h4>
-            <p class="text-muted fs-14">Manage categories for your change log system</p>
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <div>
+                <h4 class="page-title">Category Management</h4>
+                <p class="text-muted fs-14">Manage categories for your change log system</p>
+            </div>
+            <a href="{{ route('settings.index') }}" class="btn btn-secondary">
+                <i class="ti ti-arrow-left me-1"></i> Back to Settings
+            </a>
         </div>
     </div>
 </div>

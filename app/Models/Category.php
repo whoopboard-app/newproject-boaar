@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\BelongsToTeam;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class Category extends Model
 {

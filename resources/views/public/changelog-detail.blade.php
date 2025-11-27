@@ -11,75 +11,10 @@
     <!-- Tabler Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 
+    @include('public.partials.public-styles')
+
     <style>
-        :root {
-            --primary-color: #5865F2;
-            --border-color: #e5e7eb;
-            --text-primary: #1f2937;
-            --text-secondary: #6b7280;
-            --bg-hover: #f9fafb;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #ffffff;
-            color: var(--text-primary);
-        }
-
-        /* Header */
-        .public-header {
-            border-bottom: 1px solid var(--border-color);
-            background: white;
-            padding: 1rem 0;
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-img {
-            width: 40px;
-            height: 40px;
-            object-fit: contain;
-            border-radius: 8px;
-        }
-
-        .product-name {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin: 0;
-        }
-
-        /* Navigation */
-        .public-nav {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .nav-tab {
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            text-decoration: none;
-            color: var(--text-secondary);
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .nav-tab:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-        }
-
-        .nav-tab.active {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        /* Changelog Detail */
+        /* Changelog Detail Specific Styles */
         .changelog-container {
             max-width: 800px;
             margin: 0 auto;
@@ -208,117 +143,6 @@
             font-style: italic;
         }
 
-        /* Filters */
-        .filters-section {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .search-box {
-            width: 100%;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 0.625rem 0.875rem;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 0.875rem;
-            background: white;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        .filter-dropdown {
-            width: 100%;
-        }
-
-        .filter-dropdown select {
-            width: 100%;
-            padding: 0.625rem 0.875rem;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 0.875rem;
-            cursor: pointer;
-            background: white;
-        }
-
-        .filter-dropdown select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        /* Layout with Sidebar */
-        .public-content {
-            display: grid;
-            grid-template-columns: 240px 1fr;
-            gap: 2rem;
-            padding-top: 2rem;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            position: sticky;
-            top: 2rem;
-            height: fit-content;
-        }
-
-        .sidebar-title {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 1rem;
-        }
-
-        .category-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.625rem 0.75rem;
-            border-radius: 6px;
-            text-decoration: none;
-            color: var(--text-primary);
-            transition: all 0.2s;
-            margin-bottom: 0.25rem;
-            cursor: pointer;
-        }
-
-        .category-item:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-        }
-
-        .category-item.active {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .category-name {
-            font-weight: 500;
-            font-size: 0.9375rem;
-        }
-
-        .category-count {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            background: #f3f4f6;
-            padding: 0.125rem 0.5rem;
-            border-radius: 12px;
-            font-weight: 500;
-        }
-
-        .category-item.active .category-count {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-
         /* Short description */
         .changelog-short-description {
             font-size: 1.125rem;
@@ -388,42 +212,11 @@
         .changelog-item-link.current .changelog-item-date {
             color: rgba(255, 255, 255, 0.8);
         }
-
-        @media (max-width: 768px) {
-            .public-content {
-                grid-template-columns: 1fr;
-            }
-
-            .sidebar {
-                position: static;
-            }
-        }
     </style>
 </head>
 <body>
     <!-- Header -->
-    <header class="public-header pt-0">
-        <div class="container">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="logo-section">
-                    @if($settings->logo)
-                        <img src="{{ asset('storage/' . $settings->logo) }}" alt="{{ $settings->product_name }}" class="logo-img">
-                    @else
-                        <div class="logo-img" style="background: var(--primary-color); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.25rem;">
-                            {{ strtoupper(substr($settings->product_name ?? 'F', 0, 1)) }}
-                        </div>
-                        <h1 class="product-name">{{ $settings->product_name ?? 'Feedback Board' }}</h1>
-                    @endif
-                </div>
-
-                <a href="{{ route('public.subscribe', $settings->unique_url) }}" class="btn btn-primary" style="background: var(--primary-color); border: none; padding: 0.5rem 1.5rem; border-radius: 6px; text-decoration: none; color: white; font-weight: 500;">
-                    <i class="ti ti-bell-ringing me-1"></i> Subscribe
-                </a>
-            </div>
-
-            @include('public.partials.navigation')
-        </div>
-    </header>
+    @include('public.partials.top-navbar')
 
     <!-- Main Content -->
     <div class="container">
