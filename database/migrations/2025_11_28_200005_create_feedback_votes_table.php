@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Drop table if it already exists to prevent migration failure
-        Schema::dropIfExists('feedback_votes');
+        if (Schema::hasTable('feedback_votes')) {
+            return;
+        }
 
         Schema::create('feedback_votes', function (Blueprint $table) {
             $table->id();
@@ -35,10 +36,6 @@ return new class extends Migration
                 ->onDelete('cascade');
 
             $table->unique(['feedback_id', 'public_user_id'], 'unique_feedback_user_vote');
-        });
-
-        // Add index for IP-based rate limiting queries
-        Schema::table('feedback_votes', function (Blueprint $table) {
             $table->index(['voter_ip', 'voted_at']);
         });
     }
@@ -48,12 +45,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // First drop foreign keys manually (required on MySQL)
-        Schema::table('feedback_votes', function (Blueprint $table) {
-            $table->dropForeign(['feedback_id']);
-            $table->dropForeign(['public_user_id']);
-        });
-
         Schema::dropIfExists('feedback_votes');
     }
 };

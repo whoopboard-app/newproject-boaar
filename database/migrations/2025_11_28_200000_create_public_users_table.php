@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('public_users')) {
+            return;
+        }
+
         Schema::create('public_users', function (Blueprint $table) {
             $table->id();
             $table->string('email')->unique();
