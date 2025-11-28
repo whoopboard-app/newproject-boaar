@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('feedback_settings', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('team_id');
+            $table->foreignId('team_id')->constrained('teams')->onDelete('cascade');
             $table->boolean('enable_login_for_voting')->default(false);
             $table->boolean('enable_anonymous_voting')->default(true);
             $table->boolean('enable_email_based_voting')->default(false);
@@ -24,7 +24,6 @@ return new class extends Migration
             $table->boolean('enable_captcha')->default(false);
             $table->timestamps();
 
-            $table->foreign('team_id')->references('id')->on('teams')->onDelete('cascade');
             $table->unique('team_id'); // One feedback settings record per team
         });
     }
