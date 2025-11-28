@@ -15,7 +15,6 @@ class Changelog extends Model
         'cover_image',
         'short_description',
         'description',
-        'category_id',
         'tags',
         'author_name',
         'published_date',
@@ -27,8 +26,12 @@ class Changelog extends Model
         'published_date' => 'date',
     ];
 
-    public function category()
+    /**
+     * Get all categories for this changelog (many-to-many)
+     */
+    public function categories()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsToMany(Category::class, 'changelog_category')
+                    ->withTimestamps();
     }
 }

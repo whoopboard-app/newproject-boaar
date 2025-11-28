@@ -56,6 +56,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Base Domain for Subdomain Routing
+    |--------------------------------------------------------------------------
+    |
+    | This value is used for subdomain detection. Subdomains are extracted
+    | relative to this base domain. For example, if base_domain is "wbapp.com"
+    | and a request comes from "demo.wbapp.com", "demo" is the subdomain.
+    |
+    */
+
+    'base_domain' => env('APP_BASE_DOMAIN', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

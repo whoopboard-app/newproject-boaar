@@ -64,10 +64,11 @@ class Category extends Model
     }
 
     /**
-     * Get all changelogs for this category
+     * Get all changelogs for this category (many-to-many)
      */
     public function changelogs()
     {
-        return $this->hasMany(Changelog::class, 'category_id');
+        return $this->belongsToMany(Changelog::class, 'changelog_category')
+                    ->withTimestamps();
     }
 }

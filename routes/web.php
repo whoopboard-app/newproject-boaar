@@ -19,10 +19,48 @@ use App\Http\Controllers\PublicController;
 use App\Http\Controllers\PublicAuthController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\TestimonialTemplateController;
+use App\Http\Controllers\SubdomainPublicController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return redirect()->route('login');
+// Subdomain-based Public Routes (e.g., demo.wbapp.com:8000)
+// These routes are checked first and only match when a valid subdomain is detected
+Route::middleware(['web'])->group(function () {
+    Route::get('/', function (\Illuminate\Http\Request $request) {
+        // Check if this is a subdomain request
+        if ($request->attributes->get('is_subdomain')) {
+            return app(SubdomainPublicController::class)->home($request);
+        }
+        // Default: redirect to login
+        return redirect()->route('login');
+    });
+
+    Route::get('/roadmap', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(SubdomainPublicController::class)->roadmap($request);
+        }
+        abort(404);
+    })->name('subdomain.roadmap');
+
+    Route::get('/changelog', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(SubdomainPublicController::class)->changelog($request);
+        }
+        abort(404);
+    })->name('subdomain.changelog');
+
+    Route::get('/testimonials', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(SubdomainPublicController::class)->testimonials($request);
+        }
+        abort(404);
+    })->name('subdomain.testimonials');
+
+    Route::get('/knowledge', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(SubdomainPublicController::class)->knowledge($request);
+        }
+        abort(404);
+    })->name('subdomain.knowledge');
 });
 
 Route::get('/dashboard', function () {
@@ -228,36 +266,43 @@ Route::prefix('api/mux')->group(function () {
 Route::get('/testimonial-campaign/open/{trackingToken}', [\App\Http\Controllers\TestimonialCampaignController::class, 'trackOpen'])->name('testimonials.campaign-open');
 Route::get('/testimonial-campaign/click/{trackingToken}', [\App\Http\Controllers\TestimonialCampaignController::class, 'trackClick'])->name('testimonials.campaign-click');
 
-// Public Pages - MUST BE LAST (Catch-all routes)
-Route::get('/{unique_url}/login', [PublicAuthController::class, 'showLoginForm'])->name('public.auth.login');
-Route::post('/{unique_url}/login', [PublicAuthController::class, 'sendMagicLink'])->name('public.auth.send-magic-link');
-Route::get('/{unique_url}/logout', [PublicAuthController::class, 'logout'])->name('public.auth.logout');
-Route::get('/{unique_url}/roadmap', [PublicController::class, 'roadmap'])->name('public.roadmap');
-Route::get('/{unique_url}/roadmap/{roadmapItem}', [PublicController::class, 'showRoadmapItem'])->name('public.roadmap.show');
-Route::get('/{unique_url}/changelog', [PublicController::class, 'changelog'])->name('public.changelog');
-Route::get('/{unique_url}/changelog/{changelog}', [PublicController::class, 'showChangelog'])->name('public.changelog.show');
-Route::get('/{unique_url}/testimonials', [PublicController::class, 'testimonials'])->name('public.testimonials');
-Route::get('/{unique_url}/testimonials/{testimonial}', [PublicController::class, 'showTestimonial'])->name('public.testimonials.show');
-Route::get('/{unique_url}/knowledge', [PublicController::class, 'knowledge'])->name('public.knowledge');
-Route::get('/{unique_url}/knowledge/{knowledgeBoard}', [PublicController::class, 'showKnowledge'])->name('public.knowledge.show');
-Route::get('/{unique_url}/knowledge/{knowledgeBoard}/category/{category}', [PublicController::class, 'showKnowledgeCategory'])->name('public.knowledge.category');
-Route::get('/{unique_url}/knowledge/{knowledgeBoard}/article/{article}', [PublicController::class, 'showKnowledgeArticle'])->name('public.knowledge.article');
-Route::get('/{unique_url}/knowledge/{knowledgeBoard}/search', [PublicController::class, 'searchKnowledgeArticles'])->name('public.knowledge.search');
-Route::get('/{unique_url}/subscribe', [PublicController::class, 'subscribe'])->name('public.subscribe');
-Route::post('/{unique_url}/subscribe', [PublicController::class, 'subscribeSubmit'])->name('public.subscribe.submit');
+// Public Pages - Using subdomain middleware for team detection
+// These routes support both subdomain-based (team.example.com) and path-based (example.com/{unique_url}) routing
+Route::middleware(['team.subdomain'])->group(function () {
+    // Public Auth Routes
+    Route::get('/{unique_url}/login', [PublicAuthController::class, 'showLoginForm'])->name('public.auth.login');
+    Route::post('/{unique_url}/login', [PublicAuthController::class, 'sendMagicLink'])->name('public.auth.send-magic-link');
+    Route::get('/{unique_url}/logout', [PublicAuthController::class, 'logout'])->name('public.auth.logout');
 
-// Public Feedback Submission and Voting
-Route::post('/{unique_url}/feedback/submit', [PublicController::class, 'submitFeedback'])->name('public.feedback.submit');
-Route::get('/{unique_url}/feedback/{feedback}', [PublicController::class, 'showFeedback'])->name('public.feedback.show');
-Route::post('/{unique_url}/feedback/{feedback}/vote', [PublicController::class, 'vote'])->name('public.feedback.vote');
-Route::post('/{unique_url}/feedback/{feedback}/unvote', [PublicController::class, 'unvote'])->name('public.feedback.unvote');
-Route::post('/{unique_url}/feedback/{feedback}/request-otp', [PublicController::class, 'requestVoteOtp'])->name('public.feedback.request-otp');
-Route::post('/{unique_url}/feedback/{feedback}/verify-otp', [PublicController::class, 'verifyVoteOtp'])->name('public.feedback.verify-otp');
-Route::post('/{unique_url}/feedback/{feedback}/comment', [PublicController::class, 'storePublicComment'])->name('public.feedback.comment');
+    // Public Content Routes
+    Route::get('/{unique_url}/roadmap', [PublicController::class, 'roadmap'])->name('public.roadmap');
+    Route::get('/{unique_url}/roadmap/{roadmapItem}', [PublicController::class, 'showRoadmapItem'])->name('public.roadmap.show');
+    Route::get('/{unique_url}/changelog', [PublicController::class, 'changelog'])->name('public.changelog');
+    Route::get('/{unique_url}/changelog/{changelog}', [PublicController::class, 'showChangelog'])->name('public.changelog.show');
+    Route::get('/{unique_url}/testimonials', [PublicController::class, 'testimonials'])->name('public.testimonials');
+    Route::get('/{unique_url}/testimonials/{testimonial}', [PublicController::class, 'showTestimonial'])->name('public.testimonials.show');
+    Route::get('/{unique_url}/knowledge', [PublicController::class, 'knowledge'])->name('public.knowledge');
+    Route::get('/{unique_url}/knowledge/{knowledgeBoard}', [PublicController::class, 'showKnowledge'])->name('public.knowledge.show');
+    Route::get('/{unique_url}/knowledge/{knowledgeBoard}/category/{category}', [PublicController::class, 'showKnowledgeCategory'])->name('public.knowledge.category');
+    Route::get('/{unique_url}/knowledge/{knowledgeBoard}/article/{article}', [PublicController::class, 'showKnowledgeArticle'])->name('public.knowledge.article');
+    Route::get('/{unique_url}/knowledge/{knowledgeBoard}/search', [PublicController::class, 'searchKnowledgeArticles'])->name('public.knowledge.search');
+    Route::get('/{unique_url}/subscribe', [PublicController::class, 'subscribe'])->name('public.subscribe');
+    Route::post('/{unique_url}/subscribe', [PublicController::class, 'subscribeSubmit'])->name('public.subscribe.submit');
 
-// Public Rating Submission
-Route::post('/{unique_url}/rating/submit', [PublicController::class, 'submitRating'])->name('public.rating.submit');
-Route::post('/{unique_url}/rating/comment', [PublicController::class, 'submitRatingComment'])->name('public.rating.comment');
-Route::get('/{unique_url}/ratings', [PublicController::class, 'getRatings'])->name('public.ratings.get');
+    // Public Feedback Submission and Voting
+    Route::post('/{unique_url}/feedback/submit', [PublicController::class, 'submitFeedback'])->name('public.feedback.submit');
+    Route::get('/{unique_url}/feedback/{feedback}', [PublicController::class, 'showFeedback'])->name('public.feedback.show');
+    Route::post('/{unique_url}/feedback/{feedback}/vote', [PublicController::class, 'vote'])->name('public.feedback.vote');
+    Route::post('/{unique_url}/feedback/{feedback}/unvote', [PublicController::class, 'unvote'])->name('public.feedback.unvote');
+    Route::post('/{unique_url}/feedback/{feedback}/request-otp', [PublicController::class, 'requestVoteOtp'])->name('public.feedback.request-otp');
+    Route::post('/{unique_url}/feedback/{feedback}/verify-otp', [PublicController::class, 'verifyVoteOtp'])->name('public.feedback.verify-otp');
+    Route::post('/{unique_url}/feedback/{feedback}/comment', [PublicController::class, 'storePublicComment'])->name('public.feedback.comment');
 
-Route::get('/{unique_url}', [PublicController::class, 'home'])->name('public.home');
+    // Public Rating Submission
+    Route::post('/{unique_url}/rating/submit', [PublicController::class, 'submitRating'])->name('public.rating.submit');
+    Route::post('/{unique_url}/rating/comment', [PublicController::class, 'submitRatingComment'])->name('public.rating.comment');
+    Route::get('/{unique_url}/ratings', [PublicController::class, 'getRatings'])->name('public.ratings.get');
+
+    // Public Home (must be last within group)
+    Route::get('/{unique_url}', [PublicController::class, 'home'])->name('public.home');
+});

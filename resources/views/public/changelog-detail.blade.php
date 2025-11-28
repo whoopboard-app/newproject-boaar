@@ -288,11 +288,11 @@
 
                     <header class="changelog-header">
                         <div class="changelog-meta">
-                            @if($changelog->category)
-                                <span class="changelog-category" style="background-color: {{ $changelog->category->color ?? '#e5e7eb' }}20; color: {{ $changelog->category->color ?? '#6b7280' }};">
-                                    {{ $changelog->category->name }}
+                            @foreach($changelog->categories as $category)
+                                <span class="changelog-category" style="background-color: {{ $category->color ?? '#e5e7eb' }}20; color: {{ $category->color ?? '#6b7280' }};">
+                                    {{ $category->name }}
                                 </span>
-                            @endif
+                            @endforeach
                             <span class="changelog-date">
                                 <i class="ti ti-calendar"></i>
                                 {{ \Carbon\Carbon::parse($changelog->published_date)->format('F d, Y') }}

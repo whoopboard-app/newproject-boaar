@@ -35,12 +35,33 @@ use Illuminate\Support\Str;
 class PublicController extends Controller
 {
     /**
+     * Get team settings from middleware-injected request attributes.
+     * Falls back to unique_url lookup for backward compatibility.
+     */
+    protected function getTeamSettings(Request $request, ?string $uniqueUrl = null): AppSettings
+    {
+        // First try to get from middleware-injected attributes
+        $settings = $request->attributes->get('team_settings');
+
+        if ($settings instanceof AppSettings) {
+            return $settings;
+        }
+
+        // Fallback to unique_url lookup for backward compatibility
+        if ($uniqueUrl) {
+            return AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        }
+
+        abort(404, 'Team not found');
+    }
+
+    /**
      * Display public feedback board
      */
-    public function home($uniqueUrl)
+    public function home(Request $request, $uniqueUrl)
     {
-        // Find the app settings by unique URL
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        // Get team settings from middleware
+        $settings = $this->getTeamSettings($request, $uniqueUrl);
 
         // Get feedback settings for this team
         $feedbackSettings = FeedbackSettings::forTeam($settings->team_id);
@@ -89,10 +110,10 @@ class PublicController extends Controller
     /**
      * Display single feedback detail
      */
-    public function showFeedback($uniqueUrl, $feedbackId)
+    public function showFeedback(Request $request, $uniqueUrl, $feedbackId)
     {
-        // Find the app settings by unique URL
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        // Get team settings from middleware (validates subdomain/unique_url match)
+        $settings = $this->getTeamSettings($request, $uniqueUrl);
 
         // Get feedback settings for this team
         $feedbackSettings = FeedbackSettings::forTeam($settings->team_id);
@@ -146,10 +167,10 @@ class PublicController extends Controller
     /**
      * Display public roadmap
      */
-    public function roadmap($uniqueUrl)
+    public function roadmap(Request $request, $uniqueUrl)
     {
-        // Find the app settings by unique URL
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        // Get team settings from middleware (validates subdomain/unique_url match)
+        $settings = $this->getTeamSettings($request, $uniqueUrl);
 
         // Get active roadmap statuses for this team (only roadmap workflow)
         $roadmaps = Roadmap::where('team_id', $settings->team_id)
@@ -172,10 +193,10 @@ class PublicController extends Controller
     /**
      * Display public changelog
      */
-    public function changelog($uniqueUrl)
+    public function changelog(Request $request, $uniqueUrl)
     {
-        // Find the app settings by unique URL
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        // Get team settings from middleware (validates subdomain/unique_url match)
+        $settings = $this->getTeamSettings($request, $uniqueUrl);
 
         // Get active categories with changelog counts
         $categories = \App\Models\Category::where('team_id', $settings->team_id)
@@ -188,7 +209,7 @@ class PublicController extends Controller
             ->get();
 
         // Get published changelogs for this team
-        $changelogs = Changelog::with('category')
+        $changelogs = Changelog::with('categories')
             ->where('team_id', $settings->team_id)
             ->where('status', 'Published')
             ->orderBy('published_date', 'desc')
@@ -200,20 +221,20 @@ class PublicController extends Controller
     /**
      * Display single changelog
      */
-    public function showChangelog($uniqueUrl, $changelogId)
+    public function showChangelog(Request $request, $uniqueUrl, $changelogId)
     {
-        // Find the app settings by unique URL
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        // Get team settings from middleware (validates subdomain/unique_url match)
+        $settings = $this->getTeamSettings($request, $uniqueUrl);
 
         // Get the specific changelog
-        $changelog = Changelog::with('category')
+        $changelog = Changelog::with('categories')
             ->where('team_id', $settings->team_id)
             ->where('status', 'Published')
             ->where('id', $changelogId)
             ->firstOrFail();
 
         // Get all published changelogs for filtering
-        $allChangelogs = Changelog::with('category')
+        $allChangelogs = Changelog::with('categories')
             ->where('team_id', $settings->team_id)
             ->where('status', 'Published')
             ->orderBy('published_date', 'desc')
@@ -241,10 +262,10 @@ class PublicController extends Controller
     /**
      * Display public testimonials
      */
-    public function testimonials($uniqueUrl)
+    public function testimonials(Request $request, $uniqueUrl)
     {
-        // Find the app settings by unique URL
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        // Get team settings from middleware (validates subdomain/unique_url match)
+        $settings = $this->getTeamSettings($request, $uniqueUrl);
 
         // Get published testimonials for this team
         $testimonials = Testimonial::where('team_id', $settings->team_id)
@@ -258,10 +279,10 @@ class PublicController extends Controller
     /**
      * Display single testimonial
      */
-    public function showTestimonial($uniqueUrl, $testimonialId)
+    public function showTestimonial(Request $request, $uniqueUrl, $testimonialId)
     {
-        // Find the app settings by unique URL
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        // Get team settings from middleware (validates subdomain/unique_url match)
+        $settings = $this->getTeamSettings($request, $uniqueUrl);
 
         // Get the specific testimonial
         $testimonial = Testimonial::where('team_id', $settings->team_id)
@@ -283,10 +304,10 @@ class PublicController extends Controller
     /**
      * Display public knowledge board
      */
-    public function knowledge($uniqueUrl)
+    public function knowledge(Request $request, $uniqueUrl)
     {
-        // Find the app settings by unique URL
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        // Get team settings from middleware (validates subdomain/unique_url match)
+        $settings = $this->getTeamSettings($request, $uniqueUrl);
 
         // Get published public knowledge boards for this team
         $knowledgeBoards = KnowledgeBoard::where('team_id', $settings->team_id)
@@ -301,10 +322,10 @@ class PublicController extends Controller
     /**
      * Display single knowledge board with theme-based layout
      */
-    public function showKnowledge($uniqueUrl, $knowledgeBoardId)
+    public function showKnowledge(Request $request, $uniqueUrl, $knowledgeBoardId)
     {
-        // Find the app settings by unique URL
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        // Get team settings from middleware (validates subdomain/unique_url match)
+        $settings = $this->getTeamSettings($request, $uniqueUrl);
 
         // Get the specific knowledge board
         $knowledgeBoard = KnowledgeBoard::where('team_id', $settings->team_id)
@@ -345,10 +366,10 @@ class PublicController extends Controller
     /**
      * Display single knowledge board article
      */
-    public function showKnowledgeArticle($uniqueUrl, $knowledgeBoardId, $articleId)
+    public function showKnowledgeArticle(Request $request, $uniqueUrl, $knowledgeBoardId, $articleId)
     {
-        // Find the app settings by unique URL
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        // Get team settings from middleware (validates subdomain/unique_url match)
+        $settings = $this->getTeamSettings($request, $uniqueUrl);
 
         // Get the knowledge board
         $knowledgeBoard = KnowledgeBoard::where('team_id', $settings->team_id)
@@ -416,10 +437,10 @@ class PublicController extends Controller
     /**
      * Display knowledge board category page with articles
      */
-    public function showKnowledgeCategory($uniqueUrl, $knowledgeBoardId, $categoryId)
+    public function showKnowledgeCategory(Request $request, $uniqueUrl, $knowledgeBoardId, $categoryId)
     {
-        // Find the app settings by unique URL
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        // Get team settings from middleware (validates subdomain/unique_url match)
+        $settings = $this->getTeamSettings($request, $uniqueUrl);
 
         // Get the knowledge board
         $knowledgeBoard = KnowledgeBoard::where('team_id', $settings->team_id)
@@ -473,12 +494,12 @@ class PublicController extends Controller
     /**
      * Search knowledge board articles (AJAX)
      */
-    public function searchKnowledgeArticles($uniqueUrl, $knowledgeBoardId, Request $request)
+    public function searchKnowledgeArticles(Request $request, $uniqueUrl, $knowledgeBoardId)
     {
-        // Find the app settings by unique URL
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->first();
-
-        if (!$settings) {
+        // Get team settings from middleware
+        try {
+            $settings = $this->getTeamSettings($request, $uniqueUrl);
+        } catch (\Exception $e) {
             return response()->json(['results' => []]);
         }
 
@@ -525,10 +546,10 @@ class PublicController extends Controller
     /**
      * Display public subscribe page
      */
-    public function subscribe($uniqueUrl)
+    public function subscribe(Request $request, $uniqueUrl)
     {
-        // Find the app settings by unique URL
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        // Get team settings from middleware
+        $settings = $this->getTeamSettings($request, $uniqueUrl);
 
         return view('public.subscribe', compact('settings'));
     }
@@ -538,8 +559,8 @@ class PublicController extends Controller
      */
     public function subscribeSubmit(Request $request, $uniqueUrl)
     {
-        // Find the app settings by unique URL
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        // Get team settings from middleware
+        $settings = $this->getTeamSettings($request, $uniqueUrl);
 
         // Validate the request
         $validator = Validator::make($request->all(), [
@@ -584,8 +605,8 @@ class PublicController extends Controller
      */
     public function submitFeedback(Request $request, $uniqueUrl)
     {
-        // Find the app settings by unique URL
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        // Get team settings from middleware
+        $settings = $this->getTeamSettings($request, $uniqueUrl);
         $feedbackSettings = FeedbackSettings::forTeam($settings->team_id);
 
         // Validate request
@@ -754,7 +775,8 @@ class PublicController extends Controller
      */
     public function vote(Request $request, $uniqueUrl, $feedbackId)
     {
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        // Get team settings from middleware
+        $settings = $this->getTeamSettings($request, $uniqueUrl);
         $feedbackSettings = FeedbackSettings::forTeam($settings->team_id);
 
         $feedback = Feedback::where('id', $feedbackId)
@@ -846,7 +868,8 @@ class PublicController extends Controller
      */
     public function requestVoteOtp(Request $request, $uniqueUrl, $feedbackId)
     {
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        // Get team settings from middleware
+        $settings = $this->getTeamSettings($request, $uniqueUrl);
 
         $request->validate([
             'email' => 'required|email|max:255',
@@ -886,7 +909,8 @@ class PublicController extends Controller
      */
     public function verifyVoteOtp(Request $request, $uniqueUrl, $feedbackId)
     {
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        // Get team settings from middleware
+        $settings = $this->getTeamSettings($request, $uniqueUrl);
         $feedbackSettings = FeedbackSettings::forTeam($settings->team_id);
 
         $request->validate([
@@ -941,7 +965,8 @@ class PublicController extends Controller
      */
     public function unvote(Request $request, $uniqueUrl, $feedbackId)
     {
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        // Get team settings from middleware
+        $settings = $this->getTeamSettings($request, $uniqueUrl);
 
         $feedback = Feedback::where('id', $feedbackId)
             ->where('team_id', $settings->team_id)
@@ -975,7 +1000,8 @@ class PublicController extends Controller
      */
     public function storePublicComment(Request $request, $uniqueUrl, $feedbackId)
     {
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        // Get team settings from middleware
+        $settings = $this->getTeamSettings($request, $uniqueUrl);
         $feedbackSettings = FeedbackSettings::forTeam($settings->team_id);
 
         $feedback = Feedback::where('id', $feedbackId)
@@ -1086,7 +1112,8 @@ class PublicController extends Controller
      */
     public function submitRating(Request $request, $uniqueUrl)
     {
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        // Get team settings from middleware
+        $settings = $this->getTeamSettings($request, $uniqueUrl);
 
         $validator = Validator::make($request->all(), [
             'rateable_type' => 'required|in:changelog,article',
@@ -1158,7 +1185,8 @@ class PublicController extends Controller
      */
     public function submitRatingComment(Request $request, $uniqueUrl)
     {
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        // Get team settings from middleware
+        $settings = $this->getTeamSettings($request, $uniqueUrl);
 
         $validator = Validator::make($request->all(), [
             'rateable_type' => 'required|in:changelog,article',
@@ -1210,7 +1238,8 @@ class PublicController extends Controller
      */
     public function getRatings(Request $request, $uniqueUrl)
     {
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        // Get team settings from middleware
+        $settings = $this->getTeamSettings($request, $uniqueUrl);
 
         $rateableType = $request->query('type', 'changelog');
         $rateableId = $request->query('id');

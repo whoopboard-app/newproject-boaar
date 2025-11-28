@@ -13,7 +13,7 @@ class ChangelogController extends Controller
 {
     public function index()
     {
-        $changelogs = Changelog::with('category')->latest()->get();
+        $changelogs = Changelog::with('categories')->latest()->get();
         return view('changelog.index', compact('changelogs'));
     }
 
@@ -27,12 +27,21 @@ class ChangelogController extends Controller
 
         $categories = Category::where('status', 'active')->get();
         $changelog = null;
-        return view('changelog.create', compact('categories', 'changelog'));
+
+        // Get all existing tags for the current team
+        $existingTags = Changelog::whereNotNull('tags')
+            ->pluck('tags')
+            ->flatten()
+            ->unique()
+            ->values()
+            ->toArray();
+
+        return view('changelog.create', compact('categories', 'changelog', 'existingTags'));
     }
 
     public function show(Changelog $changelog)
     {
-        $changelog->load('category');
+        $changelog->load('categories');
 
         // Get ratings for this changelog
         $ratings = ArticleRating::forChangelog($changelog->id, $changelog->team_id);
@@ -49,8 +58,20 @@ class ChangelogController extends Controller
                 ->with('error', 'You do not have permission to edit changelogs.');
         }
 
+        // Eager load categories for the changelog
+        $changelog->load('categories');
+
         $categories = Category::where('status', 'active')->get();
-        return view('changelog.create', compact('categories', 'changelog'));
+
+        // Get all existing tags for the current team
+        $existingTags = Changelog::whereNotNull('tags')
+            ->pluck('tags')
+            ->flatten()
+            ->unique()
+            ->values()
+            ->toArray();
+
+        return view('changelog.create', compact('categories', 'changelog', 'existingTags'));
     }
 
     public function store(Request $request)
@@ -91,17 +112,19 @@ class ChangelogController extends Controller
                 }
             }
 
-            Changelog::create([
+            $changelog = Changelog::create([
                 'title' => $validated['title'],
                 'cover_image' => $coverImagePath,
                 'short_description' => $validated['short_description'],
                 'description' => $validated['description'],
-                'category_id' => $validated['category'][0], // Use first selected category
                 'tags' => $tags,
                 'author_name' => $validated['author_name'],
                 'published_date' => $validated['published_date'],
                 'status' => $validated['status'],
             ]);
+
+            // Sync categories (many-to-many relationship)
+            $changelog->categories()->sync($validated['category']);
 
             return redirect()->route('changelog.index')
                 ->with('success', 'Changelog created successfully!');
@@ -159,12 +182,14 @@ class ChangelogController extends Controller
                 'cover_image' => $coverImagePath,
                 'short_description' => $validated['short_description'],
                 'description' => $validated['description'],
-                'category_id' => $validated['category'][0], // Use first selected category
                 'tags' => $tags,
                 'author_name' => $validated['author_name'],
                 'published_date' => $validated['published_date'],
                 'status' => $validated['status'],
             ]);
+
+            // Sync categories (many-to-many relationship)
+            $changelog->categories()->sync($validated['category']);
 
             return redirect()->route('changelog.index')
                 ->with('success', 'Changelog updated successfully!');

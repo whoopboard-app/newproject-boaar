@@ -305,7 +305,7 @@
                     <li class="side-nav-item">
                         @php
                             $appSettings = \App\Models\AppSettings::where('team_id', Auth::user()->current_team_id)->first();
-                            $publicUrl = $appSettings && $appSettings->unique_url ? route('public.home', $appSettings->unique_url) : '#';
+                            $publicUrl = $appSettings && $appSettings->subdomain_url ? request()->getScheme() . '://' . $appSettings->subdomain_url . '.' . request()->getHttpHost() : '#';
                         @endphp
                         <a href="{{ $publicUrl }}" class="side-nav-link" onclick="window.open(this.href, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes,toolbar=yes,location=yes'); return false;">
                             <span class="menu-icon"><i class="ti ti-external-link"></i></span>

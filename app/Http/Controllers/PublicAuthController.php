@@ -14,18 +14,18 @@ class PublicAuthController extends Controller
     /**
      * Show the magic link request form.
      */
-    public function showLoginForm($uniqueUrl)
+    public function showLoginForm(Request $request)
     {
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        $settings = $request->attributes->get('app_settings');
         return view('public.auth.login', compact('settings'));
     }
 
     /**
      * Send magic link to user's email.
      */
-    public function sendMagicLink(Request $request, $uniqueUrl)
+    public function sendMagicLink(Request $request)
     {
-        $settings = AppSettings::where('unique_url', $uniqueUrl)->firstOrFail();
+        $settings = $request->attributes->get('app_settings');
 
         $request->validate([
             'email' => 'required|email|max:255',
@@ -82,12 +82,14 @@ class PublicAuthController extends Controller
     /**
      * Log the public user out.
      */
-    public function logout($uniqueUrl)
+    public function logout(Request $request)
     {
+        $settings = $request->attributes->get('app_settings');
+
         Session::forget('public_user_id');
         Session::forget('public_user_email');
 
-        return redirect()->route('public.home', $uniqueUrl)
+        return redirect()->route('public.home', $settings->unique_url)
             ->with('success', 'You have been logged out successfully.');
     }
 

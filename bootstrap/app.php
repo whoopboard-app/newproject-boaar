@@ -11,8 +11,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Global middleware for subdomain detection
+        $middleware->web(append: [
+            \App\Http\Middleware\SubdomainRouting::class,
+        ]);
+
         $middleware->alias([
             'team.permission' => \App\Http\Middleware\CheckTeamPermission::class,
+            'team.subdomain' => \App\Http\Middleware\DetectTeamSubdomain::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

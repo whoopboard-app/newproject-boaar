@@ -116,9 +116,11 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="badge" style="background-color: {{ $changelog->category->color }};">
-                                                {{ $changelog->category->name }}
-                                            </span>
+                                            @foreach($changelog->categories as $category)
+                                                <span class="badge me-1" style="background-color: {{ $category->color }};">
+                                                    {{ $category->name }}
+                                                </span>
+                                            @endforeach
                                         </td>
                                         <td>{{ $changelog->author_name }}</td>
                                         <td>{{ $changelog->published_date->format('M d, Y') }}</td>

@@ -116,12 +116,18 @@
                         </div>
                     </div>
 
-                    <!-- Public Subdomain URL (Coming Soon) -->
+                    <!-- Public Subdomain URL -->
                     <div class="row mb-4">
                         <div class="col-md-12">
-                            <label for="subdomain_url" class="form-label">Public Subdomain URL <span class="badge bg-warning ms-2">Coming Soon</span></label>
-                            <input type="text" class="form-control" id="subdomain_url" name="subdomain_url" placeholder="your-subdomain.app.com" value="{{ old('subdomain_url', $settings->subdomain_url ?? '') }}" disabled>
-                            <small class="text-muted">This feature is coming soon. You'll be able to set up a custom subdomain for your public pages.</small>
+                            <label for="subdomain_url" class="form-label">Public Subdomain URL</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control @error('subdomain_url') is-invalid @enderror" id="subdomain_url" name="subdomain_url" placeholder="myteam" value="{{ old('subdomain_url', $settings->subdomain_url ?? '') }}" pattern="[a-z0-9-]+" title="Only lowercase letters, numbers, and hyphens allowed">
+                                <span class="input-group-text">.{{ request()->getHost() }}{{ request()->getPort() && !in_array(request()->getPort(), [80, 443]) ? ':' . request()->getPort() : '' }}</span>
+                                @error('subdomain_url')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <small class="text-muted">Your public page will be accessible at this subdomain</small>
                         </div>
                     </div>
 
@@ -180,12 +186,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Auto-generate unique URL from product name
+    // Auto-generate unique URL and subdomain from product name
     const productNameInput = document.getElementById('product_name');
     const uniqueUrlInput = document.getElementById('unique_url');
+    const subdomainUrlInput = document.getElementById('subdomain_url');
     const regenerateBtn = document.getElementById('regenerate-url');
 
-    function generateUniqueUrl(text) {
+    function generateSlug(text) {
         if (!text) return '';
         return text
             .toLowerCase()
@@ -198,20 +205,37 @@ document.addEventListener('DOMContentLoaded', function() {
     if (productNameInput && uniqueUrlInput) {
         // Auto-generate on product name input
         productNameInput.addEventListener('input', function() {
-            uniqueUrlInput.value = generateUniqueUrl(this.value);
+            uniqueUrlInput.value = generateSlug(this.value);
+            // Also update subdomain if it's empty or matches the previous unique_url pattern
+            if (subdomainUrlInput && (!subdomainUrlInput.dataset.userEdited || subdomainUrlInput.value === '')) {
+                subdomainUrlInput.value = generateSlug(this.value);
+            }
         });
 
         // Regenerate button click
         if (regenerateBtn) {
             regenerateBtn.addEventListener('click', function() {
-                uniqueUrlInput.value = generateUniqueUrl(productNameInput.value);
+                uniqueUrlInput.value = generateSlug(productNameInput.value);
             });
         }
 
         // Generate on page load if product name exists but unique URL doesn't
         if (productNameInput.value && !uniqueUrlInput.value) {
-            uniqueUrlInput.value = generateUniqueUrl(productNameInput.value);
+            uniqueUrlInput.value = generateSlug(productNameInput.value);
         }
+    }
+
+    // Auto-generate subdomain on page load if empty
+    if (subdomainUrlInput && productNameInput) {
+        // Generate on page load if product name exists but subdomain doesn't
+        if (productNameInput.value && !subdomainUrlInput.value) {
+            subdomainUrlInput.value = generateSlug(productNameInput.value);
+        }
+
+        // Mark as user-edited when user manually changes it
+        subdomainUrlInput.addEventListener('input', function() {
+            this.dataset.userEdited = 'true';
+        });
     }
 });
 </script>

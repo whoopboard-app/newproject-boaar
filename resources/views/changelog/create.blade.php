@@ -138,8 +138,11 @@
                     <div class="mb-3">
                         <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
                         <select class="form-select @error('category') is-invalid @enderror" id="category" name="category[]" data-choices multiple required>
+                            @php
+                                $selectedCategories = old('category', $changelog ? $changelog->categories->pluck('id')->toArray() : []);
+                            @endphp
                             @foreach($categories as $category)
-                                <option value="{{ $category->id }}" {{ in_array($category->id, old('category', $changelog && $changelog->category_id ? [$changelog->category_id] : [])) ? 'selected' : '' }}>
+                                <option value="{{ $category->id }}" {{ in_array($category->id, $selectedCategories) ? 'selected' : '' }}>
                                     {{ $category->name }}
                                 </option>
                             @endforeach
@@ -271,12 +274,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const descriptionHtml = quillEditor.root.innerHTML;
         formData.append('description', descriptionHtml);
 
-        // Handle multiple categories
-        const categorySelect = document.getElementById('category');
-        const selectedCategories = Array.from(categorySelect.selectedOptions).map(option => option.value);
-        selectedCategories.forEach(categoryId => {
-            formData.append('category[]', categoryId);
-        });
+        // Handle multiple categories - get values from Choices.js instance
+        const categoryChoicesInstance = choicesInstances['category'];
+        const selectedCategories = categoryChoicesInstance.getValue(true); // true returns just the values
+        if (Array.isArray(selectedCategories)) {
+            selectedCategories.forEach(categoryId => {
+                formData.append('category[]', categoryId);
+            });
+        } else if (selectedCategories) {
+            // Single value selected
+            formData.append('category[]', selectedCategories);
+        }
 
         formData.append('tags', document.getElementById('tags').value);
         formData.append('author_name', document.getElementById('author_name').value);
@@ -333,20 +341,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Initialize Tagify for tags input with localStorage whitelist
+    // Initialize Tagify for tags input with team-specific tags from server
     const tagInput = document.querySelector('#tags');
 
-    // Get previously used tags from localStorage
-    let savedTags = [];
-    try {
-        const storedTags = localStorage.getItem('changelog_tags');
-        savedTags = storedTags ? JSON.parse(storedTags) : [];
-    } catch (e) {
-        savedTags = [];
-    }
+    // Get existing tags for this team from server
+    const existingTags = @json($existingTags ?? []);
 
     const tagify = new Tagify(tagInput, {
-        whitelist: savedTags,
+        whitelist: existingTags,
         maxTags: 10,
         dropdown: {
             maxItems: 20,
@@ -357,13 +359,6 @@ document.addEventListener('DOMContentLoaded', function() {
         placeholder: "Add tags...",
         delimiters: ",|;",
         enforceWhitelist: false
-    });
-
-    // Save tags to localStorage when form is submitted
-    document.querySelector('#changelogForm').addEventListener('submit', function(e) {
-        const currentTags = tagify.value.map(tag => tag.value);
-        const allTags = [...new Set([...savedTags, ...currentTags])];
-        localStorage.setItem('changelog_tags', JSON.stringify(allTags));
     });
 
     // Character counter for short description

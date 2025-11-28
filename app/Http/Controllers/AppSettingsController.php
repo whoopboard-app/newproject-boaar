@@ -53,7 +53,7 @@ class AppSettingsController extends Controller
             'product_name' => 'required|string|max:255',
             'website_url' => 'nullable|url|max:255',
             'unique_url' => 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:app_settings,unique_url,' . Auth::user()->current_team_id . ',team_id',
-            'subdomain_url' => 'nullable|string|max:255',
+            'subdomain_url' => 'nullable|string|max:63|regex:/^[a-z0-9-]+$/|unique:app_settings,subdomain_url,' . Auth::user()->current_team_id . ',team_id',
         ]);
 
         $settings = AppSettings::firstOrNew(['team_id' => Auth::user()->current_team_id]);
@@ -78,10 +78,7 @@ class AppSettingsController extends Controller
         $settings->product_name = $validated['product_name'];
         $settings->website_url = $validated['website_url'];
         $settings->unique_url = $validated['unique_url'];
-        // Only update subdomain_url if it's provided (since it's disabled in form)
-        if (isset($validated['subdomain_url'])) {
-            $settings->subdomain_url = $validated['subdomain_url'];
-        }
+        $settings->subdomain_url = $validated['subdomain_url'] ?? null;
         $settings->team_id = Auth::user()->current_team_id;
 
         $settings->save();

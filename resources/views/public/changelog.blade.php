@@ -200,7 +200,7 @@
                     <div class="changelog-list">
                         @foreach($changelogs as $changelog)
                             <article class="changelog-item"
-                                     data-category="{{ $changelog->category_id ?? '' }}"
+                                     data-category="{{ $changelog->categories->pluck('id')->implode(',') }}"
                                      data-url="{{ route('public.changelog.show', [$settings->unique_url, $changelog->id]) }}"
                                      data-year="{{ \Carbon\Carbon::parse($changelog->published_date)->format('Y') }}"
                                      data-month="{{ \Carbon\Carbon::parse($changelog->published_date)->format('n') }}"
@@ -217,11 +217,11 @@
                                         <div>
                                             <h2 class="changelog-title">{{ $changelog->title }}</h2>
                                             <div style="margin-top: 0.5rem;">
-                                                @if($changelog->category)
-                                                    <span class="changelog-category" style="background-color: {{ $changelog->category->color ?? '#e5e7eb' }}20; color: {{ $changelog->category->color ?? '#6b7280' }};">
-                                                        {{ $changelog->category->name }}
+                                                @foreach($changelog->categories as $category)
+                                                    <span class="changelog-category" style="background-color: {{ $category->color ?? '#e5e7eb' }}20; color: {{ $category->color ?? '#6b7280' }};">
+                                                        {{ $category->name }}
                                                     </span>
-                                                @endif
+                                                @endforeach
                                             </div>
                                         </div>
                                         <div class="changelog-date">
@@ -304,7 +304,9 @@
                 // Filter items
                 changelogItems.forEach(item => {
                     const matchesSearch = !searchTerm || item.dataset.search.includes(searchTerm);
-                    const matchesCategory = !selectedCategory || item.dataset.category === selectedCategory;
+                    // Handle multiple categories (comma-separated IDs)
+                    const itemCategories = item.dataset.category ? item.dataset.category.split(',') : [];
+                    const matchesCategory = !selectedCategory || itemCategories.includes(selectedCategory);
                     const matchesYear = !selectedYear || item.dataset.year === selectedYear;
                     const matchesMonth = !selectedMonth || item.dataset.month === selectedMonth;
 

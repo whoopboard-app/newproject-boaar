@@ -283,13 +283,15 @@
                     </p>
                 </div>
 
-                <!-- Category -->
+                <!-- Categories -->
                 <div class="info-box">
-                    <h6>Category</h6>
+                    <h6>Categories</h6>
                     <p>
-                        <span class="badge" style="background-color: {{ $changelog->category->color }};">
-                            {{ $changelog->category->name }}
-                        </span>
+                        @foreach($changelog->categories as $category)
+                            <span class="badge me-1" style="background-color: {{ $category->color }};">
+                                {{ $category->name }}
+                            </span>
+                        @endforeach
                     </p>
                 </div>
 
