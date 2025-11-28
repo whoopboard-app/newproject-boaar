@@ -17,23 +17,13 @@ return new class extends Migration
 
         Schema::create('feedback_votes', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('feedback_id');
-            $table->unsignedBigInteger('public_user_id')->nullable(); // Null for anonymous votes
+            $table->foreignId('feedback_id')->constrained('feedbacks')->onDelete('cascade');
+            $table->foreignId('public_user_id')->nullable()->constrained('public_users')->onDelete('cascade');
             $table->string('voter_email')->nullable(); // For email-based voting
             $table->string('voter_ip')->nullable(); // For IP tracking
             $table->string('device_fingerprint')->nullable(); // For device tracking
             $table->timestamp('voted_at');
             $table->timestamps();
-
-            $table->foreign('feedback_id')
-                ->references('id')
-                ->on('feedbacks')
-                ->onDelete('cascade');
-
-            $table->foreign('public_user_id')
-                ->references('id')
-                ->on('public_users')
-                ->onDelete('cascade');
 
             $table->unique(['feedback_id', 'public_user_id'], 'unique_feedback_user_vote');
             $table->index(['voter_ip', 'voted_at']);
