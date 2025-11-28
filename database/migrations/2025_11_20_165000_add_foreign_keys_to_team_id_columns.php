@@ -64,14 +64,22 @@ return new class extends Migration
 
         foreach ($tables as $tableName) {
             if (Schema::hasTable($tableName)) {
-                Schema::table($tableName, function (Blueprint $table) use ($tableName) {
-                    // Try to drop foreign key if it exists
-                    try {
-                        $table->dropForeign([$tableName . '_team_id_foreign']);
-                    } catch (\Exception $e) {
-                        // Foreign key might not exist, ignore
-                    }
-                });
+                // Check if foreign key exists before trying to drop
+                $database = DB::getDatabaseName();
+                $foreignKeys = DB::select("
+                    SELECT CONSTRAINT_NAME
+                    FROM information_schema.KEY_COLUMN_USAGE
+                    WHERE TABLE_SCHEMA = ?
+                    AND TABLE_NAME = ?
+                    AND COLUMN_NAME = 'team_id'
+                    AND REFERENCED_TABLE_NAME = 'teams'
+                ", [$database, $tableName]);
+
+                if (!empty($foreignKeys)) {
+                    Schema::table($tableName, function (Blueprint $table) use ($foreignKeys) {
+                        $table->dropForeign($foreignKeys[0]->CONSTRAINT_NAME);
+                    });
+                }
             }
         }
     }
