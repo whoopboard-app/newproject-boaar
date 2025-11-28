@@ -247,15 +247,7 @@
                             <span class="menu-text">Research Repo</span>
                         </a>
                     </li>
-
-                    <!-- Subscribe -->
-                    <li class="side-nav-item">
-                        <a href="#" class="side-nav-link">
-                            <span class="menu-icon"><i class="ti ti-bell"></i></span>
-                            <span class="menu-text">Subscribe</span>
-                        </a>
-                    </li>
-
+                    
                     <!-- Subscribe List -->
                     <li class="side-nav-item">
                         <a href="{{ Route::has('subscribers.index') ? route('subscribers.index') : '#' }}" class="side-nav-link {{ request()->routeIs('subscribers.*') ? 'active' : '' }}">

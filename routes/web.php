@@ -252,56 +252,56 @@ Route::middleware(['web'])->group(function () {
     });
 
     // Public pages - only accessible via subdomain
-    Route::get('/feedback', function (\Illuminate\Http\Request $request) {
+    Route::get('/ideas', function (\Illuminate\Http\Request $request) {
         if ($request->attributes->get('is_subdomain')) {
             return app(SubdomainPublicController::class)->home($request);
         }
         abort(404);
     })->name('public.feedback');
 
-    Route::post('/feedback/submit', function (\Illuminate\Http\Request $request) {
+    Route::post('/ideas/submit', function (\Illuminate\Http\Request $request) {
         if ($request->attributes->get('is_subdomain')) {
             return app(PublicController::class)->submitFeedback($request);
         }
         abort(404);
     })->name('public.feedback.submit');
 
-    Route::get('/feedback/{feedback}', function (\Illuminate\Http\Request $request, $feedback) {
+    Route::get('/ideas/{feedback}', function (\Illuminate\Http\Request $request, $feedback) {
         if ($request->attributes->get('is_subdomain')) {
             return app(PublicController::class)->showFeedback($request, $feedback);
         }
         abort(404);
     })->name('public.feedback.show');
 
-    Route::post('/feedback/{feedback}/vote', function (\Illuminate\Http\Request $request, $feedback) {
+    Route::post('/ideas/{feedback}/vote', function (\Illuminate\Http\Request $request, $feedback) {
         if ($request->attributes->get('is_subdomain')) {
             return app(PublicController::class)->vote($request, $feedback);
         }
         abort(404);
     })->name('public.feedback.vote');
 
-    Route::post('/feedback/{feedback}/unvote', function (\Illuminate\Http\Request $request, $feedback) {
+    Route::post('/ideas/{feedback}/unvote', function (\Illuminate\Http\Request $request, $feedback) {
         if ($request->attributes->get('is_subdomain')) {
             return app(PublicController::class)->unvote($request, $feedback);
         }
         abort(404);
     })->name('public.feedback.unvote');
 
-    Route::post('/feedback/{feedback}/request-otp', function (\Illuminate\Http\Request $request, $feedback) {
+    Route::post('/ideas/{feedback}/request-otp', function (\Illuminate\Http\Request $request, $feedback) {
         if ($request->attributes->get('is_subdomain')) {
             return app(PublicController::class)->requestVoteOtp($request, $feedback);
         }
         abort(404);
     })->name('public.feedback.request-otp');
 
-    Route::post('/feedback/{feedback}/verify-otp', function (\Illuminate\Http\Request $request, $feedback) {
+    Route::post('/ideas/{feedback}/verify-otp', function (\Illuminate\Http\Request $request, $feedback) {
         if ($request->attributes->get('is_subdomain')) {
             return app(PublicController::class)->verifyVoteOtp($request, $feedback);
         }
         abort(404);
     })->name('public.feedback.verify-otp');
 
-    Route::post('/feedback/{feedback}/comment', function (\Illuminate\Http\Request $request, $feedback) {
+    Route::post('/ideas/{feedback}/comment', function (\Illuminate\Http\Request $request, $feedback) {
         if ($request->attributes->get('is_subdomain')) {
             return app(PublicController::class)->storePublicComment($request, $feedback);
         }
@@ -322,28 +322,28 @@ Route::middleware(['web'])->group(function () {
         abort(404);
     })->name('public.roadmap.show');
 
-    Route::get('/changelog', function (\Illuminate\Http\Request $request) {
+    Route::get('/updates', function (\Illuminate\Http\Request $request) {
         if ($request->attributes->get('is_subdomain')) {
             return app(SubdomainPublicController::class)->changelog($request);
         }
         abort(404);
     })->name('public.changelog');
 
-    Route::get('/changelog/{changelog}', function (\Illuminate\Http\Request $request, $changelog) {
+    Route::get('/updates/{changelog}', function (\Illuminate\Http\Request $request, $changelog) {
         if ($request->attributes->get('is_subdomain')) {
             return app(PublicController::class)->showChangelog($request, $changelog);
         }
         abort(404);
     })->name('public.changelog.show');
 
-    Route::get('/testimonials', function (\Illuminate\Http\Request $request) {
+    Route::get('/reviews', function (\Illuminate\Http\Request $request) {
         if ($request->attributes->get('is_subdomain')) {
             return app(SubdomainPublicController::class)->testimonials($request);
         }
         abort(404);
     })->name('public.testimonials');
 
-    Route::get('/testimonials/{testimonial}', function (\Illuminate\Http\Request $request, $testimonial) {
+    Route::get('/reviews/{testimonial}', function (\Illuminate\Http\Request $request, $testimonial) {
         if ($request->attributes->get('is_subdomain')) {
             return app(PublicController::class)->showTestimonial($request, $testimonial);
         }
