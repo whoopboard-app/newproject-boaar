@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AppSettings;
 use App\Models\RatingSettings;
+use App\Models\SiteAccessInvite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -33,8 +34,11 @@ class AppSettingsController extends Controller
         }
 
         $settings = AppSettings::where('team_id', Auth::user()->current_team_id)->first();
+        $siteAccessInvites = SiteAccessInvite::where('team_id', Auth::user()->current_team_id)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        return view('settings.general', compact('settings'));
+        return view('settings.general', compact('settings', 'siteAccessInvites'));
     }
 
     /**
@@ -52,8 +56,13 @@ class AppSettingsController extends Controller
             'logo' => 'nullable|file|mimes:jpeg,png,jpg,svg,webp,avif|mimetypes:image/jpeg,image/png,image/svg+xml,image/webp,image/avif|max:2048',
             'product_name' => 'required|string|max:255',
             'website_url' => 'nullable|url|max:255',
-            'unique_url' => 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:app_settings,unique_url,' . Auth::user()->current_team_id . ',team_id',
-            'subdomain_url' => 'nullable|string|max:63|regex:/^[a-z0-9-]+$/|unique:app_settings,subdomain_url,' . Auth::user()->current_team_id . ',team_id',
+            'subdomain_url' => 'required|string|max:63|regex:/^[a-z0-9-]+$/|unique:app_settings,subdomain_url,' . Auth::user()->current_team_id . ',team_id',
+            'block_search_indexing' => 'nullable|boolean',
+            'site_visibility' => 'nullable|in:public,private',
+            'maintenance_mode' => 'nullable|boolean',
+            'maintenance_scheduled_at' => 'nullable|date',
+            'maintenance_ends_at' => 'nullable|date|after_or_equal:maintenance_scheduled_at',
+            'maintenance_message' => 'nullable|string|max:500',
         ]);
 
         $settings = AppSettings::firstOrNew(['team_id' => Auth::user()->current_team_id]);
@@ -70,21 +79,95 @@ class AppSettingsController extends Controller
             $settings->logo = $logoPath;
         }
 
-        // Auto-generate unique_url if not provided
-        if (empty($validated['unique_url'])) {
-            $validated['unique_url'] = $this->generateUniqueUrl($validated['product_name']);
-        }
+        // Auto-generate unique_url from subdomain for backwards compatibility
+        $settings->unique_url = $validated['subdomain_url'];
 
         $settings->product_name = $validated['product_name'];
         $settings->website_url = $validated['website_url'];
-        $settings->unique_url = $validated['unique_url'];
-        $settings->subdomain_url = $validated['subdomain_url'] ?? null;
+        $settings->subdomain_url = $validated['subdomain_url'];
+        $settings->block_search_indexing = $request->has('block_search_indexing');
+        $settings->site_visibility = $validated['site_visibility'] ?? 'public';
+        $settings->maintenance_mode = $request->has('maintenance_mode');
+        $settings->maintenance_scheduled_at = $validated['maintenance_scheduled_at'] ?? null;
+        $settings->maintenance_ends_at = $validated['maintenance_ends_at'] ?? null;
+        $settings->maintenance_message = $validated['maintenance_message'] ?? null;
         $settings->team_id = Auth::user()->current_team_id;
 
         $settings->save();
 
         return redirect()->route('settings.general')
             ->with('success', 'General settings updated successfully!');
+    }
+
+    /**
+     * Add a site access invite
+     */
+    public function addSiteAccessInvite(Request $request)
+    {
+        if (!Auth::user()->canAccessAppSettings()) {
+            return redirect()->route('dashboard')
+                ->with('error', 'You do not have permission to access app settings.');
+        }
+
+        $validated = $request->validate([
+            'emails' => 'required|string',
+        ]);
+
+        $emails = array_filter(array_map('trim', preg_split('/[,\n]+/', $validated['emails'])));
+        $teamId = Auth::user()->current_team_id;
+        $added = 0;
+        $skipped = 0;
+
+        foreach ($emails as $email) {
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $skipped++;
+                continue;
+            }
+
+            $existing = SiteAccessInvite::where('team_id', $teamId)
+                ->where('email', strtolower($email))
+                ->first();
+
+            if ($existing) {
+                $skipped++;
+                continue;
+            }
+
+            SiteAccessInvite::create([
+                'team_id' => $teamId,
+                'email' => strtolower($email),
+            ]);
+            $added++;
+        }
+
+        $message = "{$added} email(s) added to access list.";
+        if ($skipped > 0) {
+            $message .= " {$skipped} skipped (invalid or already exists).";
+        }
+
+        return redirect()->route('settings.general')
+            ->with('success', $message);
+    }
+
+    /**
+     * Remove a site access invite
+     */
+    public function removeSiteAccessInvite(SiteAccessInvite $invite)
+    {
+        if (!Auth::user()->canAccessAppSettings()) {
+            return redirect()->route('dashboard')
+                ->with('error', 'You do not have permission to access app settings.');
+        }
+
+        if ($invite->team_id !== Auth::user()->current_team_id) {
+            return redirect()->route('settings.general')
+                ->with('error', 'Access denied.');
+        }
+
+        $invite->delete();
+
+        return redirect()->route('settings.general')
+            ->with('success', 'Access invite removed successfully.');
     }
 
     /**

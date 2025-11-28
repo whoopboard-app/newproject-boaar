@@ -347,7 +347,7 @@
     <!-- Main Content -->
     <div class="container">
         <div class="feedback-container">
-            <a href="{{ route('public.home', $settings->unique_url) }}" class="back-link">
+            <a href="{{ route('public.feedback') }}" class="back-link">
                 <i class="ti ti-arrow-left"></i>
                 Back to all feedback
             </a>
@@ -453,7 +453,7 @@
                                     <div class="login-prompt" style="background: #f9fafb; border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; text-align: center;">
                                         <i class="ti ti-lock" style="font-size: 2rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem;"></i>
                                         <p class="mb-3 text-muted">You need to log in to leave a comment.</p>
-                                        <a href="{{ route('public.auth.login', $settings->unique_url) }}" class="btn" style="background: var(--primary-color); color: white;">
+                                        <a href="{{ route('public.auth.login') }}" class="btn" style="background: var(--primary-color); color: white;">
                                             <i class="ti ti-login me-1"></i> Log in to Comment
                                         </a>
                                     </div>
@@ -492,7 +492,7 @@
                         <div class="sidebar-card">
                             <h4 class="sidebar-title">Related Ideas</h4>
                             @foreach($relatedFeedbacks as $related)
-                                <a href="{{ route('public.feedback.show', [$settings->unique_url, $related->id]) }}" class="related-item">
+                                <a href="{{ route('public.feedback.show', $related->id) }}" class="related-item">
                                     <div class="related-title">{{ Str::limit($related->idea, 60) }}</div>
                                     <div class="related-meta">
                                         <i class="ti ti-arrow-up"></i>
@@ -540,7 +540,6 @@
 
     <script>
         const CONFIG = {
-            uniqueUrl: '{{ $settings->unique_url }}',
             isLoggedIn: {{ $isLoggedIn ? 'true' : 'false' }},
             requireLoginForVoting: {{ ($feedbackSettings->enable_login_for_voting ?? false) ? 'true' : 'false' }},
             enableAnonymousVoting: {{ ($feedbackSettings->enable_anonymous_voting ?? true) ? 'true' : 'false' }},
@@ -550,7 +549,7 @@
         async function handleVote(element, feedbackId) {
             if (CONFIG.requireLoginForVoting && !CONFIG.isLoggedIn) {
                 if (confirm('You need to log in to vote. Would you like to log in now?')) {
-                    window.location.href = '/' + CONFIG.uniqueUrl + '/login';
+                    window.location.href = '/login';
                 }
                 return;
             }

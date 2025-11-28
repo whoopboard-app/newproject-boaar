@@ -692,7 +692,7 @@
             <i class="ti ti-menu-2"></i>
         </button>
 
-        <a href="{{ route('public.knowledge', $settings->unique_url) }}" class="uber-header-brand">
+        <a href="{{ route('public.knowledge') }}" class="uber-header-brand">
             @if($settings->logo)
                 <img src="{{ asset('storage/' . $settings->logo) }}" alt="{{ $settings->product_name }}" class="uber-header-logo">
             @else
@@ -704,7 +704,7 @@
         </a>
 
         <nav class="uber-header-nav">
-            <a href="{{ route('public.knowledge.show', [$settings->unique_url, $knowledgeBoard->id]) }}" class="uber-header-nav-link active">Docs</a>
+            <a href="{{ route('public.knowledge.show', $knowledgeBoard->id) }}" class="uber-header-nav-link active">Docs</a>
         </nav>
 
         <div class="uber-header-search">
@@ -731,7 +731,7 @@
                         </div>
                         <div class="uber-sidebar-items">
                             @foreach($allArticles[$category->id] as $navArticle)
-                                <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $navArticle->id]) }}" class="uber-sidebar-item{{ $navArticle->id === $article->id ? ' active' : '' }}">
+                                <a href="{{ route('public.knowledge.article', [$knowledgeBoard->id, $navArticle->id]) }}" class="uber-sidebar-item{{ $navArticle->id === $article->id ? ' active' : '' }}">
                                     {{ $navArticle->article_title }}
                                 </a>
                             @endforeach
@@ -753,7 +753,7 @@
                             </div>
                             <div class="uber-sidebar-items uber-sidebar-child-items">
                                 @foreach($allArticles[$childCategory->id] as $navArticle)
-                                    <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $navArticle->id]) }}" class="uber-sidebar-item{{ $navArticle->id === $article->id ? ' active' : '' }}">
+                                    <a href="{{ route('public.knowledge.article', [$knowledgeBoard->id, $navArticle->id]) }}" class="uber-sidebar-item{{ $navArticle->id === $article->id ? ' active' : '' }}">
                                         {{ $navArticle->article_title }}
                                     </a>
                                 @endforeach
@@ -768,9 +768,9 @@
         <main class="uber-main">
             <!-- Breadcrumb -->
             <nav class="uber-breadcrumb">
-                <a href="{{ route('public.knowledge', $settings->unique_url) }}">Documentation</a>
+                <a href="{{ route('public.knowledge') }}">Documentation</a>
                 <i class="ti ti-chevron-right uber-breadcrumb-separator"></i>
-                <a href="{{ route('public.knowledge.show', [$settings->unique_url, $knowledgeBoard->id]) }}">{{ $knowledgeBoard->name }}</a>
+                <a href="{{ route('public.knowledge.show', $knowledgeBoard->id) }}">{{ $knowledgeBoard->name }}</a>
                 @if($article->boardCategory)
                     <i class="ti ti-chevron-right uber-breadcrumb-separator"></i>
                     <span>{{ $article->boardCategory->category_name }}</span>
@@ -814,7 +814,7 @@
                 @if($prevArticle || $nextArticle)
                     <nav class="uber-article-nav">
                         @if($prevArticle)
-                            <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $prevArticle->id]) }}" class="uber-article-nav-link uber-article-nav-link--prev">
+                            <a href="{{ route('public.knowledge.article', [$knowledgeBoard->id, $prevArticle->id]) }}" class="uber-article-nav-link uber-article-nav-link--prev">
                                 <i class="ti ti-arrow-left uber-article-nav-icon"></i>
                                 <div class="uber-article-nav-content">
                                     <div class="uber-article-nav-label">Previous</div>
@@ -824,7 +824,7 @@
                         @endif
 
                         @if($nextArticle)
-                            <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $nextArticle->id]) }}" class="uber-article-nav-link uber-article-nav-link--next">
+                            <a href="{{ route('public.knowledge.article', [$knowledgeBoard->id, $nextArticle->id]) }}" class="uber-article-nav-link uber-article-nav-link--next">
                                 <i class="ti ti-arrow-right uber-article-nav-icon"></i>
                                 <div class="uber-article-nav-content">
                                     <div class="uber-article-nav-label">Next</div>
@@ -882,7 +882,7 @@
             }
 
             searchTimeout = setTimeout(() => {
-                fetch(`{{ route('public.knowledge.search', [$settings->unique_url, $knowledgeBoard->id]) }}?q=${encodeURIComponent(query)}`)
+                fetch(`{{ route('public.knowledge.search', $knowledgeBoard->id) }}?q=${encodeURIComponent(query)}`)
                     .then(response => response.json())
                     .then(data => {
                         if (data.results.length > 0) {

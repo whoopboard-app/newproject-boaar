@@ -201,7 +201,7 @@
                         @foreach($changelogs as $changelog)
                             <article class="changelog-item"
                                      data-category="{{ $changelog->categories->pluck('id')->implode(',') }}"
-                                     data-url="{{ route('public.changelog.show', [$settings->unique_url, $changelog->id]) }}"
+                                     data-url="{{ route('public.changelog.show', $changelog->id) }}"
                                      data-year="{{ \Carbon\Carbon::parse($changelog->published_date)->format('Y') }}"
                                      data-month="{{ \Carbon\Carbon::parse($changelog->published_date)->format('n') }}"
                                      data-timestamp="{{ \Carbon\Carbon::parse($changelog->published_date)->timestamp }}"

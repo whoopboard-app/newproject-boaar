@@ -22,47 +22,6 @@ use App\Http\Controllers\TestimonialTemplateController;
 use App\Http\Controllers\SubdomainPublicController;
 use Illuminate\Support\Facades\Route;
 
-// Subdomain-based Public Routes (e.g., demo.wbapp.com:8000)
-// These routes are checked first and only match when a valid subdomain is detected
-Route::middleware(['web'])->group(function () {
-    Route::get('/', function (\Illuminate\Http\Request $request) {
-        // Check if this is a subdomain request
-        if ($request->attributes->get('is_subdomain')) {
-            return app(SubdomainPublicController::class)->home($request);
-        }
-        // Default: redirect to login
-        return redirect()->route('login');
-    });
-
-    Route::get('/roadmap', function (\Illuminate\Http\Request $request) {
-        if ($request->attributes->get('is_subdomain')) {
-            return app(SubdomainPublicController::class)->roadmap($request);
-        }
-        abort(404);
-    })->name('subdomain.roadmap');
-
-    Route::get('/changelog', function (\Illuminate\Http\Request $request) {
-        if ($request->attributes->get('is_subdomain')) {
-            return app(SubdomainPublicController::class)->changelog($request);
-        }
-        abort(404);
-    })->name('subdomain.changelog');
-
-    Route::get('/testimonials', function (\Illuminate\Http\Request $request) {
-        if ($request->attributes->get('is_subdomain')) {
-            return app(SubdomainPublicController::class)->testimonials($request);
-        }
-        abort(404);
-    })->name('subdomain.testimonials');
-
-    Route::get('/knowledge', function (\Illuminate\Http\Request $request) {
-        if ($request->attributes->get('is_subdomain')) {
-            return app(SubdomainPublicController::class)->knowledge($request);
-        }
-        abort(404);
-    })->name('subdomain.knowledge');
-});
-
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -166,6 +125,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings/rating', [AppSettingsController::class, 'rating'])->name('settings.rating');
     Route::put('/settings/rating', [AppSettingsController::class, 'updateRating'])->name('settings.rating.update');
 
+    // Site Access Invites
+    Route::post('/settings/site-access', [AppSettingsController::class, 'addSiteAccessInvite'])->name('settings.site-access.add');
+    Route::delete('/settings/site-access/{invite}', [AppSettingsController::class, 'removeSiteAccessInvite'])->name('settings.site-access.remove');
+
     // Theme Settings
     Route::get('/settings/themes', [\App\Http\Controllers\KnowledgeBoardThemeController::class, 'index'])->name('settings.themes');
     Route::get('/settings/themes/{knowledgeBoard}/edit', [\App\Http\Controllers\KnowledgeBoardThemeController::class, 'edit'])->name('settings.themes.edit');
@@ -266,43 +229,269 @@ Route::prefix('api/mux')->group(function () {
 Route::get('/testimonial-campaign/open/{trackingToken}', [\App\Http\Controllers\TestimonialCampaignController::class, 'trackOpen'])->name('testimonials.campaign-open');
 Route::get('/testimonial-campaign/click/{trackingToken}', [\App\Http\Controllers\TestimonialCampaignController::class, 'trackClick'])->name('testimonials.campaign-click');
 
-// Public Pages - Using subdomain middleware for team detection
-// These routes support both subdomain-based (team.example.com) and path-based (example.com/{unique_url}) routing
-Route::middleware(['team.subdomain'])->group(function () {
-    // Public Auth Routes
-    Route::get('/{unique_url}/login', [PublicAuthController::class, 'showLoginForm'])->name('public.auth.login');
-    Route::post('/{unique_url}/login', [PublicAuthController::class, 'sendMagicLink'])->name('public.auth.send-magic-link');
-    Route::get('/{unique_url}/logout', [PublicAuthController::class, 'logout'])->name('public.auth.logout');
+// =============================================================================
+// Subdomain-based Public Routes (e.g., demo.wbapp.com:8000)
+// =============================================================================
+// IMPORTANT: These routes MUST be at the END of the file so they are registered LAST.
+// This prevents them from conflicting with admin routes that have the same paths
+// (e.g., /feedback, /roadmap, /changelog, /testimonials).
+//
+// The SubdomainRouting middleware sets 'is_subdomain' attribute when a valid subdomain
+// is detected. These routes check that attribute and only respond on subdomain requests.
+// On non-subdomain requests, they return 404, allowing the admin routes (registered first)
+// to handle those paths with proper auth middleware.
+// =============================================================================
+Route::middleware(['web'])->group(function () {
+    Route::get('/', function (\Illuminate\Http\Request $request) {
+        // Check if this is a subdomain request
+        if ($request->attributes->get('is_subdomain')) {
+            return app(SubdomainPublicController::class)->home($request);
+        }
+        // Default: redirect to login
+        return redirect()->route('login');
+    });
 
-    // Public Content Routes
-    Route::get('/{unique_url}/roadmap', [PublicController::class, 'roadmap'])->name('public.roadmap');
-    Route::get('/{unique_url}/roadmap/{roadmapItem}', [PublicController::class, 'showRoadmapItem'])->name('public.roadmap.show');
-    Route::get('/{unique_url}/changelog', [PublicController::class, 'changelog'])->name('public.changelog');
-    Route::get('/{unique_url}/changelog/{changelog}', [PublicController::class, 'showChangelog'])->name('public.changelog.show');
-    Route::get('/{unique_url}/testimonials', [PublicController::class, 'testimonials'])->name('public.testimonials');
-    Route::get('/{unique_url}/testimonials/{testimonial}', [PublicController::class, 'showTestimonial'])->name('public.testimonials.show');
-    Route::get('/{unique_url}/knowledge', [PublicController::class, 'knowledge'])->name('public.knowledge');
-    Route::get('/{unique_url}/knowledge/{knowledgeBoard}', [PublicController::class, 'showKnowledge'])->name('public.knowledge.show');
-    Route::get('/{unique_url}/knowledge/{knowledgeBoard}/category/{category}', [PublicController::class, 'showKnowledgeCategory'])->name('public.knowledge.category');
-    Route::get('/{unique_url}/knowledge/{knowledgeBoard}/article/{article}', [PublicController::class, 'showKnowledgeArticle'])->name('public.knowledge.article');
-    Route::get('/{unique_url}/knowledge/{knowledgeBoard}/search', [PublicController::class, 'searchKnowledgeArticles'])->name('public.knowledge.search');
-    Route::get('/{unique_url}/subscribe', [PublicController::class, 'subscribe'])->name('public.subscribe');
-    Route::post('/{unique_url}/subscribe', [PublicController::class, 'subscribeSubmit'])->name('public.subscribe.submit');
+    // Public pages - only accessible via subdomain
+    Route::get('/feedback', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(SubdomainPublicController::class)->home($request);
+        }
+        abort(404);
+    })->name('public.feedback');
 
-    // Public Feedback Submission and Voting
-    Route::post('/{unique_url}/feedback/submit', [PublicController::class, 'submitFeedback'])->name('public.feedback.submit');
-    Route::get('/{unique_url}/feedback/{feedback}', [PublicController::class, 'showFeedback'])->name('public.feedback.show');
-    Route::post('/{unique_url}/feedback/{feedback}/vote', [PublicController::class, 'vote'])->name('public.feedback.vote');
-    Route::post('/{unique_url}/feedback/{feedback}/unvote', [PublicController::class, 'unvote'])->name('public.feedback.unvote');
-    Route::post('/{unique_url}/feedback/{feedback}/request-otp', [PublicController::class, 'requestVoteOtp'])->name('public.feedback.request-otp');
-    Route::post('/{unique_url}/feedback/{feedback}/verify-otp', [PublicController::class, 'verifyVoteOtp'])->name('public.feedback.verify-otp');
-    Route::post('/{unique_url}/feedback/{feedback}/comment', [PublicController::class, 'storePublicComment'])->name('public.feedback.comment');
+    Route::post('/feedback/submit', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(PublicController::class)->submitFeedback($request);
+        }
+        abort(404);
+    })->name('public.feedback.submit');
+
+    Route::get('/feedback/{feedback}', function (\Illuminate\Http\Request $request, $feedback) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(PublicController::class)->showFeedback($request, $feedback);
+        }
+        abort(404);
+    })->name('public.feedback.show');
+
+    Route::post('/feedback/{feedback}/vote', function (\Illuminate\Http\Request $request, $feedback) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(PublicController::class)->vote($request, $feedback);
+        }
+        abort(404);
+    })->name('public.feedback.vote');
+
+    Route::post('/feedback/{feedback}/unvote', function (\Illuminate\Http\Request $request, $feedback) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(PublicController::class)->unvote($request, $feedback);
+        }
+        abort(404);
+    })->name('public.feedback.unvote');
+
+    Route::post('/feedback/{feedback}/request-otp', function (\Illuminate\Http\Request $request, $feedback) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(PublicController::class)->requestVoteOtp($request, $feedback);
+        }
+        abort(404);
+    })->name('public.feedback.request-otp');
+
+    Route::post('/feedback/{feedback}/verify-otp', function (\Illuminate\Http\Request $request, $feedback) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(PublicController::class)->verifyVoteOtp($request, $feedback);
+        }
+        abort(404);
+    })->name('public.feedback.verify-otp');
+
+    Route::post('/feedback/{feedback}/comment', function (\Illuminate\Http\Request $request, $feedback) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(PublicController::class)->storePublicComment($request, $feedback);
+        }
+        abort(404);
+    })->name('public.feedback.comment');
+
+    Route::get('/roadmap', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(SubdomainPublicController::class)->roadmap($request);
+        }
+        abort(404);
+    })->name('public.roadmap');
+
+    Route::get('/roadmap/{roadmapItem}', function (\Illuminate\Http\Request $request, $roadmapItem) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(PublicController::class)->showRoadmapItem($request, $roadmapItem);
+        }
+        abort(404);
+    })->name('public.roadmap.show');
+
+    Route::get('/changelog', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(SubdomainPublicController::class)->changelog($request);
+        }
+        abort(404);
+    })->name('public.changelog');
+
+    Route::get('/changelog/{changelog}', function (\Illuminate\Http\Request $request, $changelog) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(PublicController::class)->showChangelog($request, $changelog);
+        }
+        abort(404);
+    })->name('public.changelog.show');
+
+    Route::get('/testimonials', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(SubdomainPublicController::class)->testimonials($request);
+        }
+        abort(404);
+    })->name('public.testimonials');
+
+    Route::get('/testimonials/{testimonial}', function (\Illuminate\Http\Request $request, $testimonial) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(PublicController::class)->showTestimonial($request, $testimonial);
+        }
+        abort(404);
+    })->name('public.testimonials.show');
+
+    Route::get('/knowledge', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(SubdomainPublicController::class)->knowledge($request);
+        }
+        abort(404);
+    })->name('public.knowledge');
+
+    Route::get('/knowledge/{knowledgeBoard}', function (\Illuminate\Http\Request $request, $knowledgeBoard) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(PublicController::class)->showKnowledge($request, $knowledgeBoard);
+        }
+        abort(404);
+    })->name('public.knowledge.show');
+
+    Route::get('/knowledge/{knowledgeBoard}/category/{category}', function (\Illuminate\Http\Request $request, $knowledgeBoard, $category) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(PublicController::class)->showKnowledgeCategory($request, $knowledgeBoard, $category);
+        }
+        abort(404);
+    })->name('public.knowledge.category');
+
+    Route::get('/knowledge/{knowledgeBoard}/article/{article}', function (\Illuminate\Http\Request $request, $knowledgeBoard, $article) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(PublicController::class)->showKnowledgeArticle($request, $knowledgeBoard, $article);
+        }
+        abort(404);
+    })->name('public.knowledge.article');
+
+    Route::get('/knowledge/{knowledgeBoard}/search', function (\Illuminate\Http\Request $request, $knowledgeBoard) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(PublicController::class)->searchKnowledgeArticles($request, $knowledgeBoard);
+        }
+        abort(404);
+    })->name('public.knowledge.search');
+
+    Route::get('/subscribe', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(PublicController::class)->subscribe($request);
+        }
+        abort(404);
+    })->name('public.subscribe');
+
+    Route::post('/subscribe', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(PublicController::class)->subscribeSubmit($request);
+        }
+        abort(404);
+    })->name('public.subscribe.submit');
 
     // Public Rating Submission
-    Route::post('/{unique_url}/rating/submit', [PublicController::class, 'submitRating'])->name('public.rating.submit');
-    Route::post('/{unique_url}/rating/comment', [PublicController::class, 'submitRatingComment'])->name('public.rating.comment');
-    Route::get('/{unique_url}/ratings', [PublicController::class, 'getRatings'])->name('public.ratings.get');
+    Route::post('/rating/submit', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(PublicController::class)->submitRating($request);
+        }
+        abort(404);
+    })->name('public.rating.submit');
 
-    // Public Home (must be last within group)
-    Route::get('/{unique_url}', [PublicController::class, 'home'])->name('public.home');
+    Route::post('/rating/comment', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(PublicController::class)->submitRatingComment($request);
+        }
+        abort(404);
+    })->name('public.rating.comment');
+
+    Route::get('/ratings', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(PublicController::class)->getRatings($request);
+        }
+        abort(404);
+    })->name('public.ratings.get');
+
+    // Public home route (alias for feedback)
+    Route::get('/home', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(SubdomainPublicController::class)->home($request);
+        }
+        abort(404);
+    })->name('public.home');
+
+    // Public Auth Routes (using /auth prefix to avoid conflict with admin /login)
+    Route::get('/auth/login', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(PublicAuthController::class)->showLoginForm($request);
+        }
+        // Fallback to admin login
+        return redirect()->route('login');
+    })->name('public.auth.login');
+
+    Route::post('/auth/login', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(PublicAuthController::class)->sendMagicLink($request);
+        }
+        abort(404);
+    })->name('public.auth.send-magic-link');
+
+    Route::get('/auth/logout', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(PublicAuthController::class)->logout($request);
+        }
+        abort(404);
+    })->name('public.auth.logout');
+
+    // Site Access Routes (for private sites)
+    Route::get('/access', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(\App\Http\Controllers\SiteAccessController::class)->showLoginForm($request);
+        }
+        abort(404);
+    })->name('public.access.login');
+
+    Route::post('/access/request-code', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(\App\Http\Controllers\SiteAccessController::class)->requestCode($request);
+        }
+        abort(404);
+    })->name('public.access.request-code');
+
+    Route::get('/access/verify', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(\App\Http\Controllers\SiteAccessController::class)->showVerifyForm($request);
+        }
+        abort(404);
+    })->name('public.access.verify-form');
+
+    Route::post('/access/verify', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(\App\Http\Controllers\SiteAccessController::class)->verifyCode($request);
+        }
+        abort(404);
+    })->name('public.access.verify');
+
+    Route::post('/access/resend-code', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(\App\Http\Controllers\SiteAccessController::class)->resendCode($request);
+        }
+        abort(404);
+    })->name('public.access.resend-code');
+
+    Route::get('/access/logout', function (\Illuminate\Http\Request $request) {
+        if ($request->attributes->get('is_subdomain')) {
+            return app(\App\Http\Controllers\SiteAccessController::class)->logout($request);
+        }
+        abort(404);
+    })->name('public.access.logout');
 });

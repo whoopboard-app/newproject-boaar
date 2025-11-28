@@ -29,7 +29,7 @@
                 @endif
 
                 {{-- Subscribe Button --}}
-                <a href="{{ route('public.subscribe', $settings->unique_url) }}" class="btn btn-subscribe">
+                <a href="{{ route('public.subscribe') }}" class="btn btn-subscribe">
                     <i class="ti ti-bell-ringing me-1"></i> Subscribe
                 </a>
 
@@ -39,11 +39,11 @@
                         <i class="ti ti-user-circle"></i>
                         {{ $publicUser->full_name ?? $publicUser->email }}
                     </span>
-                    <a href="{{ route('public.auth.logout', $settings->unique_url) }}" class="btn-logout">
+                    <a href="{{ route('public.auth.logout') }}" class="btn-logout">
                         <i class="ti ti-logout me-1"></i> Log out
                     </a>
                 @else
-                    <a href="{{ route('public.auth.login', $settings->unique_url) }}" class="btn-login">
+                    <a href="{{ route('public.auth.login') }}" class="btn-login">
                         <i class="ti ti-login me-1"></i> Log in
                     </a>
                 @endif

@@ -393,7 +393,7 @@
                     @endif
                 </div>
 
-                <a href="{{ route('public.subscribe', $settings->unique_url) }}" class="btn btn-primary" style="background: var(--primary-color); border: none; padding: 0.5rem 1.5rem; border-radius: 6px; text-decoration: none; color: white; font-weight: 500;">
+                <a href="{{ route('public.subscribe') }}" class="btn btn-primary" style="background: var(--primary-color); border: none; padding: 0.5rem 1.5rem; border-radius: 6px; text-decoration: none; color: white; font-weight: 500;">
                     <i class="ti ti-bell-ringing me-1"></i> Subscribe
                 </a>
             </div>
@@ -407,7 +407,7 @@
         <div class="public-content">
             <!-- Main Testimonial -->
             <main>
-                <a href="{{ route('public.testimonials', $settings->unique_url) }}" class="back-link">
+                <a href="{{ route('public.testimonials') }}" class="back-link">
                     <i class="ti ti-arrow-left"></i> Back to Testimonials
                 </a>
 
@@ -542,7 +542,7 @@
                 @if($otherTestimonials->count() > 0)
                     <div class="sidebar-title" style="margin-top: 1.5rem;">More Testimonials</div>
                     @foreach($otherTestimonials as $other)
-                        <a href="{{ route('public.testimonials.show', [$settings->unique_url, $other->id]) }}" class="other-testimonial">
+                        <a href="{{ route('public.testimonials.show', $other->id) }}" class="other-testimonial">
                             <div class="other-testimonial-header">
                                 @if($other->avatar)
                                     <img src="{{ asset('storage/' . $other->avatar) }}" alt="{{ $other->name }}" class="other-testimonial-avatar">

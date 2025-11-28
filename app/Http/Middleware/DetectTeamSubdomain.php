@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\AppSettings;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Symfony\Component\HttpFoundation\Response;
 
 class DetectTeamSubdomain
@@ -13,60 +14,39 @@ class DetectTeamSubdomain
      * Handle an incoming request.
      *
      * Detects team from subdomain and injects settings into the request.
-     * Supports both subdomain-based routing (team.example.com) and
-     * path-based routing (example.com/{unique_url}) as fallback.
+     * Uses subdomain-based routing only (team.example.com/feedback).
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Check if this is a subdomain request
-        $subdomain = $this->extractSubdomain($request);
+        // Get subdomain from route parameter (captured by domain routing)
+        // or extract from host as fallback
+        $subdomain = $request->route('subdomain') ?? $this->extractSubdomain($request);
 
-        // If there's a subdomain, resolve settings from it
-        if ($subdomain) {
-            $settings = AppSettings::where('subdomain_url', $subdomain)->first();
-
-            if (!$settings) {
-                abort(404, 'Team not found');
-            }
-
-            // Check if there's also a unique_url in the path
-            // If so, validate that it belongs to the same team (security check)
-            $uniqueUrl = $request->route('unique_url');
-            if ($uniqueUrl) {
-                // The unique_url must match the subdomain's team
-                if ($settings->unique_url !== $uniqueUrl) {
-                    abort(404, 'Team not found');
-                }
-            }
-
-            // Inject the settings into the request for controllers to use
-            $request->attributes->set('team_settings', $settings);
-            $request->attributes->set('team_id', $settings->team_id);
-            $request->attributes->set('is_subdomain', true);
-
-            return $next($request);
+        // If there's NO subdomain, skip
+        if (!$subdomain) {
+            abort(404, 'Team not found');
         }
 
-        // For path-based routing, check unique_url parameter
-        $uniqueUrl = $request->route('unique_url');
-        if ($uniqueUrl) {
-            $settings = AppSettings::where('unique_url', $uniqueUrl)->first();
+        // Resolve settings from subdomain
+        $settings = AppSettings::where('subdomain_url', $subdomain)->first();
 
-            if (!$settings) {
-                abort(404, 'Team not found');
-            }
-
-            $request->attributes->set('team_settings', $settings);
-            $request->attributes->set('team_id', $settings->team_id);
-            $request->attributes->set('is_subdomain', false);
-
-            return $next($request);
+        if (!$settings) {
+            abort(404, 'Team not found');
         }
 
-        // No subdomain and no unique_url - let the request pass through
-        // This allows the main app routes to work normally
+        // Set URL defaults so route() helper automatically includes subdomain
+        URL::defaults(['subdomain' => $subdomain]);
+
+        // Inject the settings into the request for controllers to use
+        $request->attributes->set('team_settings', $settings);
+        $request->attributes->set('team_id', $settings->team_id);
+        $request->attributes->set('is_subdomain', true);
+
+        // Remove subdomain from route parameters so controllers don't receive it
+        $request->route()->forgetParameter('subdomain');
+
         return $next($request);
     }
 

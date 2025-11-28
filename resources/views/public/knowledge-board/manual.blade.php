@@ -552,7 +552,7 @@
             <i class="ti ti-menu-2"></i>
         </button>
 
-        <a href="{{ route('public.knowledge', $settings->unique_url) }}" class="uber-header-brand">
+        <a href="{{ route('public.knowledge') }}" class="uber-header-brand">
             @if($settings->logo)
                 <img src="{{ asset('storage/' . $settings->logo) }}" alt="{{ $settings->product_name }}" class="uber-header-logo">
             @else
@@ -564,7 +564,7 @@
         </a>
 
         <nav class="uber-header-nav">
-            <a href="{{ route('public.knowledge.show', [$settings->unique_url, $knowledgeBoard->id]) }}" class="uber-header-nav-link active">Docs</a>
+            <a href="{{ route('public.knowledge.show', $knowledgeBoard->id) }}" class="uber-header-nav-link active">Docs</a>
         </nav>
 
         <div class="uber-header-search">
@@ -587,7 +587,7 @@
                         </div>
                         <div class="uber-sidebar-items">
                             @foreach($articles[$category->id] as $article)
-                                <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $article->id]) }}" class="uber-sidebar-item">
+                                <a href="{{ route('public.knowledge.article', [$knowledgeBoard->id, $article->id]) }}" class="uber-sidebar-item">
                                     {{ $article->article_title }}
                                 </a>
                             @endforeach
@@ -605,7 +605,7 @@
                             </div>
                             <div class="uber-sidebar-items uber-sidebar-child-items">
                                 @foreach($articles[$childCategory->id] as $article)
-                                    <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $article->id]) }}" class="uber-sidebar-item">
+                                    <a href="{{ route('public.knowledge.article', [$knowledgeBoard->id, $article->id]) }}" class="uber-sidebar-item">
                                         {{ $article->article_title }}
                                     </a>
                                 @endforeach
@@ -618,13 +618,13 @@
 
         <!-- Main Content -->
         <main class="uber-main">
-            <a href="{{ route('public.knowledge', $settings->unique_url) }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: var(--hover-bg); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 14px; font-weight: 500; margin-bottom: 24px; transition: all 0.2s;" onmouseover="this.style.background='var(--accent-color)'; this.style.color='white'; this.style.borderColor='var(--accent-color)';" onmouseout="this.style.background='var(--hover-bg)'; this.style.color='var(--text-primary)'; this.style.borderColor='var(--border-color)';">
+            <a href="{{ route('public.knowledge') }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: var(--hover-bg); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 14px; font-weight: 500; margin-bottom: 24px; transition: all 0.2s;" onmouseover="this.style.background='var(--accent-color)'; this.style.color='white'; this.style.borderColor='var(--accent-color)';" onmouseout="this.style.background='var(--hover-bg)'; this.style.color='var(--text-primary)'; this.style.borderColor='var(--border-color)';">
                 <i class="ti ti-arrow-left"></i>
                 Back to Knowledge Board
             </a>
 
             <nav class="uber-breadcrumb">
-                <a href="{{ route('public.knowledge', $settings->unique_url) }}">Documentation</a>
+                <a href="{{ route('public.knowledge') }}">Documentation</a>
                 <i class="ti ti-chevron-right uber-breadcrumb-separator"></i>
                 <span>{{ $knowledgeBoard->name }}</span>
             </nav>
@@ -655,7 +655,7 @@
                                 </div>
                                 <div class="uber-category-articles">
                                     @foreach($articles[$category->id] as $article)
-                                        <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $article->id]) }}" class="uber-article-link">
+                                        <a href="{{ route('public.knowledge.article', [$knowledgeBoard->id, $article->id]) }}" class="uber-article-link">
                                             <span class="uber-article-title">{{ $article->article_title }}</span>
                                             <i class="ti ti-arrow-right uber-article-arrow"></i>
                                         </a>
@@ -674,7 +674,7 @@
                                     </div>
                                     <div class="uber-category-articles">
                                         @foreach($articles[$childCategory->id] as $article)
-                                            <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $article->id]) }}" class="uber-article-link">
+                                            <a href="{{ route('public.knowledge.article', [$knowledgeBoard->id, $article->id]) }}" class="uber-article-link">
                                                 <span class="uber-article-title">{{ $article->article_title }}</span>
                                                 <i class="ti ti-arrow-right uber-article-arrow"></i>
                                             </a>
@@ -739,7 +739,7 @@
             }
 
             searchTimeout = setTimeout(() => {
-                fetch(`{{ route('public.knowledge.search', [$settings->unique_url, $knowledgeBoard->id]) }}?q=${encodeURIComponent(query)}`)
+                fetch(`{{ route('public.knowledge.search', $knowledgeBoard->id) }}?q=${encodeURIComponent(query)}`)
                     .then(response => response.json())
                     .then(data => {
                         if (data.results.length > 0) {

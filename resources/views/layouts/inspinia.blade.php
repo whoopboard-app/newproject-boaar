@@ -194,7 +194,7 @@
 
                     <!-- Changelog -->
                     <li class="side-nav-item">
-                        <a href="{{ route('changelog.index') }}" class="side-nav-link {{ request()->routeIs('changelog.*') ? 'active' : '' }}">
+                        <a href="{{ Route::has('changelog.index') ? route('changelog.index') : '#' }}" class="side-nav-link {{ request()->routeIs('changelog.*') ? 'active' : '' }}">
                             <span class="menu-icon"><i class="ti ti-timeline"></i></span>
                             <span class="menu-text">Changelog</span>
                         </a>
@@ -202,7 +202,7 @@
 
                     <!-- Feedback -->
                     <li class="side-nav-item">
-                        <a href="{{ route('feedback.index') }}" class="side-nav-link {{ request()->routeIs('feedback.*') ? 'active' : '' }}">
+                        <a href="{{ Route::has('feedback.index') ? route('feedback.index') : '#' }}" class="side-nav-link {{ request()->routeIs('feedback.*') ? 'active' : '' }}">
                             <span class="menu-icon"><i class="ti ti-message-dots"></i></span>
                             <span class="menu-text">Feedback</span>
                         </a>
@@ -210,7 +210,7 @@
 
                    {{-- <!-- Roadmap Statuses -->
                     <li class="side-nav-item">
-                        <a href="{{ route('roadmap.index') }}" class="side-nav-link {{ request()->routeIs('roadmap.index') || request()->routeIs('roadmap.create') || request()->routeIs('roadmap.edit') ? 'active' : '' }}">
+                        <a href="{{ Route::has('roadmap.index') ? route('roadmap.index') : '#' }}" class="side-nav-link {{ request()->routeIs('roadmap.index') || request()->routeIs('roadmap.create') || request()->routeIs('roadmap.edit') ? 'active' : '' }}">
                             <span class="menu-icon"><i class="ti ti-map-pin"></i></span>
                             <span class="menu-text">Roadmap Statuses</span>
                         </a>
@@ -218,7 +218,7 @@
 
                     <!-- Roadmap Items -->
                     <li class="side-nav-item">
-                        <a href="{{ route('roadmap-items.index') }}" class="side-nav-link {{ request()->routeIs('roadmap-items.*') ? 'active' : '' }}">
+                        <a href="{{ Route::has('roadmap-items.index') ? route('roadmap-items.index') : '#' }}" class="side-nav-link {{ request()->routeIs('roadmap-items.*') ? 'active' : '' }}">
                             <span class="menu-icon"><i class="ti ti-route"></i></span>
                             <span class="menu-text">Roadmap</span>
                         </a>
@@ -226,7 +226,7 @@
 
                     <!-- Testimonials -->
                     <li class="side-nav-item">
-                        <a href="{{ route('testimonials.index') }}" class="side-nav-link {{ request()->routeIs('testimonials.*') || request()->routeIs('testimonial-templates.*') ? 'active' : '' }}">
+                        <a href="{{ Route::has('testimonials.index') ? route('testimonials.index') : '#' }}" class="side-nav-link {{ request()->routeIs('testimonials.*') || request()->routeIs('testimonial-templates.*') ? 'active' : '' }}">
                             <span class="menu-icon"><i class="ti ti-star"></i></span>
                             <span class="menu-text">Testimonials</span>
                         </a>
@@ -234,7 +234,7 @@
 
                     <!-- Knowledge Board -->
                     <li class="side-nav-item">
-                        <a href="{{ route('knowledge-board.index') }}" class="side-nav-link {{ request()->routeIs('knowledge-board.*') ? 'active' : '' }}">
+                        <a href="{{ Route::has('knowledge-board.index') ? route('knowledge-board.index') : '#' }}" class="side-nav-link {{ request()->routeIs('knowledge-board.*') ? 'active' : '' }}">
                             <span class="menu-icon"><i class="ti ti-book"></i></span>
                             <span class="menu-text">Knowledge Board</span>
                         </a>
@@ -258,7 +258,7 @@
 
                     <!-- Subscribe List -->
                     <li class="side-nav-item">
-                        <a href="{{ route('subscribers.index') }}" class="side-nav-link {{ request()->routeIs('subscribers.*') ? 'active' : '' }}">
+                        <a href="{{ Route::has('subscribers.index') ? route('subscribers.index') : '#' }}" class="side-nav-link {{ request()->routeIs('subscribers.*') ? 'active' : '' }}">
                             <span class="menu-icon"><i class="ti ti-list"></i></span>
                             <span class="menu-text">Subscribe List</span>
                         </a>
@@ -268,7 +268,7 @@
 
                     <!-- Segmentations -->
                     <li class="side-nav-item">
-                        <a href="{{ route('user-segment.index') }}" class="side-nav-link {{ request()->routeIs('user-segment.*') ? 'active' : '' }}">
+                        <a href="{{ Route::has('user-segment.index') ? route('user-segment.index') : '#' }}" class="side-nav-link {{ request()->routeIs('user-segment.*') ? 'active' : '' }}">
                             <span class="menu-icon"><i class="ti ti-layout-grid"></i></span>
                             <span class="menu-text">Segmentations</span>
                         </a>
@@ -276,7 +276,7 @@
 
                     <!-- Personas -->
                     <li class="side-nav-item">
-                        <a href="{{ route('personas.index') }}" class="side-nav-link {{ request()->routeIs('personas.*') ? 'active' : '' }}">
+                        <a href="{{ Route::has('personas.index') ? route('personas.index') : '#' }}" class="side-nav-link {{ request()->routeIs('personas.*') ? 'active' : '' }}">
                             <span class="menu-icon"><i class="ti ti-users-group"></i></span>
                             <span class="menu-text">Personas</span>
                         </a>
@@ -295,7 +295,7 @@
                     <!-- App Settings (Hidden for Idea Submitter and Viewer) -->
                     @if(Auth::user()->canAccessAppSettings())
                     <li class="side-nav-item">
-                        <a href="{{ route('settings.index') }}" class="side-nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
+                        <a href="{{ Route::has('settings.index') ? route('settings.index') : '#' }}" class="side-nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
                             <span class="menu-icon"><i class="ti ti-settings"></i></span>
                             <span class="menu-text">App Settings</span>
                         </a>

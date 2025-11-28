@@ -295,7 +295,7 @@
                                                 <i class="ti ti-arrow-up vote-icon"></i>
                                                 <span class="vote-count">{{ $voteCount }}</span>
                                             </div>
-                                            <a href="{{ route('public.feedback.show', [$settings->unique_url, $feedback->id]) }}" class="feedback-content" style="text-decoration: none; color: inherit;">
+                                            <a href="{{ route('public.feedback.show', $feedback->id) }}" class="feedback-content" style="text-decoration: none; color: inherit;">
                                                 <h3 class="feedback-title">{{ $feedback->idea }}</h3>
                                                 @if($feedback->value_description)
                                                     <div class="feedback-description">
@@ -497,7 +497,6 @@
     <script>
         // Configuration from server
         const CONFIG = {
-            uniqueUrl: '{{ $settings->unique_url }}',
             isLoggedIn: {{ $isLoggedIn ? 'true' : 'false' }},
             requireLoginForVoting: {{ ($feedbackSettings->enable_login_for_voting ?? false) ? 'true' : 'false' }},
             enableAnonymousVoting: {{ ($feedbackSettings->enable_anonymous_voting ?? true) ? 'true' : 'false' }},
@@ -520,7 +519,7 @@
             // Check if login is required
             if (CONFIG.requireLoginForVoting && !CONFIG.isLoggedIn) {
                 if (confirm('You need to log in to vote. Would you like to log in now?')) {
-                    window.location.href = '/' + CONFIG.uniqueUrl + '/login';
+                    window.location.href = '/login';
                 }
                 return;
             }

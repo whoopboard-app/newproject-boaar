@@ -269,7 +269,7 @@
         <div class="knowledge-container">
             <div class="knowledge-grid">
                 @foreach($knowledgeBoards as $board)
-                    <a href="{{ route('public.knowledge.show', [$settings->unique_url, $board->id]) }}" class="knowledge-card">
+                    <a href="{{ route('public.knowledge.show', $board->id) }}" class="knowledge-card">
                         @if($board->cover_page)
                             <div class="knowledge-cover">
                                 <img src="{{ asset('storage/' . $board->cover_page) }}" alt="{{ $board->name }}">

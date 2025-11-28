@@ -136,7 +136,7 @@ class SubdomainPublicController extends Controller
         // Get published changelogs
         $changelogs = Changelog::where('team_id', $settings->team_id)
             ->where('status', 'published')
-            ->orderBy('publish_date', 'desc')
+            ->orderBy('published_date', 'desc')
             ->paginate(10);
 
         return view('public.changelog', compact('settings', 'categories', 'changelogs'));
@@ -165,11 +165,12 @@ class SubdomainPublicController extends Controller
     {
         $settings = $this->requireTeamSettings($request);
 
-        // Get knowledge boards
+        // Get knowledge boards (published and public visibility)
         $knowledgeBoards = KnowledgeBoard::where('team_id', $settings->team_id)
-            ->where('is_active', true)
+            ->where('status', 'published')
+            ->where('visibility_type', 'public')
             ->orderBy('name')
-            ->get();
+            ->paginate(12);
 
         return view('public.knowledge', compact('settings', 'knowledgeBoards'));
     }

@@ -302,8 +302,8 @@
 <script>
 let selectedRating = null;
 let ratingSubmitted = false;
-const ratingApiUrl = '{{ route("public.rating.submit", $settings->unique_url ?? "") }}';
-const ratingCommentApiUrl = '{{ route("public.rating.comment", $settings->unique_url ?? "") }}';
+const ratingApiUrl = '{{ route("public.rating.submit") }}';
+const ratingCommentApiUrl = '{{ route("public.rating.comment") }}';
 const csrfToken = '{{ csrf_token() }}';
 
 async function submitRating(rating) {

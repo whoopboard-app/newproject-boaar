@@ -145,7 +145,7 @@
 <body>
     <div class="subscribe-container">
         <div class="subscribe-card">
-            <a href="{{ route('public.home', $settings->unique_url) }}" class="back-link">
+            <a href="{{ route('public.feedback') }}" class="back-link">
                 <i class="ti ti-arrow-left"></i>
                 Back to {{ $settings->product_name }}
             </a>
@@ -160,7 +160,7 @@
                 </p>
             </div>
 
-            <form action="{{ route('public.subscribe.submit', $settings->unique_url) }}" method="POST" id="subscribeForm">
+            <form action="{{ route('public.subscribe.submit') }}" method="POST" id="subscribeForm">
                 @csrf
 
                 <div class="mb-3">

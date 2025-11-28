@@ -98,36 +98,31 @@
                         </div>
                     </div>
 
-                    <!-- Unique URL -->
+                    <!-- Public Subdomain URL -->
                     <div class="row mb-3">
                         <div class="col-md-12">
-                            <label for="unique_url" class="form-label">Unique URL <span class="badge bg-info ms-2">Auto-Generated</span></label>
+                            <label for="subdomain_url" class="form-label">Public Subdomain URL <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <span class="input-group-text">{{ request()->getSchemeAndHttpHost() }}/</span>
-                                <input type="text" class="form-control @error('unique_url') is-invalid @enderror" id="unique_url" name="unique_url" placeholder="your-unique-slug" value="{{ old('unique_url', $settings->unique_url ?? '') }}" pattern="[a-z0-9-]+" title="Only lowercase letters, numbers, and hyphens allowed" readonly>
-                                <button type="button" class="btn btn-outline-secondary" id="regenerate-url" title="Regenerate URL">
-                                    <i class="ti ti-refresh"></i>
-                                </button>
-                                @error('unique_url')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <small class="text-muted">This is automatically generated from your product name. Click the refresh button to regenerate.</small>
-                        </div>
-                    </div>
-
-                    <!-- Public Subdomain URL -->
-                    <div class="row mb-4">
-                        <div class="col-md-12">
-                            <label for="subdomain_url" class="form-label">Public Subdomain URL</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control @error('subdomain_url') is-invalid @enderror" id="subdomain_url" name="subdomain_url" placeholder="myteam" value="{{ old('subdomain_url', $settings->subdomain_url ?? '') }}" pattern="[a-z0-9-]+" title="Only lowercase letters, numbers, and hyphens allowed">
-                                <span class="input-group-text">.{{ request()->getHost() }}{{ request()->getPort() && !in_array(request()->getPort(), [80, 443]) ? ':' . request()->getPort() : '' }}</span>
+                                <input type="text" class="form-control @error('subdomain_url') is-invalid @enderror" id="subdomain_url" name="subdomain_url" placeholder="myteam" value="{{ old('subdomain_url', $settings->subdomain_url ?? '') }}" pattern="[a-z0-9-]+" title="Only lowercase letters, numbers, and hyphens allowed" required>
+                                <span class="input-group-text">.{{ config('app.base_domain', request()->getHost()) }}</span>
                                 @error('subdomain_url')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <small class="text-muted">Your public page will be accessible at this subdomain</small>
+                            <small class="text-muted">Your public pages will be accessible at <strong><span id="subdomain-preview">{{ $settings->subdomain_url ?? 'myteam' }}</span>.{{ config('app.base_domain', request()->getHost()) }}/feedback</strong></small>
+                        </div>
+                    </div>
+
+                    <!-- Block Search Engine Indexing -->
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="block_search_indexing" name="block_search_indexing" value="1" {{ old('block_search_indexing', $settings->block_search_indexing ?? false) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="block_search_indexing">
+                                    <strong>Block Search Engine Indexing</strong>
+                                </label>
+                            </div>
+                            <small class="text-muted">When enabled, search engines like Google will be asked not to index your public pages. Useful for private or internal feedback boards.</small>
                         </div>
                     </div>
 
@@ -142,6 +137,239 @@
                                     Cancel
                                 </a>
                             </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Site Visibility Section -->
+<div class="row mt-4">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ti ti-eye me-2"></i>Site Visibility
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ route('settings.general.update') }}">
+                    @csrf
+                    @method('PUT')
+
+                    <!-- Hidden fields to preserve other settings -->
+                    <input type="hidden" name="product_name" value="{{ $settings->product_name ?? '' }}">
+                    <input type="hidden" name="subdomain_url" value="{{ $settings->subdomain_url ?? '' }}">
+                    <input type="hidden" name="website_url" value="{{ $settings->website_url ?? '' }}">
+                    @if($settings && $settings->block_search_indexing)
+                        <input type="hidden" name="block_search_indexing" value="1">
+                    @endif
+
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <label class="form-label"><strong>Public Site Access</strong></label>
+                            <div class="d-flex gap-4 mt-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="site_visibility" id="visibility_public" value="public" {{ old('site_visibility', $settings->site_visibility ?? 'public') === 'public' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="visibility_public">
+                                        <i class="ti ti-world me-1"></i> Public
+                                    </label>
+                                    <div class="text-muted small">Anyone can view your public site</div>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="site_visibility" id="visibility_private" value="private" {{ old('site_visibility', $settings->site_visibility ?? 'public') === 'private' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="visibility_private">
+                                        <i class="ti ti-lock me-1"></i> Private
+                                    </label>
+                                    <div class="text-muted small">Only invited users can view the site</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Private Site Info -->
+                    <div class="row mb-3" id="private-site-info" style="{{ ($settings->site_visibility ?? 'public') === 'private' ? '' : 'display: none;' }}">
+                        <div class="col-md-12">
+                            <div class="alert alert-info mb-0">
+                                <i class="ti ti-info-circle me-2"></i>
+                                <strong>How Private Access Works:</strong>
+                                <ul class="mb-0 mt-2">
+                                    <li>Team members automatically have full access</li>
+                                    <li>Invited users will enter their email on the public site</li>
+                                    <li>They will receive a verification code via email</li>
+                                    <li>After verification, they can view the site</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="ti ti-device-floppy me-1"></i> Save Visibility Settings
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Access List Section (shown when private) -->
+<div class="row mt-4" id="access-list-section" style="{{ ($settings->site_visibility ?? 'public') === 'private' ? '' : 'display: none;' }}">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ti ti-users me-2"></i>Invited Users
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Add New Emails -->
+                <form method="POST" action="{{ route('settings.site-access.add') }}" class="mb-4">
+                    @csrf
+                    <div class="row">
+                        <div class="col-md-8">
+                            <label for="emails" class="form-label">Add Email Addresses</label>
+                            <textarea class="form-control @error('emails') is-invalid @enderror" id="emails" name="emails" rows="3" placeholder="Enter email addresses (one per line or comma-separated)&#10;example1@email.com&#10;example2@email.com, example3@email.com"></textarea>
+                            @error('emails')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="text-muted">Enter one or more email addresses. Separate multiple emails with commas or new lines.</small>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-success">
+                                <i class="ti ti-plus me-1"></i> Add to Access List
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Access List Table -->
+                @if(isset($siteAccessInvites) && $siteAccessInvites->count() > 0)
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Email</th>
+                                    <th>Status</th>
+                                    <th>Added</th>
+                                    <th width="100">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($siteAccessInvites as $invite)
+                                    <tr>
+                                        <td>{{ $invite->email }}</td>
+                                        <td>
+                                            @if($invite->verified_at)
+                                                <span class="badge bg-success"><i class="ti ti-check me-1"></i>Verified</span>
+                                            @else
+                                                <span class="badge bg-warning text-dark"><i class="ti ti-clock me-1"></i>Pending</span>
+                                            @endif
+                                        </td>
+                                        <td>{{ $invite->created_at->format('M d, Y') }}</td>
+                                        <td>
+                                            <form method="POST" action="{{ route('settings.site-access.remove', $invite) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to remove this invite?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="ti ti-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="text-center text-muted py-4">
+                        <i class="ti ti-users-group fs-1 d-block mb-2"></i>
+                        <p class="mb-0">No users invited yet. Add email addresses above to grant access.</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Maintenance Mode Section -->
+<div class="row mt-4">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ti ti-tool me-2"></i>Maintenance Mode
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ route('settings.general.update') }}">
+                    @csrf
+                    @method('PUT')
+
+                    <!-- Hidden fields to preserve other settings -->
+                    <input type="hidden" name="product_name" value="{{ $settings->product_name ?? '' }}">
+                    <input type="hidden" name="subdomain_url" value="{{ $settings->subdomain_url ?? '' }}">
+                    <input type="hidden" name="website_url" value="{{ $settings->website_url ?? '' }}">
+                    <input type="hidden" name="site_visibility" value="{{ $settings->site_visibility ?? 'public' }}">
+                    @if($settings && $settings->block_search_indexing)
+                        <input type="hidden" name="block_search_indexing" value="1">
+                    @endif
+
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="maintenance_mode" name="maintenance_mode" value="1" {{ old('maintenance_mode', $settings->maintenance_mode ?? false) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="maintenance_mode">
+                                    <strong>Enable Maintenance Mode</strong>
+                                </label>
+                            </div>
+                            <small class="text-muted">When enabled, visitors will see a maintenance page instead of your public site. Team members can still access the admin area.</small>
+                        </div>
+                    </div>
+
+                    <!-- Maintenance Options (shown when maintenance mode is enabled) -->
+                    <div id="maintenance-options" style="{{ ($settings->maintenance_mode ?? false) ? '' : 'display: none;' }}">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="maintenance_scheduled_at" class="form-label">Scheduled Start (Optional)</label>
+                                <input type="datetime-local" class="form-control @error('maintenance_scheduled_at') is-invalid @enderror" id="maintenance_scheduled_at" name="maintenance_scheduled_at" value="{{ old('maintenance_scheduled_at', $settings->maintenance_scheduled_at ? $settings->maintenance_scheduled_at->format('Y-m-d\TH:i') : '') }}">
+                                @error('maintenance_scheduled_at')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <small class="text-muted">Leave empty for immediate maintenance</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="maintenance_ends_at" class="form-label">Scheduled End (Optional)</label>
+                                <input type="datetime-local" class="form-control @error('maintenance_ends_at') is-invalid @enderror" id="maintenance_ends_at" name="maintenance_ends_at" value="{{ old('maintenance_ends_at', $settings->maintenance_ends_at ? $settings->maintenance_ends_at->format('Y-m-d\TH:i') : '') }}">
+                                @error('maintenance_ends_at')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <small class="text-muted">Maintenance will end automatically at this time</small>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="maintenance_message" class="form-label">Custom Message (Optional)</label>
+                                <textarea class="form-control @error('maintenance_message') is-invalid @enderror" id="maintenance_message" name="maintenance_message" rows="2" placeholder="We're currently performing scheduled maintenance. Please check back soon.">{{ old('maintenance_message', $settings->maintenance_message ?? '') }}</textarea>
+                                @error('maintenance_message')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <small class="text-muted">This message will be shown to visitors during maintenance</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="ti ti-device-floppy me-1"></i> Save Maintenance Settings
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -186,11 +414,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Auto-generate unique URL and subdomain from product name
+    // Auto-generate subdomain from product name
     const productNameInput = document.getElementById('product_name');
-    const uniqueUrlInput = document.getElementById('unique_url');
     const subdomainUrlInput = document.getElementById('subdomain_url');
-    const regenerateBtn = document.getElementById('regenerate-url');
+    const subdomainPreview = document.getElementById('subdomain-preview');
 
     function generateSlug(text) {
         if (!text) return '';
@@ -202,31 +429,17 @@ document.addEventListener('DOMContentLoaded', function() {
             .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
     }
 
-    if (productNameInput && uniqueUrlInput) {
-        // Auto-generate on product name input
+    if (productNameInput && subdomainUrlInput) {
+        // Auto-generate on product name input (only if subdomain is empty)
         productNameInput.addEventListener('input', function() {
-            uniqueUrlInput.value = generateSlug(this.value);
-            // Also update subdomain if it's empty or matches the previous unique_url pattern
-            if (subdomainUrlInput && (!subdomainUrlInput.dataset.userEdited || subdomainUrlInput.value === '')) {
+            if (!subdomainUrlInput.dataset.userEdited || subdomainUrlInput.value === '') {
                 subdomainUrlInput.value = generateSlug(this.value);
+                if (subdomainPreview) {
+                    subdomainPreview.textContent = generateSlug(this.value) || 'myteam';
+                }
             }
         });
 
-        // Regenerate button click
-        if (regenerateBtn) {
-            regenerateBtn.addEventListener('click', function() {
-                uniqueUrlInput.value = generateSlug(productNameInput.value);
-            });
-        }
-
-        // Generate on page load if product name exists but unique URL doesn't
-        if (productNameInput.value && !uniqueUrlInput.value) {
-            uniqueUrlInput.value = generateSlug(productNameInput.value);
-        }
-    }
-
-    // Auto-generate subdomain on page load if empty
-    if (subdomainUrlInput && productNameInput) {
         // Generate on page load if product name exists but subdomain doesn't
         if (productNameInput.value && !subdomainUrlInput.value) {
             subdomainUrlInput.value = generateSlug(productNameInput.value);
@@ -235,6 +448,42 @@ document.addEventListener('DOMContentLoaded', function() {
         // Mark as user-edited when user manually changes it
         subdomainUrlInput.addEventListener('input', function() {
             this.dataset.userEdited = 'true';
+            if (subdomainPreview) {
+                subdomainPreview.textContent = this.value || 'myteam';
+            }
+        });
+    }
+
+    // Site Visibility Toggle
+    const visibilityPublic = document.getElementById('visibility_public');
+    const visibilityPrivate = document.getElementById('visibility_private');
+    const privateSiteInfo = document.getElementById('private-site-info');
+    const accessListSection = document.getElementById('access-list-section');
+
+    function toggleVisibilityOptions() {
+        const isPrivate = visibilityPrivate && visibilityPrivate.checked;
+        if (privateSiteInfo) {
+            privateSiteInfo.style.display = isPrivate ? '' : 'none';
+        }
+        if (accessListSection) {
+            accessListSection.style.display = isPrivate ? '' : 'none';
+        }
+    }
+
+    if (visibilityPublic) {
+        visibilityPublic.addEventListener('change', toggleVisibilityOptions);
+    }
+    if (visibilityPrivate) {
+        visibilityPrivate.addEventListener('change', toggleVisibilityOptions);
+    }
+
+    // Maintenance Mode Toggle
+    const maintenanceMode = document.getElementById('maintenance_mode');
+    const maintenanceOptions = document.getElementById('maintenance-options');
+
+    if (maintenanceMode && maintenanceOptions) {
+        maintenanceMode.addEventListener('change', function() {
+            maintenanceOptions.style.display = this.checked ? '' : 'none';
         });
     }
 });

@@ -405,7 +405,7 @@ function submitComment() {
     localStorage.setItem(ratingKey, 'comment');
 
     // Submit to server
-    fetch('{{ route("public.rating.submit", $settings->unique_url ?? "") }}', {
+    fetch('{{ route("public.rating.submit") }}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -441,7 +441,7 @@ function submitAdditionalComment() {
     btn.style.background = '#28a745';
 
     // Submit additional comment to server
-    fetch('{{ route("public.rating.comment", $settings->unique_url ?? "") }}', {
+    fetch('{{ route("public.rating.comment") }}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -474,7 +474,7 @@ function saveRating(rating) {
     localStorage.setItem(ratingKey, rating);
 
     // Submit to server
-    fetch('{{ route("public.rating.submit", $settings->unique_url ?? "") }}', {
+    fetch('{{ route("public.rating.submit") }}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\AppSettings;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Symfony\Component\HttpFoundation\Response;
 
 class SubdomainRouting
@@ -26,9 +27,13 @@ class SubdomainRouting
             if ($settings) {
                 // Store settings in request for controllers
                 $request->attributes->set('team_settings', $settings);
+                $request->attributes->set('subdomain_settings', $settings);
                 $request->attributes->set('team_id', $settings->team_id);
                 $request->attributes->set('is_subdomain', true);
                 $request->attributes->set('subdomain', $subdomain);
+
+                // Set URL defaults so route() helper automatically includes subdomain
+                URL::defaults(['subdomain' => $subdomain]);
             }
         }
 

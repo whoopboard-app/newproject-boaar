@@ -333,7 +333,7 @@
                     @endif
                 </div>
 
-                <a href="{{ route('public.subscribe', $settings->unique_url) }}" class="btn btn-primary" style="background: var(--primary-color); border: none; padding: 0.5rem 1.5rem; border-radius: 6px; text-decoration: none; color: white; font-weight: 500;">
+                <a href="{{ route('public.subscribe') }}" class="btn btn-primary" style="background: var(--primary-color); border: none; padding: 0.5rem 1.5rem; border-radius: 6px; text-decoration: none; color: white; font-weight: 500;">
                     <i class="ti ti-bell-ringing me-1"></i> Subscribe
                 </a>
             </div>
@@ -344,7 +344,7 @@
 
     <!-- Main Content -->
     <div class="content-container">
-        <a href="{{ route('public.knowledge', $settings->unique_url) }}" class="btn btn-outline-secondary mb-3" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 500;">
+        <a href="{{ route('public.knowledge') }}" class="btn btn-outline-secondary mb-3" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 500;">
             <i class="ti ti-arrow-left"></i>
             Back to Knowledge Board
         </a>
@@ -400,7 +400,7 @@
                     @if($otherBoards->count() > 0)
                         <div class="related-list">
                             @foreach($otherBoards as $board)
-                                <a href="{{ route('public.knowledge.show', [$settings->unique_url, $board->id]) }}" class="related-item">
+                                <a href="{{ route('public.knowledge.show', $board->id) }}" class="related-item">
                                     @if($board->cover_page)
                                         <div class="related-cover">
                                             <img src="{{ asset('storage/' . $board->cover_page) }}" alt="{{ $board->name }}">

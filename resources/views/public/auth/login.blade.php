@@ -138,7 +138,7 @@
 <body>
     <div class="login-container">
         <div class="login-card">
-            <a href="{{ route('public.home', $settings->unique_url) }}" class="back-link">
+            <a href="{{ route('public.feedback') }}" class="back-link">
                 <i class="ti ti-arrow-left"></i>
                 Back to {{ $settings->product_name }}
             </a>
@@ -152,7 +152,7 @@
                 Enter your email address and we'll send you a magic link to log in.
             </p>
 
-            <form action="{{ route('public.auth.send-magic-link', $settings->unique_url) }}" method="POST">
+            <form action="{{ route('public.auth.send-magic-link') }}" method="POST">
                 @csrf
 
                 <div class="mb-4">

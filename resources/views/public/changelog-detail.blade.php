@@ -281,7 +281,7 @@
             <!-- Main Content -->
             <main>
                 <div class="changelog-container" style="max-width: 100%; padding: 0;">
-                    <a href="{{ route('public.changelog', $settings->unique_url) }}" class="back-link">
+                    <a href="{{ route('public.changelog') }}" class="back-link">
                         <i class="ti ti-arrow-left"></i>
                         Back to all updates
                     </a>

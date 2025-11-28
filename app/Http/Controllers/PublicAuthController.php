@@ -16,7 +16,7 @@ class PublicAuthController extends Controller
      */
     public function showLoginForm(Request $request)
     {
-        $settings = $request->attributes->get('app_settings');
+        $settings = $request->attributes->get('team_settings');
         return view('public.auth.login', compact('settings'));
     }
 
@@ -25,7 +25,7 @@ class PublicAuthController extends Controller
      */
     public function sendMagicLink(Request $request)
     {
-        $settings = $request->attributes->get('app_settings');
+        $settings = $request->attributes->get('team_settings');
 
         $request->validate([
             'email' => 'required|email|max:255',
@@ -69,14 +69,9 @@ class PublicAuthController extends Controller
         Session::put('public_user_id', $publicUser->id);
         Session::put('public_user_email', $publicUser->email);
 
-        // Redirect to home page
-        $appSettings = AppSettings::first(); // Get first settings or adjust logic
-        if ($appSettings) {
-            return redirect()->route('public.home', $appSettings->unique_url)
-                ->with('success', 'You have successfully logged in!');
-        }
-
-        return redirect('/')->with('success', 'You have successfully logged in!');
+        // Redirect to home/feedback page
+        return redirect()->route('public.home')
+            ->with('success', 'You have successfully logged in!');
     }
 
     /**
@@ -84,12 +79,10 @@ class PublicAuthController extends Controller
      */
     public function logout(Request $request)
     {
-        $settings = $request->attributes->get('app_settings');
-
         Session::forget('public_user_id');
         Session::forget('public_user_email');
 
-        return redirect()->route('public.home', $settings->unique_url)
+        return redirect()->route('public.home')
             ->with('success', 'You have been logged out successfully.');
     }
 

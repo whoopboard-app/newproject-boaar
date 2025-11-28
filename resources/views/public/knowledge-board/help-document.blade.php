@@ -425,7 +425,7 @@
     <!-- Hero Section -->
     <header class="hs-hero">
         <div class="hs-hero-inner">
-            <a href="{{ route('public.knowledge', $settings->unique_url) }}" class="hs-brand">
+            <a href="{{ route('public.knowledge') }}" class="hs-brand">
                 @if($settings->logo)
                     <img src="{{ asset('storage/' . $settings->logo) }}" alt="{{ $settings->product_name }}" class="hs-brand-logo">
                 @else
@@ -449,7 +449,7 @@
 
     <!-- Main Content -->
     <main class="hs-main">
-        <a href="{{ route('public.knowledge', $settings->unique_url) }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: white; border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-dark); font-size: 14px; font-weight: 500; margin-bottom: 24px; transition: all 0.2s;" onmouseover="this.style.background='var(--primary-color)'; this.style.color='white'; this.style.borderColor='var(--primary-color)';" onmouseout="this.style.background='white'; this.style.color='var(--text-dark)'; this.style.borderColor='var(--border-color)';">
+        <a href="{{ route('public.knowledge') }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: white; border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-dark); font-size: 14px; font-weight: 500; margin-bottom: 24px; transition: all 0.2s;" onmouseover="this.style.background='var(--primary-color)'; this.style.color='white'; this.style.borderColor='var(--primary-color)';" onmouseout="this.style.background='white'; this.style.color='var(--text-dark)'; this.style.borderColor='var(--border-color)';">
             <i class="ti ti-arrow-left"></i>
             Back to Knowledge Board
         </a>
@@ -469,7 +469,7 @@
                 @foreach($categories as $category)
                     @if(isset($articles[$category->id]) && $articles[$category->id]->count() > 0)
                         <div class="hs-collection">
-                            <a href="{{ route('public.knowledge.category', [$settings->unique_url, $knowledgeBoard->id, $category->id]) }}" class="hs-collection-header" style="border-bottom: none;">
+                            <a href="{{ route('public.knowledge.category', [$knowledgeBoard->id, $category->id]) }}" class="hs-collection-header" style="border-bottom: none;">
                                 <div class="hs-collection-icon">
                                     <i class="{{ $category->category_icon ?: 'ti ti-folder' }}"></i>
                                 </div>
@@ -483,7 +483,7 @@
                     @foreach($category->childCategories as $childCategory)
                         @if(isset($articles[$childCategory->id]) && $articles[$childCategory->id]->count() > 0)
                             <div class="hs-collection">
-                                <a href="{{ route('public.knowledge.category', [$settings->unique_url, $knowledgeBoard->id, $childCategory->id]) }}" class="hs-collection-header" style="border-bottom: none;">
+                                <a href="{{ route('public.knowledge.category', [$knowledgeBoard->id, $childCategory->id]) }}" class="hs-collection-header" style="border-bottom: none;">
                                     <div class="hs-collection-icon">
                                         <i class="{{ $childCategory->category_icon ?: 'ti ti-folder' }}"></i>
                                     </div>
@@ -525,7 +525,7 @@
             }
 
             searchTimeout = setTimeout(() => {
-                fetch(`{{ route('public.knowledge.search', [$settings->unique_url, $knowledgeBoard->id]) }}?q=${encodeURIComponent(query)}`)
+                fetch(`{{ route('public.knowledge.search', $knowledgeBoard->id) }}?q=${encodeURIComponent(query)}`)
                     .then(response => response.json())
                     .then(data => {
                         if (data.results.length > 0) {

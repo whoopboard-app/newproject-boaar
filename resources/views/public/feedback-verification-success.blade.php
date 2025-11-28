@@ -166,7 +166,7 @@
             </div>
 
             @if($settings)
-                <a href="{{ route('public.home', $settings->unique_url) }}" class="btn btn-home">
+                <a href="{{ route('public.feedback') }}" class="btn btn-home">
                     <i class="ti ti-arrow-left"></i>
                     Go to Feedback Board
                 </a>

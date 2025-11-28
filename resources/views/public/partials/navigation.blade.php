@@ -50,7 +50,7 @@
                     $isActive = str_starts_with($currentRoute, 'public.knowledge');
                 }
             @endphp
-            <a href="{{ route($config['route'], $settings->unique_url) }}" class="nav-tab {{ $isActive ? 'active' : '' }}">
+            <a href="{{ route($config['route']) }}" class="nav-tab {{ $isActive ? 'active' : '' }}">
                 <i class="{{ $config['icon'] }}"></i> {{ $item['label'] ?? $config['default_label'] }}
             </a>
         @endif

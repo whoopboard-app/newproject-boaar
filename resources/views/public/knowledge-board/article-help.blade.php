@@ -642,7 +642,7 @@
     <!-- Hero Section -->
     <header class="hs-hero">
         <div class="hs-hero-inner">
-            <a href="{{ route('public.knowledge', $settings->unique_url) }}" class="hs-brand">
+            <a href="{{ route('public.knowledge') }}" class="hs-brand">
                 @if($settings->logo)
                     <img src="{{ asset('storage/' . $settings->logo) }}" alt="{{ $settings->product_name }}" class="hs-brand-logo">
                 @else
@@ -667,18 +667,18 @@
     <main class="hs-main">
         <!-- Breadcrumb -->
         <nav class="hs-breadcrumb">
-            <a href="{{ route('public.knowledge', $settings->unique_url) }}">
+            <a href="{{ route('public.knowledge') }}">
                 <i class="ti ti-home" style="font-size: 14px;"></i>
             </a>
             <i class="ti ti-chevron-right hs-breadcrumb-separator"></i>
-            <a href="{{ route('public.knowledge.show', [$settings->unique_url, $knowledgeBoard->id]) }}">{{ $knowledgeBoard->name }}</a>
+            <a href="{{ route('public.knowledge.show', $knowledgeBoard->id) }}">{{ $knowledgeBoard->name }}</a>
             @if($article->boardCategory)
                 @if($article->boardCategory->parentCategory)
                     <i class="ti ti-chevron-right hs-breadcrumb-separator"></i>
-                    <a href="{{ route('public.knowledge.category', [$settings->unique_url, $knowledgeBoard->id, $article->boardCategory->parentCategory->id]) }}">{{ $article->boardCategory->parentCategory->category_name }}</a>
+                    <a href="{{ route('public.knowledge.category', [$knowledgeBoard->id, $article->boardCategory->parentCategory->id]) }}">{{ $article->boardCategory->parentCategory->category_name }}</a>
                 @endif
                 <i class="ti ti-chevron-right hs-breadcrumb-separator"></i>
-                <a href="{{ route('public.knowledge.category', [$settings->unique_url, $knowledgeBoard->id, $article->boardCategory->id]) }}">{{ $article->boardCategory->category_name }}</a>
+                <a href="{{ route('public.knowledge.category', [$knowledgeBoard->id, $article->boardCategory->id]) }}">{{ $article->boardCategory->category_name }}</a>
             @endif
             <i class="ti ti-chevron-right hs-breadcrumb-separator"></i>
             <span class="hs-breadcrumb-current">{{ Str::limit($article->article_title, 40) }}</span>
@@ -720,7 +720,7 @@
             <!-- Navigation -->
             <nav class="hs-article-nav">
                 @if($prevArticle)
-                    <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $prevArticle->id]) }}" class="hs-article-nav-link hs-article-nav-link--prev">
+                    <a href="{{ route('public.knowledge.article', [$knowledgeBoard->id, $prevArticle->id]) }}" class="hs-article-nav-link hs-article-nav-link--prev">
                         <i class="ti ti-arrow-left hs-article-nav-icon"></i>
                         <div class="hs-article-nav-content">
                             <div class="hs-article-nav-label">Previous</div>
@@ -732,7 +732,7 @@
                 @endif
 
                 @if($nextArticle)
-                    <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $nextArticle->id]) }}" class="hs-article-nav-link hs-article-nav-link--next">
+                    <a href="{{ route('public.knowledge.article', [$knowledgeBoard->id, $nextArticle->id]) }}" class="hs-article-nav-link hs-article-nav-link--next">
                         <i class="ti ti-arrow-right hs-article-nav-icon"></i>
                         <div class="hs-article-nav-content">
                             <div class="hs-article-nav-label">Next</div>
@@ -755,7 +755,7 @@
                     <h2 class="hs-related-title">Related Articles</h2>
                     <div class="hs-related-list">
                         @foreach($relatedArticles as $relatedArticle)
-                            <a href="{{ route('public.knowledge.article', [$settings->unique_url, $knowledgeBoard->id, $relatedArticle->id]) }}" class="hs-related-item">
+                            <a href="{{ route('public.knowledge.article', [$knowledgeBoard->id, $relatedArticle->id]) }}" class="hs-related-item">
                                 <i class="ti ti-file-text hs-related-item-icon"></i>
                                 <span class="hs-related-item-title">{{ $relatedArticle->article_title }}</span>
                                 <i class="ti ti-chevron-right hs-related-item-arrow"></i>
@@ -767,7 +767,7 @@
         @endif
 
         <!-- Back Link -->
-        <a href="{{ route('public.knowledge.show', [$settings->unique_url, $knowledgeBoard->id]) }}" class="hs-back">
+        <a href="{{ route('public.knowledge.show', $knowledgeBoard->id) }}" class="hs-back">
             <i class="ti ti-arrow-left"></i>
             Back to {{ $knowledgeBoard->name }}
         </a>
@@ -794,7 +794,7 @@
             }
 
             searchTimeout = setTimeout(() => {
-                fetch(`{{ route('public.knowledge.search', [$settings->unique_url, $knowledgeBoard->id]) }}?q=${encodeURIComponent(query)}`)
+                fetch(`{{ route('public.knowledge.search', $knowledgeBoard->id) }}?q=${encodeURIComponent(query)}`)
                     .then(response => response.json())
                     .then(data => {
                         if (data.results.length > 0) {

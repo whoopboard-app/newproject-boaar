@@ -157,7 +157,7 @@
 <body>
     <div class="login-container">
         <div class="login-card">
-            <a href="{{ route('public.home', $settings->unique_url) }}" class="back-link">
+            <a href="{{ route('public.feedback') }}" class="back-link">
                 <i class="ti ti-arrow-left"></i>
                 Back to {{ $settings->product_name ?? 'Feedback Board' }}
             </a>
@@ -186,13 +186,13 @@
                 </ul>
             </div>
 
-            <a href="{{ route('public.home', $settings->unique_url) }}" class="btn-back">
+            <a href="{{ route('public.feedback') }}" class="btn-back">
                 <i class="ti ti-arrow-left"></i>
                 Return to Feedback Board
             </a>
 
             <p class="resend-link">
-                Need a new link? <a href="{{ route('public.auth.login', $settings->unique_url) }}">Request another one</a>
+                Need a new link? <a href="{{ route('public.auth.login') }}">Request another one</a>
             </p>
         </div>
     </div>

@@ -148,7 +148,7 @@
             </div>
 
             <div class="text-center">
-                <a href="{{ route('public.home', $settings->unique_url) }}" class="back-home-link">
+                <a href="{{ route('public.feedback') }}" class="back-home-link">
                     <i class="ti ti-arrow-left"></i>
                     Back to {{ $settings->product_name }}
                 </a>
