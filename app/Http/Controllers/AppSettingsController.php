@@ -33,7 +33,7 @@ class AppSettingsController extends Controller
                 ->with('error', 'You do not have permission to access app settings.');
         }
 
-        $settings = AppSettings::where('team_id', Auth::user()->current_team_id)->first();
+        $settings = AppSettings::firstOrNew(['team_id' => Auth::user()->current_team_id]);
         $siteAccessInvites = SiteAccessInvite::where('team_id', Auth::user()->current_team_id)
             ->orderBy('created_at', 'desc')
             ->get();
