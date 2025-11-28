@@ -36,7 +36,8 @@
       "Bash(\"C:\\wamp64\\bin\\php\\php8.1.0\\php.exe\" artisan make:migration update_categories_unique_constraint_to_include_team_id --path=database/migrations)",
       "Bash(\"C:\\wamp64\\bin\\php\\php8.1.0\\php.exe\" \"C:\\wamp64\\www\\whoopboard\\artisan\" config:clear)",
       "Bash(/c/wamp64/bin/php/php8.1.0/php.exe:*)",
-      "Bash(\"C:\\wamp64\\bin\\php\\php8.1.0\\php.exe\" artisan make:migration create_changelog_category_table)"
+      "Bash(\"C:\\wamp64\\bin\\php\\php8.1.0\\php.exe\" artisan make:migration create_changelog_category_table)",
+      "Bash(\"C:\\wamp64\\bin\\php\\php8.1.0\\php.exe\" artisan route:clear)"
     ],
     "deny": [],
     "ask": []

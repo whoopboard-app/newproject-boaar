@@ -76,9 +76,9 @@
                                     </td>
                                     <td>
                                         @if($item->feedback)
-                                            <a href="{{ route('feedback.show', $item->feedback) }}" class="text-decoration-none">
+{{--                                            <a href="{{ route('feedback.show', $item->feedback) }}" class="text-decoration-none">
                                                 <i class="ti ti-link me-1"></i>{{ Str::limit($item->feedback->idea, 30) }}
-                                            </a>
+                                            </a>--}}
                                         @else
                                             <span class="text-muted">-</span>
                                         @endif
@@ -89,9 +89,9 @@
                                         <a href="{{ route('roadmap-items.show', $item) }}" class="btn btn-sm btn-info" title="View">
                                             <i class="ti ti-eye"></i>
                                         </a>
-                                        <a href="{{ route('roadmap-items.edit', $item) }}" class="btn btn-sm btn-primary" title="Edit">
+{{--                                        <a href="{{ route('roadmap-items.edit', $item) }}" class="btn btn-sm btn-primary" title="Edit">
                                             <i class="ti ti-edit"></i>
-                                        </a>
+                                        </a>--}}
                                         <form action="{{ route('roadmap-items.destroy', $item) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this roadmap item?');">
                                             @csrf
                                             @method('DELETE')

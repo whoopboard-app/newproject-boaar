@@ -105,9 +105,9 @@
                             <i class="ti ti-link me-3 fs-4"></i>
                             <div>
                                 <strong>Feedback #{{ $roadmapItem->feedback->id }}</strong><br>
-                                <a href="{{ route('feedback.show', $roadmapItem->feedback) }}" class="text-decoration-none">
+{{--                                <a href="{{ route('feedback.show', $roadmapItem->feedback) }}" class="text-decoration-none">
                                     {{ $roadmapItem->feedback->idea }}
-                                </a>
+                                </a>--}}
                             </div>
                         </div>
                     </div>
