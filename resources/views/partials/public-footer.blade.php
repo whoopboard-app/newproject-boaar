@@ -6,6 +6,14 @@
     } elseif (isset($settings) && isset($settings->product_name)) {
         $footerName = $settings->product_name;
     }
+
+    // Get active published survey for this team (if settings available)
+    $activeSurvey = null;
+    if (isset($settings) && isset($settings->team_id)) {
+        $activeSurvey = \App\Models\Survey::where('team_id', $settings->team_id)
+            ->where('status', 'published')
+            ->first();
+    }
 @endphp
 <footer class="public-footer" style="border-top: 1px solid var(--border-color, #e5e7eb); margin-top: 4rem; padding: 2rem 0; background: #f9fafb;">
     <div class="container">
@@ -23,3 +31,15 @@
         </div>
     </div>
 </footer>
+
+{{-- Survey Widget --}}
+@if($activeSurvey)
+<script src="{{ url('/js/survey-widget.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.WhoopSurvey) {
+            WhoopSurvey.init('{{ $activeSurvey->id }}', '{{ url('/') }}');
+        }
+    });
+</script>
+@endif

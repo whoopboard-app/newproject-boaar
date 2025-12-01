@@ -232,6 +232,14 @@
                         </a>
                     </li>
 
+                    <!-- Surveys -->
+                    <li class="side-nav-item">
+                        <a href="{{ Route::has('surveys.index') ? route('surveys.index') : '#' }}" class="side-nav-link {{ request()->routeIs('surveys.*') ? 'active' : '' }}">
+                            <span class="menu-icon"><i class="ti ti-chart-bar"></i></span>
+                            <span class="menu-text">Surveys</span>
+                        </a>
+                    </li>
+
                     <!-- Knowledge Board -->
                     <li class="side-nav-item">
                         <a href="{{ Route::has('knowledge-board.index') ? route('knowledge-board.index') : '#' }}" class="side-nav-link {{ request()->routeIs('knowledge-board.*') ? 'active' : '' }}">

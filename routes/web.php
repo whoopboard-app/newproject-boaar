@@ -20,6 +20,7 @@ use App\Http\Controllers\PublicAuthController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\TestimonialTemplateController;
 use App\Http\Controllers\SubdomainPublicController;
+use App\Http\Controllers\SurveyController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/dashboard', function () {
@@ -141,12 +142,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/configuration/feedback-settings', [AppConfigurationController::class, 'updateFeedbackSettings'])->name('configuration.feedback-settings.update');
 
     // Roadmap Management
-    Route::get('/roadmap', [RoadmapController::class, 'index'])->name('roadmap.index');
-    Route::post('/roadmap', [RoadmapController::class, 'store'])->name('roadmap.store');
-    Route::put('/roadmap/{roadmap}', [RoadmapController::class, 'update'])->name('roadmap.update');
-    Route::delete('/roadmap/{roadmap}', [RoadmapController::class, 'destroy'])->name('roadmap.destroy');
-    Route::post('/roadmap/reorder', [RoadmapController::class, 'reorder'])->name('roadmap.reorder');
-    Route::post('/roadmap/bulk-update', [RoadmapController::class, 'bulkUpdate'])->name('roadmap.bulkUpdate');
+    Route::get('/roadmaps', [RoadmapController::class, 'index'])->name('roadmap.index');
+    Route::post('/roadmaps', [RoadmapController::class, 'store'])->name('roadmap.store');
+    Route::put('/roadmaps/{roadmap}', [RoadmapController::class, 'update'])->name('roadmap.update');
+    Route::delete('/roadmaps/{roadmap}', [RoadmapController::class, 'destroy'])->name('roadmap.destroy');
+    Route::post('/roadmaps/reorder', [RoadmapController::class, 'reorder'])->name('roadmap.reorder');
+    Route::post('/roadmaps/bulk-update', [RoadmapController::class, 'bulkUpdate'])->name('roadmap.bulkUpdate');
 
     // Feedback Category Management
     Route::get('/feedback-category', [FeedbackCategoryController::class, 'index'])->name('feedback-category.index');
@@ -210,6 +211,19 @@ Route::middleware('auth')->group(function () {
     Route::delete('/testimonial-campaigns/{campaign}', [\App\Http\Controllers\TestimonialCampaignController::class, 'destroy'])->name('testimonial-campaigns.destroy');
     Route::get('/testimonial-campaigns/{campaign}/statistics', [\App\Http\Controllers\TestimonialCampaignController::class, 'statistics'])->name('testimonial-campaigns.statistics');
     Route::post('/testimonial-campaigns/{campaign}/resend-failed', [\App\Http\Controllers\TestimonialCampaignController::class, 'resendFailedEmails'])->name('testimonial-campaigns.resend-failed');
+
+    // Survey Management
+    Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
+    Route::get('/surveys/create', [SurveyController::class, 'create'])->name('surveys.create');
+    Route::get('/surveys/builder/{type}', [SurveyController::class, 'builder'])->name('surveys.builder');
+    Route::post('/surveys', [SurveyController::class, 'store'])->name('surveys.store');
+    Route::get('/surveys/{survey}', [SurveyController::class, 'show'])->name('surveys.show');
+    Route::get('/surveys/{survey}/edit', [SurveyController::class, 'edit'])->name('surveys.edit');
+    Route::put('/surveys/{survey}', [SurveyController::class, 'update'])->name('surveys.update');
+    Route::delete('/surveys/{survey}', [SurveyController::class, 'destroy'])->name('surveys.destroy');
+    Route::post('/surveys/{survey}/toggle-active', [SurveyController::class, 'toggleActive'])->name('surveys.toggle-active');
+    Route::get('/surveys/{survey}/install', [SurveyController::class, 'install'])->name('surveys.install');
+    Route::get('/surveys/{survey}/responses', [SurveyController::class, 'responses'])->name('surveys.responses');
 });
 
 require __DIR__.'/auth.php';
@@ -224,6 +238,10 @@ Route::prefix('api/mux')->group(function () {
     Route::get('/upload/{uploadId}/status', [\App\Http\Controllers\Api\MuxVideoController::class, 'getUploadStatus'])->name('api.mux.upload.status');
     Route::post('/webhook', [\App\Http\Controllers\Api\MuxVideoController::class, 'handleWebhook'])->name('api.mux.webhook');
 });
+
+// Public Survey API (No Authentication Required)
+Route::get('/api/survey/{survey}/config', [SurveyController::class, 'getConfig'])->name('api.survey.config');
+Route::post('/api/survey/{survey}/respond', [SurveyController::class, 'submitResponse'])->name('api.survey.respond');
 
 // Campaign Tracking Routes (No Authentication Required)
 Route::get('/testimonial-campaign/open/{trackingToken}', [\App\Http\Controllers\TestimonialCampaignController::class, 'trackOpen'])->name('testimonials.campaign-open');

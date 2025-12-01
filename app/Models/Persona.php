@@ -12,23 +12,52 @@ class Persona extends Model
 
     protected $fillable = [
         'team_id',
+        // Persona Header
         'name',
         'avatar',
-        'role',
-        'age_range',
-        'location',
-        'description',
-        'goals',
-        'pain_points',
-        'behaviors',
-        'quote',
+        'tagline',
+        'segmentation_tags',
         'status',
+        // Identity
+        'age_range',
+        'gender',
+        'location',
+        'occupation',
+        'education',
+        'income',
+        'role', // Legacy field for job title
+        'description', // Legacy field
+        // Goals & Pain Points
+        'goals',
+        'motivations',
+        'pain_points',
+        'frustrations',
+        // Behavior
+        'behaviors',
+        'device_usage',
+        'channel_preference',
+        'workflow',
+        'buying_behavior',
+        // Product Fit
+        'journey_stage',
+        'modules_interacted',
+        'weighted_impact_scores',
+        // Persona Summary Card
+        'bio',
+        'quote',
     ];
 
     protected $casts = [
+        'segmentation_tags' => 'array',
         'goals' => 'array',
+        'motivations' => 'array',
         'pain_points' => 'array',
+        'frustrations' => 'array',
         'behaviors' => 'array',
+        'device_usage' => 'array',
+        'channel_preference' => 'array',
+        'modules_interacted' => 'array',
+        'weighted_impact_scores' => 'array',
     ];
 
     /**

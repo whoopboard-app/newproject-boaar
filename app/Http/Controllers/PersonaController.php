@@ -33,14 +33,29 @@ class PersonaController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            // Persona Header
             'name' => 'required|string|max:255',
-            'role' => 'required|string|max:255',
-            'age_range' => 'nullable|string|max:50',
-            'location' => 'nullable|string|max:255',
-            'description' => 'required|string',
-            'quote' => 'nullable|string',
-            'status' => 'required|in:active,inactive,draft',
+            'tagline' => 'nullable|string|max:255',
+            'status' => 'required|in:active,inactive',
             'avatar' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:2048',
+            // Identity
+            'age_range' => 'nullable|string|max:50',
+            'gender' => 'nullable|string|max:50',
+            'location' => 'nullable|string|max:255',
+            'occupation' => 'nullable|string|max:255',
+            'education' => 'nullable|string|max:255',
+            'income' => 'nullable|string|max:255',
+            // Behavior
+            'workflow' => 'nullable|string',
+            'buying_behavior' => 'nullable|string',
+            // Product Fit
+            'journey_stage' => 'nullable|string|max:255',
+            // Persona Summary Card
+            'bio' => 'nullable|string',
+            'quote' => 'nullable|string',
+            // Legacy fields
+            'role' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
         ]);
 
         // Handle avatar upload
@@ -49,9 +64,16 @@ class PersonaController extends Controller
         }
 
         // Handle array fields from form (they come as individual array items)
+        $validated['segmentation_tags'] = $request->has('segmentation_tags') ? (is_array($request->segmentation_tags) ? $request->segmentation_tags : []) : [];
         $validated['goals'] = $request->has('goals') ? (is_array($request->goals) ? $request->goals : []) : [];
+        $validated['motivations'] = $request->has('motivations') ? (is_array($request->motivations) ? $request->motivations : []) : [];
         $validated['pain_points'] = $request->has('pain_points') ? (is_array($request->pain_points) ? $request->pain_points : []) : [];
+        $validated['frustrations'] = $request->has('frustrations') ? (is_array($request->frustrations) ? $request->frustrations : []) : [];
         $validated['behaviors'] = $request->has('behaviors') ? (is_array($request->behaviors) ? $request->behaviors : []) : [];
+        $validated['device_usage'] = $request->has('device_usage') ? (is_array($request->device_usage) ? $request->device_usage : []) : [];
+        $validated['channel_preference'] = $request->has('channel_preference') ? (is_array($request->channel_preference) ? $request->channel_preference : []) : [];
+        $validated['modules_interacted'] = $request->has('modules_interacted') ? (is_array($request->modules_interacted) ? $request->modules_interacted : []) : [];
+        $validated['weighted_impact_scores'] = $request->has('weighted_impact_scores') ? (is_array($request->weighted_impact_scores) ? $request->weighted_impact_scores : []) : [];
 
         // Create persona
         $persona = Persona::create($validated);
@@ -89,14 +111,29 @@ class PersonaController extends Controller
     public function update(Request $request, Persona $persona)
     {
         $validated = $request->validate([
+            // Persona Header
             'name' => 'required|string|max:255',
-            'role' => 'required|string|max:255',
-            'age_range' => 'nullable|string|max:50',
-            'location' => 'nullable|string|max:255',
-            'description' => 'required|string',
-            'quote' => 'nullable|string',
-            'status' => 'required|in:active,inactive,draft',
+            'tagline' => 'nullable|string|max:255',
+            'status' => 'required|in:active,inactive',
             'avatar' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,avif|mimetypes:image/jpeg,image/png,image/gif,image/webp,image/avif|max:2048',
+            // Identity
+            'age_range' => 'nullable|string|max:50',
+            'gender' => 'nullable|string|max:50',
+            'location' => 'nullable|string|max:255',
+            'occupation' => 'nullable|string|max:255',
+            'education' => 'nullable|string|max:255',
+            'income' => 'nullable|string|max:255',
+            // Behavior
+            'workflow' => 'nullable|string',
+            'buying_behavior' => 'nullable|string',
+            // Product Fit
+            'journey_stage' => 'nullable|string|max:255',
+            // Persona Summary Card
+            'bio' => 'nullable|string',
+            'quote' => 'nullable|string',
+            // Legacy fields
+            'role' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
         ]);
 
         // Handle avatar removal
@@ -117,9 +154,16 @@ class PersonaController extends Controller
         }
 
         // Handle array fields from form (they come as individual array items)
+        $validated['segmentation_tags'] = $request->has('segmentation_tags') ? (is_array($request->segmentation_tags) ? $request->segmentation_tags : []) : [];
         $validated['goals'] = $request->has('goals') ? (is_array($request->goals) ? $request->goals : []) : [];
+        $validated['motivations'] = $request->has('motivations') ? (is_array($request->motivations) ? $request->motivations : []) : [];
         $validated['pain_points'] = $request->has('pain_points') ? (is_array($request->pain_points) ? $request->pain_points : []) : [];
+        $validated['frustrations'] = $request->has('frustrations') ? (is_array($request->frustrations) ? $request->frustrations : []) : [];
         $validated['behaviors'] = $request->has('behaviors') ? (is_array($request->behaviors) ? $request->behaviors : []) : [];
+        $validated['device_usage'] = $request->has('device_usage') ? (is_array($request->device_usage) ? $request->device_usage : []) : [];
+        $validated['channel_preference'] = $request->has('channel_preference') ? (is_array($request->channel_preference) ? $request->channel_preference : []) : [];
+        $validated['modules_interacted'] = $request->has('modules_interacted') ? (is_array($request->modules_interacted) ? $request->modules_interacted : []) : [];
+        $validated['weighted_impact_scores'] = $request->has('weighted_impact_scores') ? (is_array($request->weighted_impact_scores) ? $request->weighted_impact_scores : []) : [];
 
         // Update persona
         $persona->update($validated);

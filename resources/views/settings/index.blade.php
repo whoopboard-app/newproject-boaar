@@ -231,12 +231,12 @@
                     Manage roadmap statuses, customize colors, and define your product development workflow.
                 </p>
                 <div class="d-flex gap-2">
-{{--                    <a href="{{ route('roadmap.index') }}" class="btn btn-sm btn-primary">
+                    <a href="{{ route('roadmap.index') }}" class="btn btn-sm btn-primary">
                         <i class="ti ti-eye me-1"></i>View
                     </a>
                     <a href="{{ route('roadmap.index') }}" class="btn btn-sm btn-outline-primary">
                         <i class="ti ti-settings me-1"></i>Manage
-                    </a>--}}
+                    </a>
                 </div>
             </div>
             <div class="card-footer border-top">

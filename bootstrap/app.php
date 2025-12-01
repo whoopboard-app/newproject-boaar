@@ -21,6 +21,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'team.permission' => \App\Http\Middleware\CheckTeamPermission::class,
             'team.subdomain' => \App\Http\Middleware\DetectTeamSubdomain::class,
         ]);
+
+        // Exclude public survey API routes from CSRF verification
+        $middleware->validateCsrfTokens(except: [
+            'api/survey/*/config',
+            'api/survey/*/respond',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
