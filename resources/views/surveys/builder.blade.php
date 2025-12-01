@@ -572,6 +572,18 @@
                                 </div>
                             </div>
 
+                            <!-- Enable in Subdomain Toggle -->
+                            <div class="mb-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="enable_in_subdomain" id="enableInSubdomain" value="1"
+                                        {{ old('enable_in_subdomain', $survey->enable_in_subdomain ?? false) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="enableInSubdomain">
+                                        <strong>Enable in Subdomain</strong>
+                                    </label>
+                                </div>
+                                <p class="text-muted small mt-1">When enabled, this survey will also be displayed on subdomains of your domain</p>
+                            </div>
+
                             <div class="conditional-field" id="specificPagesField">
                                 <p class="text-muted small mb-3">
                                     <i class="ti ti-info-circle me-1"></i>

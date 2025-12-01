@@ -1,7 +1,6 @@
 {{-- Top Navigation Bar for Public Pages --}}
-{{-- Required variables: $settings, optional: $isLoggedIn, $publicUser, $feedbackSettings, $showIdeaButton --}}
+{{-- Required variables: $settings, optional: $isLoggedIn, $publicUser, $feedbackSettings --}}
 @php
-    $showIdeaButton = $showIdeaButton ?? false;
     $isLoggedIn = $isLoggedIn ?? false;
     $publicUser = $publicUser ?? null;
 @endphp
@@ -21,12 +20,10 @@
             </div>
 
             <div class="header-actions">
-                {{-- Add Idea Button (optional - only shown on feedback page) --}}
-                @if($showIdeaButton)
+                {{-- Add Idea Button - Always visible --}}
                 <button type="button" class="btn btn-add-idea" data-bs-toggle="offcanvas" data-bs-target="#addIdeaOffcanvas" aria-controls="addIdeaOffcanvas">
                     <i class="ti ti-bulb me-1"></i> Add Idea
                 </button>
-                @endif
 
                 {{-- Subscribe Button --}}
                 <a href="{{ route('public.subscribe') }}" class="btn btn-subscribe">

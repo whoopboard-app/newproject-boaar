@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Roadmap - {{ $settings->product_name ?? 'Feedback' }}</title>
 
     <!-- Bootstrap CSS -->
@@ -10,6 +11,11 @@
 
     <!-- Tabler Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+
+    <!-- hCaptcha -->
+    @if($feedbackSettings->enable_captcha ?? false)
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+    @endif
 
     @include('public.partials.public-styles')
 
@@ -291,6 +297,9 @@
     </div>
 
     @include('partials.public-footer')
+
+    <!-- Add Idea Offcanvas -->
+    @include('public.partials.add-idea-offcanvas')
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

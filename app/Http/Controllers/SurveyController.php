@@ -85,6 +85,7 @@ class SurveyController extends Controller
             'location_urls' => 'nullable|array',
             'location_urls.*.type' => 'nullable|in:show,hide',
             'location_urls.*.url' => 'nullable|string|max:500',
+            'enable_in_subdomain' => 'nullable',
 
             // Audience settings
             'only_identified_users' => 'nullable',
@@ -118,6 +119,7 @@ class SurveyController extends Controller
         // Handle checkbox fields
         $validated['show_labels'] = $request->has('show_labels');
         $validated['only_identified_users'] = $request->has('only_identified_users');
+        $validated['enable_in_subdomain'] = $request->has('enable_in_subdomain');
         $validated['skip_if_answered_in_session'] = $request->has('skip_if_answered_in_session');
         $validated['hide_branding'] = $request->has('hide_branding');
 
@@ -202,6 +204,7 @@ class SurveyController extends Controller
             'location_urls' => 'nullable|array',
             'location_urls.*.type' => 'nullable|in:show,hide',
             'location_urls.*.url' => 'nullable|string|max:500',
+            'enable_in_subdomain' => 'nullable',
 
             // Audience settings
             'only_identified_users' => 'nullable',
@@ -227,6 +230,7 @@ class SurveyController extends Controller
         // Handle checkbox fields
         $validated['show_labels'] = $request->has('show_labels');
         $validated['only_identified_users'] = $request->has('only_identified_users');
+        $validated['enable_in_subdomain'] = $request->has('enable_in_subdomain');
         $validated['skip_if_answered_in_session'] = $request->has('skip_if_answered_in_session');
         $validated['hide_branding'] = $request->has('hide_branding');
 
@@ -382,6 +386,7 @@ class SurveyController extends Controller
             'hide_branding' => $survey->hide_branding ?? false,
             'only_identified_users' => $survey->only_identified_users ?? false,
             'skip_if_answered_in_session' => $survey->skip_if_answered_in_session ?? true,
+            'enable_in_subdomain' => $survey->enable_in_subdomain ?? false,
         ]);
     }
 }

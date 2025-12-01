@@ -75,9 +75,49 @@
     }
 
     /**
+     * Check if current hostname is a subdomain
+     */
+    function isSubdomain() {
+        const hostname = window.location.hostname;
+
+        // Handle IP addresses - not a subdomain
+        if (/^\d{1,3}(\.\d{1,3}){3}$/.test(hostname)) {
+            return false;
+        }
+
+        // Handle localhost
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return false;
+        }
+
+        // Split hostname into parts
+        const parts = hostname.split('.');
+
+        // Common TLDs that have two parts (co.uk, com.au, etc.)
+        const multiPartTLDs = ['co.uk', 'com.au', 'co.nz', 'co.za', 'com.br', 'co.in', 'co.jp', 'or.jp', 'ne.jp', 'ac.uk', 'gov.uk', 'org.uk'];
+
+        // Check if it ends with a multi-part TLD
+        const lastTwoParts = parts.slice(-2).join('.');
+        const isMultiPartTLD = multiPartTLDs.includes(lastTwoParts);
+
+        // For multi-part TLDs: subdomain if more than 3 parts (sub.domain.co.uk)
+        // For single TLDs: subdomain if more than 2 parts (sub.domain.com)
+        if (isMultiPartTLD) {
+            return parts.length > 3;
+        } else {
+            return parts.length > 2;
+        }
+    }
+
+    /**
      * Check if survey should be displayed based on settings
      */
     function shouldShowSurvey() {
+        // Check subdomain setting - if we're on a subdomain and it's not enabled, don't show
+        if (isSubdomain() && !config.enable_in_subdomain) {
+            return false;
+        }
+
         // Check if user identification is required
         if (config.only_identified_users && !identifiedUser) {
             return false;
