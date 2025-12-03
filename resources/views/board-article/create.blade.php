@@ -1,6 +1,6 @@
 @extends('layouts.inspinia')
 
-@section('title', ($article ? 'Edit Article' : 'Add Article') . ' - ' . $knowledgeBoard->name)
+ @section('title', ($article ? 'Edit Article' : 'Add Article') . ' - ' . $knowledgeBoard->name)
 
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
