@@ -6,11 +6,22 @@
 <!-- PAGE HEADER -->
 <div class="kt-container-fixed">
     <div class="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
-        <div class="flex flex-col gap-2">
-            <h1 class="text-xl font-medium leading-none">{{ $changelog ? 'Edit Changelog' : 'Add Changelog' }}</h1>
-            <div class="text-sm text-secondary-foreground">Manage your changelog entries</div>
+        <div class="flex flex-col justify-center gap-2">
+            <h1 class="text-xl font-medium leading-none text-mono">
+                Settings - Plain
+            </h1>
+            <div class="flex items-center gap-2 text-sm font-normal text-secondary-foreground">
+                Clean, Efficient User Experience
+            </div>
         </div>
-        <a class="kt-btn kt-btn-outline" href="{{ route('changelog.index') }}">Back to List</a>
+        <div class="flex items-center gap-2.5">
+            <a class="kt-btn kt-btn-outline" href="#">
+                Public Profile
+            </a>
+            <a class="kt-btn kt-btn-primary" href="#">
+                Get Started
+            </a>
+        </div>
     </div>
 </div>
 
@@ -26,7 +37,7 @@
 
             <!-- FORM START -->
             <form action="{{ $changelog ? route('changelog.update', $changelog) : route('changelog.store') }}"
-                  method="POST" enctype="multipart/form-data" id="changelogForm">
+                method="POST" enctype="multipart/form-data" id="changelogForm">
                 @csrf
                 @if($changelog) @method('PUT') @endif
 
@@ -36,102 +47,108 @@
                     <div class="flex flex-col lg:flex-row gap-2.5">
                         <label class="kt-form-label max-w-56">Changelog Title *</label>
                         <input class="kt-input" id="title" name="title"
-                               value="{{ old('title', $changelog->title ?? '') }}"
-                               placeholder="Enter changelog title" required>
+                            value="{{ old('title', $changelog->title ?? '') }}"
+                            placeholder="Enter changelog title" required>
                     </div>
 
                     <!-- COVER IMAGE -->
                     <div class="flex flex-col gap-2.5">
                         <label class="kt-form-label">Cover Image</label>
-                         <input type="file" class="filepond" id="cover_image" name="cover_image" accept="image/*" data-existing-image="{{ $changelog && $changelog->cover_image ? asset('storage/' . $changelog->cover_image) : '' }}">
+                        <input type="file" class="filepond" id="cover_image" name="cover_image" accept="image/*" data-existing-image="{{ $changelog && $changelog->cover_image ? asset('storage/' . $changelog->cover_image) : '' }}">
                         @error('cover_image')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                         <small class="text-muted">
                             Max 2MB — JPG, PNG, GIF. Leave empty to keep existing image.
                         </small>
                     </div>
 
+
+
                     <!-- SHORT DESCRIPTION -->
                     <div class="flex flex-col lg:flex-row gap-2.5">
                         <label class="kt-form-label max-w-56">Short Description *</label>
                         <div class="w-full">
-                            <textarea id="short_description" name="short_description"
-                                      class="kt-textarea"
-                                      maxlength="200"
-                                      required>{{ old('short_description', $changelog->short_description ?? '') }}</textarea>
-                            <small class="text-muted">
-                                <span id="char-count">0</span>/200 characters
-                            </small>
+                            <textarea class="kt-textarea @error('short_description') is-invalid @enderror" id="short_description" name="short_description" rows="3" maxlength="200" placeholder="Enter short description..." required>{{ old('short_description', $changelog->short_description ?? '') }}</textarea>
+
+                            @error('short_description')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">Maximum 200 characters</small>
+                                <small class="text-muted"><span id="char-count">0</span> / 200 characters</small>
+                            </div>
                         </div>
                     </div>
 
                     <!-- FULL DESCRIPTION -->
                     <div class="flex flex-col gap-2.5">
-                        <label class="kt-form-label">Enter Description *</label>
+                        <label for="description" class="kt-form-label">Enter Descriptions <span class="text-danger">*</span></label>
+
                         <!-- <div id="quill-editor"></div> -->
-                          <div class="quill-editor-wrapper @error('description') is-invalid @enderror">
+                        <div class="quill-editor-wrapper @error('description') is-invalid @enderror">
                             <div id="quill-editor"></div>
                         </div>
-                         <input type="hidden" id="description" name="description" value="{{ old('description', $changelog->description ?? '') }}">
+                        <input type="hidden" id="description" name="description" value="{{ old('description', $changelog->description ?? '') }}">
                         @error('description')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
-                       
+                        <small class="text-muted">Provide detailed information about the changelog using the rich text editor</small>
+
                     </div>
 
                     <!-- CATEGORY -->
                     <div class="flex flex-col lg:flex-row gap-2.5">
                         <label class="kt-form-label max-w-56">Category *</label>
-                        <select id="category" name="category[]" multiple data-choices class="kt-select">
+                        <select class="kt-select @error('category') is-invalid @enderror" id="category" name="category[]" data-choices multiple required>
                             @php
-                                $selectedCategories = old('category', $changelog ? $changelog->categories->pluck('id')->toArray() : []);
+                            $selectedCategories = old('category', $changelog ? $changelog->categories->pluck('id')->toArray() : []);
                             @endphp
                             @foreach($categories as $category)
-                                <option value="{{ $category->id }}"
-                                    {{ in_array($category->id, $selectedCategories) ? 'selected' : '' }}>
-                                    {{ $category->name }}
-                                </option>
+                            <option value="{{ $category->id }}" {{ in_array($category->id, $selectedCategories) ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
                             @endforeach
                         </select>
+                        @error('category')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="text-muted">You can select multiple categories</small>
+
                     </div>
 
                     <!-- TAGS -->
                     <div class="flex flex-col lg:flex-row gap-2.5">
                         <label class="kt-form-label max-w-56">Tags</label>
-                        <input id="tags" class="kt-input"
-                               name="tags"
-                               placeholder="Add tags..."
-                               value="{{ old('tags', $changelog && $changelog->tags ? json_encode($changelog->tags) : '') }}">
+
+                        <input type="text" class="kt-input" id="tags" name="tags" placeholder="Add tags..." value="{{ old('tags', $changelog && $changelog->tags ? json_encode($changelog->tags) : '') }}">
+
                     </div>
 
                     <!-- AUTHOR -->
                     <div class="flex flex-col lg:flex-row gap-2.5">
                         <label class="kt-form-label max-w-56">Author Name *</label>
                         <input class="kt-input" id="author_name" name="author_name"
-                               value="{{ old('author_name', $changelog->author_name ?? Auth::user()->name) }}" required>
+                            value="{{ old('author_name', $changelog->author_name ?? Auth::user()->name) }}" required>
                     </div>
 
                     <!-- PUBLISHED DATE -->
                     <div class="flex flex-col lg:flex-row gap-2.5">
                         <label class="kt-form-label max-w-56">Published Date *</label>
                         <input type="date" class="kt-input" id="published_date" name="published_date"
-                               value="{{ old('published_date', $changelog ? $changelog->published_date->format('Y-m-d') : date('Y-m-d')) }}"
-                               required>
+                            value="{{ old('published_date', $changelog ? $changelog->published_date->format('Y-m-d') : date('Y-m-d')) }}"
+                            required>
                     </div>
 
                     <!-- STATUS -->
                     <div class="flex flex-col lg:flex-row gap-2.5">
                         <label class="kt-form-label max-w-56">Status *</label>
                         <div class="w-full">
-                            <select class="kt-select" id="status" name="status" data-choices>
+                            <select class="kt-select @error('status') is-invalid @enderror" id="status" name="status" data-choices required>
                                 <option value="">Select Status</option>
-                                <option value="published" {{ old('status', $changelog->status ?? '')=='published'?'selected':'' }}>Published</option>
-                                <option value="draft" {{ old('status', $changelog->status ?? '')=='draft'?'selected':'' }}>Draft</option>
-                                <option value="scheduled" style="display:none"
-                                        {{ old('status', $changelog->status ?? '')=='scheduled'?'selected':'' }}>
-                                    Scheduled
-                                </option>
+                                <option value="published" {{ old('status', $changelog->status ?? 'published') == 'published' ? 'selected' : '' }}>Published</option>
+                                <option value="draft" {{ old('status', $changelog->status ?? '') == 'draft' ? 'selected' : '' }}>Draft</option>
+                                <option value="scheduled" style="display: none;" {{ old('status', $changelog->status ?? '') == 'scheduled' ? 'selected' : '' }}>Scheduled for Published</option>
                             </select>
                             <small id="status-help" class="text-muted">
                                 Current date selected — choose Published or Draft
