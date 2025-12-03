@@ -20,10 +20,10 @@ class ChangelogController extends Controller
     public function create()
     {
         // Only Owner, Admin, and Moderator can create changelog
-        if (!Auth::user()->canManageChangelogAndKnowledge()) {
-            return redirect()->route('changelog.index')
-                ->with('error', 'You do not have permission to create changelogs.');
-        }
+        // if (!Auth::user()->canManageChangelogAndKnowledge()) {
+        //     return redirect()->route('changelog.index')
+        //         ->with('error', 'You do not have permission to create changelogs.');
+        // }
 
         $categories = Category::where('status', 'active')->get();
         $changelog = null;
