@@ -95,240 +95,216 @@ License: https://keenthemes.com/metronic/tailwind/docs/getting-started/license
                     </i>
                 </button>
             </div>
-            <div class="kt-sidebar-content flex grow shrink-0 py-5 pe-2" id="sidebar_content">
+          <div class="kt-sidebar-content flex grow shrink-0 py-5 pe-2" id="sidebar_content">
                 <div class="kt-scrollable-y-hover grow shrink-0 flex ps-2 lg:ps-5 pe-1 lg:pe-3" data-kt-scrollable="true" data-kt-scrollable-dependencies="#sidebar_header" data-kt-scrollable-height="auto" data-kt-scrollable-offset="0px" data-kt-scrollable-wrappers="#sidebar_content" id="sidebar_scrollable">
                     <!-- Sidebar Menu -->
                     <div class="kt-menu flex flex-col grow gap-1" data-kt-menu="true" data-kt-menu-accordion-expand-all="false" id="sidebar_menu">
-                        <div class="kt-menu-item" data-kt-menu-item-toggle="accordion" data-kt-menu-item-trigger="click">
-                            <div class="kt-menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] ps-[10px] pe-[10px] py-[6px]" tabindex="0">
+                        <div class="kt-menu-item pt-2.25 pb-px">
+                            <span class="kt-menu-heading uppercase text-xs font-medium text-muted-foreground ps-[10px] pe-[10px]">
+                                Menu
+                            </span>
+                        </div>
+                        <div class="kt-menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                            <a class="kt-menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] ps-[10px] pe-[10px] py-[6px]" href="{{ route('dashboard') }}" tabindex="0">
                                 <span class="kt-menu-icon items-start text-muted-foreground w-[20px]">
                                     <i class="ki-filled ki-element-11 text-lg">
                                     </i>
                                 </span>
                                 <span class="kt-menu-title text-sm font-medium text-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary">
-                                    Menu
+                                    Dashboard
                                 </span>
-                                <span class="kt-menu-arrow text-muted-foreground w-[20px] shrink-0 justify-end ms-1 me-[-10px]">
-                                    <span class="inline-flex kt-menu-item-show:hidden">
-                                        <i class="ki-filled ki-plus text-[11px]">
-                                        </i>
-                                    </span>
-                                    <span class="hidden kt-menu-item-show:inline-flex">
-                                        <i class="ki-filled ki-minus text-[11px]">
-                                        </i>
-                                    </span>
-                                </span>
-                            </div>
-                            <div class="kt-menu-accordion gap-1 ps-[10px] relative before:absolute before:start-[20px] before:top-0 before:bottom-0 before:border-s before:border-border">
-
-                                <div class="kt-menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                                    <a class="kt-menu-link border border-transparent items-center grow kt-menu-item-active:bg-accent/60 dark:menu-item-active:border-border kt-menu-item-active:rounded-lg hover:bg-accent/60 hover:rounded-lg gap-[14px] ps-[10px] pe-[10px] py-[8px]" href="{{ route('dashboard') }}" tabindex="0">
-                                        <span class="kt-menu-bullet flex w-[6px] -start-[3px] rtl:start-0 relative before:absolute before:top-0 before:size-[6px] before:rounded-full rtl:before:translate-x-1/2 before:-translate-y-1/2 kt-menu-item-active:before:bg-primary kt-menu-item-hover:before:bg-primary">
-                                        </span>
-                                        <span class="kt-menu-title text-2sm font-normal text-foreground kt-menu-item-active:text-primary kt-menu-item-active:font-semibold kt-menu-link-hover:!text-primary">
-                                            Dashboard
-                                        </span>
-                                    </a>
-                                </div>
-                                <div class="kt-menu-item {{ request()->routeIs('changelog.*') ? 'active' : '' }}">
-                                    <a class="kt-menu-link border border-transparent items-center grow kt-menu-item-active:bg-accent/60 dark:menu-item-active:border-border kt-menu-item-active:rounded-lg hover:bg-accent/60 hover:rounded-lg gap-[14px] ps-[10px] pe-[10px] py-[8px]" href="{{ Route::has('changelog.index') ? route('changelog.index') : '#' }}" tabindex="0">
-                                        <span class="kt-menu-bullet flex w-[6px] -start-[3px] rtl:start-0 relative before:absolute before:top-0 before:size-[6px] before:rounded-full rtl:before:translate-x-1/2 before:-translate-y-1/2 kt-menu-item-active:before:bg-primary kt-menu-item-hover:before:bg-primary">
-                                        </span>
-                                        <span class="kt-menu-title text-2sm font-normal text-foreground kt-menu-item-active:text-primary kt-menu-item-active:font-semibold kt-menu-link-hover:!text-primary">
-                                            Changelog
-                                        </span>
-                                    </a>
-                                </div>
-                                <div class="kt-menu-item {{ request()->routeIs('feedback.*') ? 'active' : '' }}">
-                                    <a class="kt-menu-link border border-transparent items-center grow kt-menu-item-active:bg-accent/60 dark:menu-item-active:border-border kt-menu-item-active:rounded-lg hover:bg-accent/60 hover:rounded-lg gap-[14px] ps-[10px] pe-[10px] py-[8px]" href="{{ Route::has('feedback.index') ? route('feedback.index') : '#' }}" tabindex="0">
-                                        <span class="kt-menu-bullet flex w-[6px] -start-[3px] rtl:start-0 relative before:absolute before:top-0 before:size-[6px] before:rounded-full rtl:before:translate-x-1/2 before:-translate-y-1/2 kt-menu-item-active:before:bg-primary kt-menu-item-hover:before:bg-primary">
-                                        </span>
-                                        <span class="kt-menu-title text-2sm font-normal text-foreground kt-menu-item-active:text-primary kt-menu-item-active:font-semibold kt-menu-link-hover:!text-primary">
-                                            Feedback
-                                        </span>
-                                    </a>
-                                </div>
-                                <div class="kt-menu-item {{ request()->routeIs('roadmap.index') || request()->routeIs('roadmap.create') || request()->routeIs('roadmap.edit') ? 'active' : '' }}">
-                                    <a class="kt-menu-link border border-transparent items-center grow kt-menu-item-active:bg-accent/60 dark:menu-item-active:border-border kt-menu-item-active:rounded-lg hover:bg-accent/60 hover:rounded-lg gap-[14px] ps-[10px] pe-[10px] py-[8px]" href="{{ Route::has('roadmap.index') ? route('roadmap.index') : '#' }}" tabindex="0">
-                                        <span class="kt-menu-bullet flex w-[6px] -start-[3px] rtl:start-0 relative before:absolute before:top-0 before:size-[6px] before:rounded-full rtl:before:translate-x-1/2 before:-translate-y-1/2 kt-menu-item-active:before:bg-primary kt-menu-item-hover:before:bg-primary">
-                                        </span>
-                                        <span class="kt-menu-title text-2sm font-normal text-foreground kt-menu-item-active:text-primary kt-menu-item-active:font-semibold kt-menu-link-hover:!text-primary">
-                                            Roadmap Statuses
-                                        </span>
-                                    </a>
-                                </div>
-                                <div class="kt-menu-item {{ request()->routeIs('roadmap-items.*') ? 'active' : '' }}">
-                                    <a class="kt-menu-link border border-transparent items-center grow kt-menu-item-active:bg-accent/60 dark:menu-item-active:border-border kt-menu-item-active:rounded-lg hover:bg-accent/60 hover:rounded-lg gap-[14px] ps-[10px] pe-[10px] py-[8px]" href="{{ Route::has('roadmap-items.index') ? route('roadmap-items.index') : '#' }}" tabindex="0">
-                                        <span class="kt-menu-bullet flex w-[6px] -start-[3px] rtl:start-0 relative before:absolute before:top-0 before:size-[6px] before:rounded-full rtl:before:translate-x-1/2 before:-translate-y-1/2 kt-menu-item-active:before:bg-primary kt-menu-item-hover:before:bg-primary">
-                                        </span>
-                                        <span class="kt-menu-title text-2sm font-normal text-foreground kt-menu-item-active:text-primary kt-menu-item-active:font-semibold kt-menu-link-hover:!text-primary">
-                                            Roadmap
-                                        </span>
-                                    </a>
-                                </div>
-                                <div class="kt-menu-item {{ request()->routeIs('testimonials.*') || request()->routeIs('testimonial-templates.*') ? 'active' : '' }}">
-                                    <a class="kt-menu-link border border-transparent items-center grow kt-menu-item-active:bg-accent/60 dark:menu-item-active:border-border kt-menu-item-active:rounded-lg hover:bg-accent/60 hover:rounded-lg gap-[14px] ps-[10px] pe-[10px] py-[8px]" href="{{ Route::has('testimonials.index') ? route('testimonials.index') : '#' }}" tabindex="0">
-                                        <span class="kt-menu-bullet flex w-[6px] -start-[3px] rtl:start-0 relative before:absolute before:top-0 before:size-[6px] before:rounded-full rtl:before:translate-x-1/2 before:-translate-y-1/2 kt-menu-item-active:before:bg-primary kt-menu-item-hover:before:bg-primary">
-                                        </span>
-                                        <span class="kt-menu-title text-2sm font-normal text-foreground kt-menu-item-active:text-primary kt-menu-item-active:font-semibold kt-menu-link-hover:!text-primary">
-                                            Testimonials
-                                        </span>
-                                    </a>
-                                </div>
-                                <div class="kt-menu-item {{ request()->routeIs('knowledge-board.*') ? 'active' : '' }}">
-                                    <a class="kt-menu-link border border-transparent items-center grow kt-menu-item-active:bg-accent/60 dark:menu-item-active:border-border kt-menu-item-active:rounded-lg hover:bg-accent/60 hover:rounded-lg gap-[14px] ps-[10px] pe-[10px] py-[8px]" href="{{ Route::has('knowledge-board.index') ? route('knowledge-board.index') : '#' }}" tabindex="0">
-                                        <span class="kt-menu-bullet flex w-[6px] -start-[3px] rtl:start-0 relative before:absolute before:top-0 before:size-[6px] before:rounded-full rtl:before:translate-x-1/2 before:-translate-y-1/2 kt-menu-item-active:before:bg-primary kt-menu-item-hover:before:bg-primary">
-                                        </span>
-                                        <span class="kt-menu-title text-2sm font-normal text-foreground kt-menu-item-active:text-primary kt-menu-item-active:font-semibold kt-menu-link-hover:!text-primary">
-                                            Knowledge Board
-                                        </span>
-                                    </a>
-                                </div>
-                                <div class="kt-menu-item">
-                                    <a class="kt-menu-link border border-transparent items-center grow kt-menu-item-active:bg-accent/60 dark:menu-item-active:border-border kt-menu-item-active:rounded-lg hover:bg-accent/60 hover:rounded-lg gap-[14px] ps-[10px] pe-[10px] py-[8px]" href="#" tabindex="0">
-                                        <span class="kt-menu-bullet flex w-[6px] -start-[3px] rtl:start-0 relative before:absolute before:top-0 before:size-[6px] before:rounded-full rtl:before:translate-x-1/2 before:-translate-y-1/2 kt-menu-item-active:before:bg-primary kt-menu-item-hover:before:bg-primary">
-                                        </span>
-                                        <span class="kt-menu-title text-2sm font-normal text-foreground kt-menu-item-active:text-primary kt-menu-item-active:font-semibold kt-menu-link-hover:!text-primary">
-                                            Research Repo
-                                        </span>
-                                    </a>
-                                </div>
-                                <div class="kt-menu-item {{ request()->routeIs('subscribers.*') ? 'active' : '' }}">
-                                    <a class="kt-menu-link border border-transparent items-center grow kt-menu-item-active:bg-accent/60 dark:menu-item-active:border-border kt-menu-item-active:rounded-lg hover:bg-accent/60 hover:rounded-lg gap-[14px] ps-[10px] pe-[10px] py-[8px]" href="{{ Route::has('subscribers.index') ? route('subscribers.index') : '#' }}" tabindex="0">
-                                        <span class="kt-menu-bullet flex w-[6px] -start-[3px] rtl:start-0 relative before:absolute before:top-0 before:size-[6px] before:rounded-full rtl:before:translate-x-1/2 before:-translate-y-1/2 kt-menu-item-active:before:bg-primary kt-menu-item-hover:before:bg-primary">
-                                        </span>
-                                        <span class="kt-menu-title text-2sm font-normal text-foreground kt-menu-item-active:text-primary kt-menu-item-active:font-semibold kt-menu-link-hover:!text-primary">
-                                            Subscribe List
-                                        </span>
-                                    </a>
-                                </div>
-                                
-                            </div>
+                            </a>
                         </div>
-                        <div class="kt-menu-item" data-kt-menu-item-toggle="accordion" data-kt-menu-item-trigger="click">
-                            <div class="kt-menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] ps-[10px] pe-[10px] py-[6px]" tabindex="0">
+
+                        <div class="kt-menu-item {{ request()->routeIs('changelog.*') ? 'active' : '' }}">
+                            <a class="kt-menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] ps-[10px] pe-[10px] py-[6px]" href="{{ Route::has('changelog.index') ? route('changelog.index') : '#' }}" tabindex="0">
+                                <span class="kt-menu-icon items-start text-muted-foreground w-[20px]">
+                                    <i class="ki-filled ki-security-user text-lg">
+                                    </i>
+                                </span>
+                                <span class="kt-menu-title text-sm font-medium text-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary">
+                                    Changelog
+                                </span>
+                            </a>
+                        </div>
+                        <div class="kt-menu-item {{ request()->routeIs('feedback.*') ? 'active' : '' }}">
+                            <a class="kt-menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] ps-[10px] pe-[10px] py-[6px]" href="{{ Route::has('feedback.index') ? route('feedback.index') : '#' }}" tabindex="0">
+                                <span class="kt-menu-icon items-start text-muted-foreground w-[20px]">
+                                    <i class="ki-filled ki-element-10 text-lg">
+                                    </i>
+                                </span>
+                                <span class="kt-menu-title text-sm font-medium text-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary">
+                                    Feedback
+                                </span>
+                            </a>
+                        </div>
+                        <div class="kt-menu-item {{ request()->routeIs('roadmap.index') ? 'active' : '' }}">
+                            <a class="kt-menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] ps-[10px] pe-[10px] py-[6px]" href="{{ Route::has('roadmap.index') ? route('roadmap.index') : '#' }}" tabindex="0">
+                                <span class="kt-menu-icon items-start text-muted-foreground w-[20px]">
+                                    <i class="ki-filled ki-people text-lg">
+                                    </i>
+                                </span>
+                                <span class="kt-menu-title text-sm font-medium text-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary">
+                                    Roadmap Statuses
+                                </span>
+                            </a>
+                        </div>
+                        <div class="kt-menu-item {{ request()->routeIs('roadmap-items.*') ? 'active' : '' }}">
+                            <a class="kt-menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] ps-[10px] pe-[10px] py-[6px]" href="{{ Route::has('testimonials.index') ? route('testimonials.index') : '#' }}" tabindex="0">
+                                <span class="kt-menu-icon items-start text-muted-foreground w-[20px]">
+                                    <i class="ki-filled ki-element-10 text-lg">
+                                    </i>
+                                </span>
+                                <span class="kt-menu-title text-sm font-medium text-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary">
+                                    Testimonials
+                                </span>
+                            </a>
+                        </div>
+                        <div class="kt-menu-item {{ request()->routeIs('knowledge-board.*') ? 'active' : '' }}">
+                            <a class="kt-menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] ps-[10px] pe-[10px] py-[6px]" href="{{ Route::has('knowledge-board.index') ? route('knowledge-board.index') : '#' }}" tabindex="0">
+                                <span class="kt-menu-icon items-start text-muted-foreground w-[20px]">
+                                    <i class="ki-filled ki-element-2 text-lg">
+                                    </i>
+                                </span>
+                                <span class="kt-menu-title text-sm font-medium text-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary">
+                                    Knowledge Board
+                                </span>
+                            </a>
+                        </div>
+                        <div class="kt-menu-item">
+                            <a class="kt-menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] ps-[10px] pe-[10px] py-[6px]" href="#" tabindex="0">
+                                <span class="kt-menu-icon items-start text-muted-foreground w-[20px]">
+                                    <i class="ki-filled ki-element-1 text-lg">
+                                    </i>
+                                </span>
+                                <span class="kt-menu-title text-sm font-medium text-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary">
+                                    Research Repo
+                                </span>
+                            </a>
+                        </div>
+                        <div class="kt-menu-item {{ request()->routeIs('subscribers.*') ? 'active' : '' }}">
+                            <a class="kt-menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] ps-[10px] pe-[10px] py-[6px]" href="{{ Route::has('subscribers.index') ? route('subscribers.index') : '#' }}" tabindex="0">
                                 <span class="kt-menu-icon items-start text-muted-foreground w-[20px]">
                                     <i class="ki-filled ki-users text-lg">
                                     </i>
                                 </span>
                                 <span class="kt-menu-title text-sm font-medium text-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary">
-                                    Customer Insights
+                                    Subscribe List
                                 </span>
-                                <span class="kt-menu-arrow text-muted-foreground w-[20px] shrink-0 justify-end ms-1 me-[-10px]">
-                                    <span class="inline-flex kt-menu-item-show:hidden">
-                                        <i class="ki-filled ki-plus text-[11px]">
-                                        </i>
-                                    </span>
-                                    <span class="hidden kt-menu-item-show:inline-flex">
-                                        <i class="ki-filled ki-minus text-[11px]">
-                                        </i>
-                                    </span>
-                                </span>
-                            </div>
-                            <div class="kt-menu-accordion gap-1 ps-[10px] relative before:absolute before:start-[20px] before:top-0 before:bottom-0 before:border-s before:border-border">
-
-                                <div class="kt-menu-item {{ request()->routeIs('user-segment.*') ? 'active' : '' }}">
-                                    <a class="kt-menu-link border border-transparent items-center grow kt-menu-item-active:bg-accent/60 dark:menu-item-active:border-border kt-menu-item-active:rounded-lg hover:bg-accent/60 hover:rounded-lg gap-[14px] ps-[10px] pe-[10px] py-[8px]" href="{{ Route::has('user-segment.index') ? route('user-segment.index') : '#' }}" tabindex="0">
-                                        <span class="kt-menu-bullet flex w-[6px] -start-[3px] rtl:start-0 relative before:absolute before:top-0 before:size-[6px] before:rounded-full rtl:before:translate-x-1/2 before:-translate-y-1/2 kt-menu-item-active:before:bg-primary kt-menu-item-hover:before:bg-primary">
-                                        </span>
-                                        <span class="kt-menu-title text-2sm font-normal text-foreground kt-menu-item-active:text-primary kt-menu-item-active:font-semibold kt-menu-link-hover:!text-primary">
-                                            Segmentations
-                                        </span>
-                                    </a>
-                                </div>
-                                <div class="kt-menu-item {{ request()->routeIs('personas.*') ? 'active' : '' }}">
-                                    <a class="kt-menu-link border border-transparent items-center grow kt-menu-item-active:bg-accent/60 dark:menu-item-active:border-border kt-menu-item-active:rounded-lg hover:bg-accent/60 hover:rounded-lg gap-[14px] ps-[10px] pe-[10px] py-[8px]" href="{{ Route::has('personas.index') ? route('personas.index') : '#' }}" tabindex="0">
-                                        <span class="kt-menu-bullet flex w-[6px] -start-[3px] rtl:start-0 relative before:absolute before:top-0 before:size-[6px] before:rounded-full rtl:before:translate-x-1/2 before:-translate-y-1/2 kt-menu-item-active:before:bg-primary kt-menu-item-hover:before:bg-primary">
-                                        </span>
-                                        <span class="kt-menu-title text-2sm font-normal text-foreground kt-menu-item-active:text-primary kt-menu-item-active:font-semibold kt-menu-link-hover:!text-primary">
-                                            Personas
-                                        </span>
-                                    </a>
-                                </div>
-                                <div class="kt-menu-item">
-                                    <a class="kt-menu-link border border-transparent items-center grow kt-menu-item-active:bg-accent/60 dark:menu-item-active:border-border kt-menu-item-active:rounded-lg hover:bg-accent/60 hover:rounded-lg gap-[14px] ps-[10px] pe-[10px] py-[8px]" href="#" tabindex="0">
-                                        <span class="kt-menu-bullet flex w-[6px] -start-[3px] rtl:start-0 relative before:absolute before:top-0 before:size-[6px] before:rounded-full rtl:before:translate-x-1/2 before:-translate-y-1/2 kt-menu-item-active:before:bg-primary kt-menu-item-hover:before:bg-primary">
-                                        </span>
-                                        <span class="kt-menu-title text-2sm font-normal text-foreground kt-menu-item-active:text-primary kt-menu-item-active:font-semibold kt-menu-link-hover:!text-primary">
-                                            Journey Mapping
-                                        </span>
-                                    </a>
-                                </div>
-
-                            </div>
+                            </a>
                         </div>
-                        <div class="kt-menu-item" data-kt-menu-item-toggle="accordion" data-kt-menu-item-trigger="click">
-                            <div class="kt-menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] ps-[10px] pe-[10px] py-[6px]" tabindex="0">
+                        <div class="kt-menu-item {{ request()->routeIs('roadmap.index') ? 'active' : '' }}">
+                            <a class="kt-menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] ps-[10px] pe-[10px] py-[6px]" href="{{ Route::has('roadmap.index') ? route('roadmap.index') : '#' }}" tabindex="0">
+                                <span class="kt-menu-icon items-start text-muted-foreground w-[20px]">
+                                    <i class="ki-filled ki-python text-lg">
+                                    </i>
+                                </span>
+                                <span class="kt-menu-title text-sm font-medium text-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary">
+                                    Roadmap Statuses
+                                </span>
+                            </a>
+                        </div>
+                        <div class="kt-menu-item pt-2.25 pb-px">
+                            <span class="kt-menu-heading uppercase text-xs font-medium text-muted-foreground ps-[10px] pe-[10px]">
+                                Customer Insights
+                            </span>
+                        </div>
+                        <div class="kt-menu-item {{ request()->routeIs('user-segment.*') ? 'active' : '' }}">
+                            <a class="kt-menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] ps-[10px] pe-[10px] py-[6px]" href="{{ Route::has('user-segment.index') ? route('user-segment.index') : '#' }}" tabindex="0">
+                                <span class="kt-menu-icon items-start text-muted-foreground w-[20px]">
+                                    <i class="ki-filled ki-cheque text-lg">
+                                    </i>
+                                </span>
+                                <span class="kt-menu-title text-sm font-medium text-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary">
+                                    Segmentations
+                                </span>
+                            </a>
+                        </div>
+                        <div class="kt-menu-item {{ request()->routeIs('personas.*') ? 'active' : '' }}">
+                            <a class="kt-menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] ps-[10px] pe-[10px] py-[6px]" href="{{ Route::has('personas.index') ? route('personas.index') : '#' }}" tabindex="0">
+                                <span class="kt-menu-icon items-start text-muted-foreground w-[20px]">
+                                    <i class="ki-filled ki-artificial-intelligence text-lg">
+                                    </i>
+                                </span>
+                                <span class="kt-menu-title text-sm font-medium text-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary">
+                                    Personas
+                                </span>
+                            </a>
+                        </div>
+                        <div class="kt-menu-item">
+                            <a class="kt-menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] ps-[10px] pe-[10px] py-[6px]" href="#" tabindex="0">
+                                <span class="kt-menu-icon items-start text-muted-foreground w-[20px]">
+                                    <i class="ki-filled ki-element-10 text-lg">
+                                    </i>
+                                </span>
+                                <span class="kt-menu-title text-sm font-medium text-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary">
+                                    Journey Mapping
+                                </span>
+                            </a>
+                        </div>
+
+
+                        <div class="kt-menu-item pt-2.25 pb-px">
+                            <span class="kt-menu-heading uppercase text-xs font-medium text-muted-foreground ps-[10px] pe-[10px]">
+                                Settings
+                            </span>
+                        </div>
+                        @if(Auth::user()->canAccessAppSettings())
+                        <div class="kt-menu-item {{ request()->routeIs('settings.*') ? 'active' : '' }}">
+                            <a class="kt-menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] ps-[10px] pe-[10px] py-[6px]" href="{{ Route::has('settings.index') ? route('settings.index') : '#' }}" tabindex="0">
                                 <span class="kt-menu-icon items-start text-muted-foreground w-[20px]">
                                     <i class="ki-filled ki-setting-2 text-lg">
                                     </i>
                                 </span>
                                 <span class="kt-menu-title text-sm font-medium text-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary">
-                                    Settings
+                                    Personas
                                 </span>
-                                <span class="kt-menu-arrow text-muted-foreground w-[20px] shrink-0 justify-end ms-1 me-[-10px]">
-                                    <span class="inline-flex kt-menu-item-show:hidden">
-                                        <i class="ki-filled ki-plus text-[11px]">
-                                        </i>
-                                    </span>
-                                    <span class="hidden kt-menu-item-show:inline-flex">
-                                        <i class="ki-filled ki-minus text-[11px]">
-                                        </i>
-                                    </span>
+                            </a>
+                        </div>
+                        @endif
+                        @php
+                        $appSettings = \App\Models\AppSettings::where('team_id', Auth::user()->current_team_id)->first();
+                        $publicUrl = $appSettings && $appSettings->subdomain_url ? request()->getScheme() . '://' . $appSettings->subdomain_url . '.' . request()->getHttpHost() : '#';
+                        @endphp
+                        <div class="kt-menu-item">
+                            <a onclick="window.open(this.href, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes,toolbar=yes,location=yes'); return false;" class="kt-menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] ps-[10px] pe-[10px] py-[6px]" href="{{ $publicUrl }}" tabindex="0">
+                                <span class="kt-menu-icon items-start text-muted-foreground w-[20px]">
+                                    <i class="ki-filled ki-heart text-xl">
+                                    </i>
                                 </span>
-                            </div>
-                            <div class="kt-menu-accordion gap-1 ps-[10px] relative before:absolute before:start-[20px] before:top-0 before:bottom-0 before:border-s before:border-border">
-                                @if(Auth::user()->canAccessAppSettings())
-                                <div class="kt-menu-item {{ request()->routeIs('settings.*') ? 'active' : '' }}"">
-                                    <a class=" kt-menu-link border border-transparent items-center grow kt-menu-item-active:bg-accent/60 dark:menu-item-active:border-border kt-menu-item-active:rounded-lg hover:bg-accent/60 hover:rounded-lg gap-[14px] ps-[10px] pe-[10px] py-[8px]" href="{{ Route::has('settings.index') ? route('settings.index') : '#' }}" tabindex="0">
-                                    <span class="kt-menu-bullet flex w-[6px] -start-[3px] rtl:start-0 relative before:absolute before:top-0 before:size-[6px] before:rounded-full rtl:before:translate-x-1/2 before:-translate-y-1/2 kt-menu-item-active:before:bg-primary kt-menu-item-hover:before:bg-primary">
-                                    </span>
-                                    <span class="kt-menu-title text-2sm font-normal text-foreground kt-menu-item-active:text-primary kt-menu-item-active:font-semibold kt-menu-link-hover:!text-primary">
-                                        Personas
-                                    </span>
-                                    </a>
-                                </div>
-                                @endif
-                                @php
-                                $appSettings = \App\Models\AppSettings::where('team_id', Auth::user()->current_team_id)->first();
-                                $publicUrl = $appSettings && $appSettings->subdomain_url ? request()->getScheme() . '://' . $appSettings->subdomain_url . '.' . request()->getHttpHost() : '#';
-                                @endphp
-                                <div class="kt-menu-item {{ request()->routeIs('settings.*') ? 'active' : '' }}">
-                                    <a onclick="window.open(this.href, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes,toolbar=yes,location=yes'); return false;" class=" kt-menu-link border border-transparent items-center grow kt-menu-item-active:bg-accent/60 dark:menu-item-active:border-border kt-menu-item-active:rounded-lg hover:bg-accent/60 hover:rounded-lg gap-[14px] ps-[10px] pe-[10px] py-[8px]" href="{{ $publicUrl }}" tabindex="0">
-                                        <span class="kt-menu-bullet flex w-[6px] -start-[3px] rtl:start-0 relative before:absolute before:top-0 before:size-[6px] before:rounded-full rtl:before:translate-x-1/2 before:-translate-y-1/2 kt-menu-item-active:before:bg-primary kt-menu-item-hover:before:bg-primary">
-                                        </span>
-                                        <span class="kt-menu-title text-2sm font-normal text-foreground kt-menu-item-active:text-primary kt-menu-item-active:font-semibold kt-menu-link-hover:!text-primary">
-                                            Visit My Website
-                                        </span>
-                                    </a>
-                                </div>
-
-                                <div class="kt-menu-item">
-                                    <a class=" kt-menu-link border border-transparent items-center grow kt-menu-item-active:bg-accent/60 dark:menu-item-active:border-border kt-menu-item-active:rounded-lg hover:bg-accent/60 hover:rounded-lg gap-[14px] ps-[10px] pe-[10px] py-[8px]" href="#" tabindex="0">
-                                        <span class="kt-menu-bullet flex w-[6px] -start-[3px] rtl:start-0 relative before:absolute before:top-0 before:size-[6px] before:rounded-full rtl:before:translate-x-1/2 before:-translate-y-1/2 kt-menu-item-active:before:bg-primary kt-menu-item-hover:before:bg-primary">
-                                        </span>
-                                        <span class="kt-menu-title text-2sm font-normal text-foreground kt-menu-item-active:text-primary kt-menu-item-active:font-semibold kt-menu-link-hover:!text-primary">
-                                            Your Widget
-                                        </span>
-                                    </a>
-                                </div>
-                                <div class="kt-menu-item">
-                                    <form method="POST" action="{{ route('logout') }}" id="sidebar-logout-form">
-                                        @csrf
-                                    </form>
-                                    <a onclick="event.preventDefault(); document.getElementById('sidebar-logout-form').submit();" class=" kt-menu-link border border-transparent items-center grow kt-menu-item-active:bg-accent/60 dark:menu-item-active:border-border kt-menu-item-active:rounded-lg hover:bg-accent/60 hover:rounded-lg gap-[14px] ps-[10px] pe-[10px] py-[8px]" href="#" tabindex="0">
-                                        <span class="kt-menu-bullet flex w-[6px] -start-[3px] rtl:start-0 relative before:absolute before:top-0 before:size-[6px] before:rounded-full rtl:before:translate-x-1/2 before:-translate-y-1/2 kt-menu-item-active:before:bg-primary kt-menu-item-hover:before:bg-primary">
-                                        </span>
-                                        <span class="kt-menu-title text-2sm font-normal text-foreground kt-menu-item-active:text-primary kt-menu-item-active:font-semibold kt-menu-link-hover:!text-primary">
-                                            Sign Out
-                                        </span>
-                                    </a>
-                                </div>
-                            </div>
+                                <span class="kt-menu-title text-sm font-medium text-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary">
+                                     Visit My Website
+                                </span>
+                            </a>
+                        </div>
+                        <div class="kt-menu-item">
+                            <a class="kt-menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] ps-[10px] pe-[10px] py-[6px]" href="#" tabindex="0">
+                                <span class="kt-menu-icon items-start text-muted-foreground w-[20px]">
+                                    <i class="ki-filled ki-setting text-lg">
+                                    </i>
+                                </span>
+                                <span class="kt-menu-title text-sm font-medium text-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary">
+                                    Your Widget
+                                </span>
+                            </a>
+                        </div>
+                        <div class="kt-menu-item">
+                            <form method="POST" action="{{ route('logout') }}" id="sidebar-logout-form">
+                                    @csrf
+                                </form>
+                            <a onclick="event.preventDefault(); document.getElementById('sidebar-logout-form').submit();"  class="kt-menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] ps-[10px] pe-[10px] py-[6px]" href="#" tabindex="0">
+                                <span class="kt-menu-icon items-start text-muted-foreground w-[20px]">
+                                    <i class="ki-filled ki-element-6 text-lg">
+                                    </i>
+                                </span>
+                                <span class="kt-menu-title text-sm font-medium text-foreground kt-menu-item-active:text-primary kt-menu-link-hover:!text-primary">
+                                    Sign Out
+                                </span>
+                            </a>
                         </div>
                     </div>
-                    <!-- End of Sidebar Menu -->
                 </div>
+                <!-- End of Sidebar Menu -->
             </div>
         </div>
         <!-- End of Sidebar -->
