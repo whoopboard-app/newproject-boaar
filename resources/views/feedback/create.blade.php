@@ -42,22 +42,17 @@
 
 @section('content')
 <div class="row">
-    <div class="col-12">
-        <div class="page-title-box d-flex align-items-center justify-content-between">
-            <div>
-                <h2 class="mb-0">{{ isset($feedback) ? 'Edit Feedback' : 'Add New Feedback' }}</h2>
-                <p class="text-muted fs-14 mb-0">{{ isset($feedback) ? 'Update feedback details' : 'Submit a new feedback idea' }}</p>
-            </div>
-            <a href="{{ isset($feedback) ? route('feedback.show', $feedback) : route('feedback.index') }}" class="btn btn-secondary">
-                <i class="ti ti-arrow-left me-1"></i> Back
-            </a>
-        </div>
-    </div>
-</div>
-
-<div class="row">
     <div class="col-lg-12">
         <div class="card">
+             <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ti ti-list me-2"></i>{{ isset($feedback) ? 'Edit Feedback' : 'Add New Feedback' }}
+                </h5>
+                <!-- <p class="text-muted fs-14 mb-0">{{ isset($feedback) ? 'Update feedback details' : 'Submit a new feedback idea' }}</p> -->
+                <a href="{{ isset($feedback) ? route('feedback.show', $feedback) : route('feedback.index') }}" class="btn btn-secondary">
+                <i class="ti ti-arrow-left me-1"></i> Back
+            </a>
+            </div>
             <div class="card-body">
                 <form method="POST" action="{{ isset($feedback) ? route('feedback.update', $feedback) : route('feedback.store') }}" enctype="multipart/form-data">
                     @csrf
