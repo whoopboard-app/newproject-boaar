@@ -56,13 +56,7 @@
 @endpush
 
 @section('content')
-<div class="row">
-    <div class="col-12">
-        <div class="page-title-box">
-            <h4 class="page-title">{{ $changelog ? 'Edit Changelog' : 'Add Changelog' }}</h4>
-        </div>
-    </div>
-</div>
+
 
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -81,6 +75,12 @@
 <div class="row">
     <div class="col-12">
         <div class="card">
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ti ti-list me-2"></i>{{ $changelog ? 'Edit Changelog' : 'Add Changelog' }}
+                </h5>
+            </div>
             <div class="card-body">
                 <form action="{{ $changelog ? route('changelog.update', $changelog) : route('changelog.store') }}" method="POST" enctype="multipart/form-data" id="changelogForm">
                     @csrf
@@ -202,7 +202,7 @@
                         <button type="reset" class="btn btn-secondary">
                             <i class="ti ti-refresh me-1"></i>Reset
                         </button>
-                        <a href="{{ $changelog ? route('changelog.index') : route('dashboard') }}" class="btn btn-light">
+                        <a href="{{ $changelog ? route('changelog.index') : route('dashboard') }}" class="btn btn-secondary">
                             <i class="ti ti-x me-1"></i>Cancel
                         </a>
                     </div>

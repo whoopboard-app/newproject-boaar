@@ -31,8 +31,9 @@
     --ins-gray-700:#6c757d;
     --ins-gray-800:#343a40;
     --ins-gray-900:#313a46;
-    --ins-primary:#1ab394;
-    --ins-secondary:#1c84c6;
+    --ins-primary:oklch(62.3% 0.214 259.815);
+    --ins-secondary:#ffffff;
+    --ins-secondary-border: oklch(92% 0.004 286.32);
     --ins-success:#0acf97;
     --ins-info:#23c6c8;
     --ins-warning:#f8ac59;
@@ -49,8 +50,8 @@
     --ins-purple-rgb:123,112,239;
     --ins-light-rgb:238,242,247;
     --ins-dark-rgb:49,58,70;
-    --ins-primary-text-emphasis:#16987e;
-    --ins-secondary-text-emphasis:#1870a8;
+    --ins-primary-text-emphasis:color-mix(in oklab, var(--ins-primary) 90%, transparent);
+    --ins-secondary-text-emphasis:#000000;
     --ins-success-text-emphasis:#09b080;
     --ins-info-text-emphasis:#1ea8aa;
     --ins-warning-text-emphasis:#d3924c;
@@ -78,7 +79,7 @@
     --ins-dark-border-subtle:#a1a9b1;
     --ins-white-rgb:255,255,255;
     --ins-black-rgb:0,0,0;
-    --ins-font-sans-serif:"Open Sans",sans-serif;
+    --ins-font-sans-serif: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --ins-font-monospace:SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
     --ins-gradient:linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
     --ins-body-font-family:var(--ins-font-sans-serif);
@@ -112,7 +113,7 @@
     --ins-border-style:solid;
     --ins-border-color:#e7e9eb;
     --ins-border-color-translucent:#eef2f7;
-    --ins-border-radius:0.3rem;
+    --ins-border-radius:0.5rem;
     --ins-border-radius-sm:0.25rem;
     --ins-border-radius-lg:0.4rem;
     --ins-border-radius-xl:1rem;
@@ -2077,7 +2078,9 @@ progress{
 }
 .form-label{
     margin-bottom:.5rem;
-    font-weight:600
+    font-weight:600;
+    font-size: 14px;
+    color: #000;
 }
 .col-form-label{
     padding-top:calc(.4532rem + var(--ins-border-width));
@@ -3044,7 +3047,7 @@ textarea.form-control-lg{
     --ins-btn-disabled-border-color:#1ab394
 }
 .btn-secondary{
-    --ins-btn-color:#fff;
+    --ins-btn-color:oklch(21% 0.006 285.885);
     --ins-btn-bg:#1c84c6;
     --ins-btn-border-color:#1c84c6;
     --ins-btn-hover-color:#fff;
@@ -4439,6 +4442,7 @@ textarea.form-control-lg{
     --ins-card-spacer-y:1.25rem;
     --ins-card-spacer-x:1.25rem;
     --ins-card-title-spacer-y:0;
+    --ins-card-title-color: var(--ins-black);
     --ins-card-border-width:var(--ins-theme-card-border-width);
     --ins-card-border-color:var(--ins-border-color);
     --ins-card-border-radius:var(--ins-border-radius);
@@ -13226,7 +13230,7 @@ textarea.form-control-lg{
 :root{
     --ins-logo-lg-height:26px;
     --ins-logo-sm-height:26px;
-    --ins-sidenav-width:235px;
+    --ins-sidenav-width:240px;
     --ins-sidenav-width-md:160px;
     --ins-sidenav-width-sm:75px;
     --ins-topbar-height:65px;
@@ -13587,7 +13591,7 @@ html[data-menu-color=light][data-topbar-color=dark] .sidenav-menu .sidenav-user,
     color:#fff!important
 }
 .side-nav>.side-nav-item{
-    padding:0 10px
+    padding:0 20px
 }
 .side-nav .sub-menu{
     list-style-type:none;
@@ -14166,9 +14170,9 @@ html[data-layout=topnav] .page-title-head{
     padding:0 1.25rem;
     border-bottom:1px solid var(--ins-border-color)
 }
-.logo-lg img{
+/* .logo-lg img{
     height:var(--ins-logo-lg-height)
-}
+} */
 .logo-sm img{
     height:var(--ins-logo-sm-height)
 }
@@ -14612,7 +14616,7 @@ html.sidebar-with-line .sub-menu .side-nav-link::after{
 }
 .btn-secondary{
     --ins-btn-bg:var(--ins-secondary);
-    --ins-btn-border-color:var(--ins-secondary);
+    --ins-btn-border-color:var(--ins-secondary-border);
     --ins-btn-hover-bg:var(--ins-secondary-text-emphasis);
     --ins-btn-hover-border-color:var(--ins-secondary-text-emphasis);
     --ins-btn-focus-shadow-rgb:var(--ins-secondary-rgb);
@@ -15431,8 +15435,7 @@ html[data-bs-theme=dark] .btn-ghost-dark,html[data-bs-theme=dark] .btn-soft-dark
     width:1rem
 }
 .card{
-    -webkit-box-shadow:none;
-    box-shadow:none;
+    box-shadow: 0px 2px 2px 0px #ededed;
     margin-bottom:1.25rem
 }
 .card.card-collapse .card-header{
@@ -15443,7 +15446,7 @@ html[data-bs-theme=dark] .btn-ghost-dark,html[data-bs-theme=dark] .btn-soft-dark
     color:#fff!important
 }
 .card .card-title{
-    font-size:15px;
+    font-size:16px;
     text-transform:none
 }
 .card.card-bordered{
@@ -16625,14 +16628,53 @@ code[class*=language-] code:not(:last-of-type),pre[class*=language-] code:not(:l
 [data-simplebar-primary] .simplebar-scrollbar:before{
     background:var(--ins-primary)
 }
-body .sidenav-menu .side-nav-link.active, body .sidenav-menu .side-nav-link:hover {
+body .sidenav-menu .simplebar-scrollable-y .side-nav-link.active, body .sidenav-menu .simplebar-scrollable-y .side-nav-link:hover {
     background:none !important;
 }
-.sidenav-menu .side-nav-link.active, .sidenav-menu .side-nav-link.active .menu-text
+.sidenav-menu .simplebar-scrollable-y .side-nav-link.active, .sidenav-menu .simplebar-scrollable-y .side-nav-link.active .menu-text
  {
     background-color: transparent !important;
     color: #1ab394 !important;
 }
 body .sidenav-menu .side-nav-link:hover span{color: #408cff !important;}
+.side-nav .simplebar-scrollable-y .side-nav-item .side-nav-link{padding: 7px 10px !important;font-weight: 500;}
+body .sidenav-menu .side-nav-title {
+    font-size: 12px !important;
+    color: #75757f !important;
+    padding: 0 30px;
+    font-weight: 500;
+}
+body .sidenav-menu .logo {
+    margin-bottom: 30px;
+    background-color: #ffffff !important;
+}
+body .content-page
+ {
+    padding-left: 1.5% !important;
+    padding-right: 1.5% !important;
+}
+body .sidenav-menu {
+    background-color: #fff !important;
+    border-right: 1px solid #e0e0e0 !important;
+    box-shadow: none !important;
+}
+.card-header h4{font-size: 20px; color: #000000;}
+.card-body h4 {
+    color: #000;
+    font-size: 14px;
+}
+body .footer {
+    margin-left: -2% !important;
+    margin-right: -2% !important;
+    width: calc(100% + 4%) !important;
+}
+.form-control:focus, .choices.is-open .choices__inner {
+    box-shadow: 0px 0px 1px 3px rgb(159 159 169 / 35%);
+}
+button.btn.btn-secondary:hover {
+    background: oklch(96.7% 0.001 286.375);
+    color: oklch(21% 0.006 285.885);
+    border-color: oklch(92% 0.004 286.32);
+}
 /*# sourceMappingURL=app.min.css.map */
  
