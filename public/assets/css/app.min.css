@@ -16671,10 +16671,12 @@ body .sidenav-menu {
     width: calc(100% + 4%) !important;
 } */
 body .footer {
-    margin-left: -16% !important;
-    margin-right: -16% !important;
-    margin-top: 10% !important;
-    width: calc(100% + 32%) !important;
+    margin-left: var(--ins-sidenav-width) !important;
+    margin-right: 0 !important;
+    margin-top: 0% !important;
+    width: auto !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
 }
 .form-control:focus, .choices.is-open .choices__inner {
     box-shadow: 0px 0px 1px 3px rgb(159 159 169 / 35%);
@@ -16731,15 +16733,21 @@ body .choices__inner, body .tagify {
     min-height: 100% !important;
 }
 body .tagify .tagify__tag {
-    margin: 0px !important;
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
 }
-body .choices__list--multiple .choices__item
- {
-    background-color: oklch(62.3% 0.214 259.815) !important;
-    border: 1px solid oklch(62.3% 0.214 259.815) !important;
+body .choices__list--multiple .choices__item {
+    background-color: oklch(0.92 0 0) !important;
+    border: 1px solid oklch(0.92 0 0) !important;
+    color: #000;
 }
-
-
+body .choices__list--multiple .choices__item button.choices__button {
+    background: none;
+    text-indent: 0;
+    font-weight: 600;
+    padding-left: 8px;
+    padding-right: 20px;
+}
 .app-topbar .sidenav-toggle-button {
     color: #000000 !important;
     background-color: #ffffff !important;

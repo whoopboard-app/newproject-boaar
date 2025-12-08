@@ -4,6 +4,15 @@
 
 @push('styles')
 <style>
+    table#changelogTable td:nth-child(1) {
+    width: 10%;
+}
+table#changelogTable td:nth-child(2) {
+    width: 80%;
+}
+table#changelogTable td:nth-child(1) {
+    width: 10%;
+}
     .changelog-cover {
         width: 60px;
         height: 34px;
@@ -102,7 +111,7 @@
                                 <td>
                                     <div>
                                         <h6 class="mb-1">{{ $changelog->title }}</h6>
-                                        <small class="text-muted">{{ Str::limit($changelog->short_description, 60) }}</small>
+                                        <!-- <small class="text-muted">{{ Str::limit($changelog->short_description, 60) }}</small> -->
                                     </div>
                                     <div class="spacer">
                                         @if($changelog->status == 'published')

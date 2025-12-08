@@ -585,7 +585,10 @@
             </div>
             <!-- container -->
 
-            <!-- Footer Start -->
+            
+
+        </div>
+                    <!-- Footer Start -->
             <footer class="footer">
                 <div class="container-fluid">
                     <div class="row">
@@ -601,9 +604,6 @@
                 </div>
             </footer>
             <!-- end Footer -->
-
-        </div>
-
         <!-- ============================================================== -->
         <!-- End Page content -->
         <!-- ============================================================== -->
@@ -616,7 +616,15 @@
 
     <!-- App js -->
     <script src="{{ asset('assets/js/app.js') }}"></script>
-
+<script>
+    jQuery(document).ready(function(){
+       setTimeout(function(){
+        jQuery('.choices__button').each(function(){
+            jQuery(this).html('X');
+        });
+        },500);
+    });
+</script>
     @stack('scripts')
 </body>
 </html>
