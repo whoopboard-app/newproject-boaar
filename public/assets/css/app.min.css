@@ -8,6 +8,8 @@
 1,300..800&display=swap);
 @import url(https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;
 1,100..900&display=swap);
+@import url(https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap);
+
 :root,[data-bs-theme=light]{
     --ins-blue:#1c84c6;
     --ins-indigo:#6b5eae;
@@ -79,7 +81,7 @@
     --ins-dark-border-subtle:#a1a9b1;
     --ins-white-rgb:255,255,255;
     --ins-black-rgb:0,0,0;
-    --ins-font-sans-serif: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --ins-font-sans-serif: "Inter";
     --ins-font-monospace:SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
     --ins-gradient:linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
     --ins-body-font-family:var(--ins-font-sans-serif);
@@ -8805,7 +8807,7 @@ textarea.form-control-lg{
 }
 .bg-primary{
     --ins-bg-opacity:1;
-    background-color:rgba(var(--ins-primary-rgb),var(--ins-bg-opacity))!important
+    background-color: var(--ins-primary) !important;
 }
 .bg-secondary{
     --ins-bg-opacity:1;
@@ -16634,7 +16636,7 @@ body .sidenav-menu .simplebar-scrollable-y .side-nav-link.active, body .sidenav-
 .sidenav-menu .simplebar-scrollable-y .side-nav-link.active, .sidenav-menu .simplebar-scrollable-y .side-nav-link.active .menu-text
  {
     background-color: transparent !important;
-    color: #1ab394 !important;
+    color: var(--ins-primary) !important;
 }
 body .sidenav-menu .side-nav-link:hover span{color: #408cff !important;}
 .side-nav .simplebar-scrollable-y .side-nav-item .side-nav-link{padding: 7px 10px !important;font-weight: 500;}
@@ -16645,13 +16647,13 @@ body .sidenav-menu .side-nav-title {
     font-weight: 500;
 }
 body .sidenav-menu .logo {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     background-color: #ffffff !important;
 }
 body .content-page
  {
-    padding-left: 1.5% !important;
-    padding-right: 1.5% !important;
+    padding-left: 10% !important;
+    padding-right: 10% !important;
 }
 body .sidenav-menu {
     background-color: #fff !important;
@@ -16663,10 +16665,16 @@ body .sidenav-menu {
     color: #000;
     font-size: 14px;
 }
-body .footer {
+/* body .footer {
     margin-left: -2% !important;
     margin-right: -2% !important;
     width: calc(100% + 4%) !important;
+} */
+body .footer {
+    margin-left: -16% !important;
+    margin-right: -16% !important;
+    margin-top: 10% !important;
+    width: calc(100% + 32%) !important;
 }
 .form-control:focus, .choices.is-open .choices__inner {
     box-shadow: 0px 0px 1px 3px rgb(159 159 169 / 35%);
@@ -16676,5 +16684,140 @@ button.btn.btn-secondary:hover {
     color: oklch(21% 0.006 285.885);
     border-color: oklch(92% 0.004 286.32);
 }
+.filepond--drop-label{
+    font-size: 14px !important;
+}
+.card .info-box {
+    background-color: transparent;
+    border-left: 0 none;
+    padding: 0; 
+    margin-bottom: 25px;
+    border-radius: 0;
+}
+.card .info-box h6 {
+    color: #393B40;
+    font-size: 0.75rem;
+    text-transform: capitalize;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    line-height: 12px;
+}
+.card .info-box span.badge, .card .info-box .tag-badge {
+    background: #E1FCE9 !important;
+    font-size: 11px;
+    padding: 8px 26px;
+    color: #0B5C22;
+    border-radius: 4px;
+    margin-top: 5px;
+}
+.card .info-box p {
+    margin-bottom: 0;
+    font-size: 0.875rem;
+    color: #27314B;
+    font-weight: 400;
+    line-height: 22px;
+}
+.card .card-title {
+    color: #111B37;
+    font-weight: 600;
+    line-height: 16px;
+}
+.card .card-title .ti {
+display: none;
+}
+body .choices__inner, body .tagify {
+    border-radius: 0.5rem !important;
+    height: 35.6px;
+    min-height: 100% !important;
+}
+body .tagify .tagify__tag {
+    margin: 0px !important;
+}
+body .choices__list--multiple .choices__item
+ {
+    background-color: oklch(62.3% 0.214 259.815) !important;
+    border: 1px solid oklch(62.3% 0.214 259.815) !important;
+}
+
+
+.app-topbar .sidenav-toggle-button {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    border: 2px solid #eee !important;
+    border-radius: 11px;
+}
+.sidebar-enable .ti-arrow-bar-to-right:before{content:"\ec89" !important;}
+.card.top-area {
+    box-shadow: none;
+    border: 0 none;
+}
+.card.top-area .card-header {
+    border: 0;
+    padding: 0;
+    margin-bottom: 10px;
+}
+.card.top-area .card-header .card-title {
+    color: #000;
+    font-size: 20px;
+    line-height: 20px;
+    font-weight: 600;
+}
+.card.top-area .card-header .card-title p {
+    color: #676A72 !important;
+    font-size: 14px !important;
+    line-height: 14px;
+    font-weight: 400;
+    margin-top: 5px;
+}
+#changelogTable tr {
+    background: transparent !important;
+    border: 1px solid #f1f1f1;
+    display: table;
+    width: 100%;
+    margin-bottom: 10px;
+}
+#changelogTable>tbody>tr:nth-of-type(odd)>* {
+    --ins-table-bg-type: transparent;
+}
+#changelogTable .btn-group a, #changelogTable .btn-group .btn-soft-danger {
+    background: none !important;
+    border: 0 none;
+    color: #78829D;
+    font-size: 16px;
+}
+#changelogTable .btn-group a:hover, #changelogTable .btn-group .btn-soft-danger:hover {
+    color: rgbaoklch(62.3% 0.214 259.815);
+}
+#changelogTable tr h6 {
+    font-size: 16px;
+    color: #000;
+    line-height: 22px;
+    font-weight: 500;
+}
+span.span-tags {
+    color: #676A72;
+    font-size: 12px;
+    line-height: 12px;
+    font-weight: 400;
+}
+span.tag-value {
+    color: #393B40;
+    font-size: 12px;
+    line-height: 12px;
+    font-weight: 500;
+}
+span.badge.bg-success.alt-primary-success {
+    background: #E1FCE9 !important;
+    color: #0B5C22;
+    font-size: 11px;
+    padding: 8px;
+    border-radius: 8px;
+    font-weight: 500;
+}
+.spacer {
+    display: inline-block;
+    margin: 0 10px 0 0;
+}
 /*# sourceMappingURL=app.min.css.map */
  
+

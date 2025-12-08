@@ -74,8 +74,6 @@
         .app-topbar .sidenav-toggle-button,
         .app-topbar .sidenav-toggle-button i {
             color: #000000 !important;
-            background-color: transparent !important;
-            border: none !important;
         }
 
         /* Topbar button hover effect */
@@ -368,7 +366,7 @@
 
                     <!-- Sidebar Menu Toggle Button -->
                     <button class="sidenav-toggle-button btn btn-primary btn-icon d-flex mt-2">
-                        <i class="ti ti-menu-4 fs-22"></i>
+                        <i class="ti ti-arrow-bar-to-right fs-20"></i>
                     </button>
                 </div>
 
@@ -403,7 +401,7 @@
                     <!-- Alert/Notifications Dropdown -->
                     <div class="dropdown topbar-head-dropdown ms-1 header-item">
                         <button type="button" class="btn btn-icon btn-topbar rounded-circle position-relative" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="ti ti-bell fs-22"></i>
+                            <i class="ti ti-notification fs-22"></i>
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                 3
                                 <span class="visually-hidden">unread notifications</span>
@@ -479,7 +477,7 @@
                     <!-- Activity Dropdown -->
                     <div class="dropdown topbar-head-dropdown ms-1 header-item">
                         <button type="button" class="btn btn-icon btn-topbar rounded-circle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="ti ti-activity fs-22"></i>
+                            <i class="ti ti-device-mobile-message fs-22"></i>
                         </button>
                         <div class="dropdown-menu dropdown-menu-end dropdown-menu-lg">
                             <div class="dropdown-header">
