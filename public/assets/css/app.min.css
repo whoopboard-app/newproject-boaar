@@ -90,7 +90,7 @@
     --ins-body-line-height:1.5;
     --ins-body-color:#4c4c5c;
     --ins-body-color-rgb:76,76,92;
-    --ins-body-bg:#f1f2f7;
+    --ins-body-bg:#ffffff;
     --ins-body-bg-rgb:241,242,247;
     --ins-emphasis-color:rgba(76, 76, 92, 0.75);
     --ins-emphasis-color-rgb:76,76,92;
@@ -16673,7 +16673,6 @@ body .sidenav-menu {
 body .footer {
     margin-left: var(--ins-sidenav-width) !important;
     margin-right: 0 !important;
-    margin-top: 0% !important;
     width: auto !important;
     padding-left: 15px !important;
     padding-right: 15px !important;

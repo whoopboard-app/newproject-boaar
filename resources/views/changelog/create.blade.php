@@ -35,6 +35,8 @@
     }
     .choices__list--multiple .choices__item {
         border-radius: 3px !important;
+        margin-bottom: 7px;
+        padding-bottom: 0px;
     }
 
     .tagify {
