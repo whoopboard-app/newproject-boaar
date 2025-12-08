@@ -74,7 +74,7 @@
 
 <div class="row">
     <div class="col-12">
-        <div class="card top-area">
+        <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0">
                     <i class="ti ti-list me-2"></i>{{ $changelog ? 'Edit Changelog' : 'Add Changelog' }}
@@ -337,7 +337,29 @@
                 shouldSort: false,
                 removeItemButton: isMultiple // Show remove button for multiselect
             });
+            choicesInstances[element.id].passedElement.element.addEventListener('addItem', (event) => {
+    setTimeout(function(){
+        jQuery('.choices__button').each(function(){
+            jQuery(this).html('X');
         });
+        },100);
+});
+choicesInstances[element.id].passedElement.element.addEventListener('removeItem', (event) => {
+    setTimeout(function(){
+        jQuery('.choices__button').each(function(){
+            jQuery(this).html('X');
+        });
+        },100);
+});
+choicesInstances[element.id].passedElement.element.addEventListener('change', (event) => {
+    setTimeout(function(){
+        jQuery('.choices__button').each(function(){
+            jQuery(this).html('X');
+        });
+        },100);
+});
+        });
+
 
         // Initialize Tagify for tags input with team-specific tags from server
         const tagInput = document.querySelector('#tags');
