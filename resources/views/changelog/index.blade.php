@@ -5,13 +5,13 @@
 @push('styles')
 <style>
     table#changelogTable td:nth-child(1) {
-    width: 10%;
+    width: 8%;
 }
 table#changelogTable td:nth-child(2) {
     width: 80%;
 }
-table#changelogTable td:nth-child(1) {
-    width: 10%;
+table#changelogTable td:nth-child(3) {
+    width: 12%;
 }
     .changelog-cover {
         width: 60px;

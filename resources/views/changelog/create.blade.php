@@ -14,9 +14,10 @@
         background-color: #fff !important;
         border: 1px solid #dee2e6 !important;
         border-radius: 0.25rem !important;
-        font-size: 1rem !important;
+        font-size: 14px !important;
         line-height: 1.5 !important;
     }
+
 
     .choices__list--single {
         display: flex;
@@ -31,6 +32,9 @@
 
     .choices__list--dropdown .choices__item--selectable {
         padding: 0.5rem 1rem !important;
+    }
+    .choices__list--multiple .choices__item {
+        border-radius: 3px !important;
     }
 
     .tagify {
@@ -79,6 +83,11 @@
                 <h5 class="card-title mb-0">
                     <i class="ti ti-list me-2"></i>{{ $changelog ? 'Edit Changelog' : 'Add Changelog' }}
                 </h5>
+                <div class="d-flex justify-content-between align-items-center">
+                <a href="{{ route('changelog.index') }}" class="btn btn-secondary me-1">
+                    <i class="ti ti-arrow-left me-1"></i>Back to List
+                </a>
+                </div>
             </div>
             <div class="card-body">
                 <form action="{{ $changelog ? route('changelog.update', $changelog) : route('changelog.store') }}" method="POST" enctype="multipart/form-data" id="changelogForm">
