@@ -125,26 +125,7 @@
 @endpush
 
 @section('content')
-<div class="row">
-    <div class="col-12">
-        <div class="page-title-box d-flex justify-content-between align-items-center">
-            <div>
-                <h4 class="page-title">{{ $changelog->title }}</h4>
-                <p class="text-muted fs-14 mb-0">Changelog Details</p>
-            </div>
-            <div class="d-flex gap-2">
-                <a href="{{ route('changelog.index') }}" class="btn btn-secondary">
-                    <i class="ti ti-arrow-left me-1"></i>Back to List
-                </a>
-                @if(Auth::user()->canEdit())
-                <a href="{{ route('changelog.edit', $changelog) }}" class="btn btn-primary">
-                    <i class="ti ti-edit me-1"></i>Edit
-                </a>
-                @endif
-            </div>
-        </div>
-    </div>
-</div>
+
 
 @if(Auth::user()->isReadOnly())
     <div class="alert alert-info alert-dismissible fade show" role="alert">
@@ -166,11 +147,37 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 @endif
-
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card top-area">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ti ti-list me-2"></i>Changelog details
+                    <p class="text-muted fs-14 mb-0">Manage and view all changelog entries</p>
+                </h5>
+                <div class="d-flex justify-content-between align-items-center">
+                <a href="{{ route('changelog.index') }}" class="btn btn-secondary me-1">
+                    <i class="ti ti-arrow-left me-1"></i>Back to List
+                </a>
+                @if(Auth::user()->canEdit())
+                <a href="{{ route('changelog.edit', $changelog) }}" class="btn btn-primary">
+                    <i class="ti ti-edit me-1"></i>Edit Change Log
+                </a>
+                @endif
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="row">
     <!-- Main Content -->
     <div class="col-lg-8">
         <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ti ti-list me-2"></i>{{ $changelog->title }}
+                </h5>
+            </div>
             <div class="card-body">
                 <!-- Cover Image -->
                 @if($changelog->cover_image)
@@ -269,6 +276,63 @@
                 </h5>
             </div>
             <div class="card-body">
+                <!-- Average Rating -->
+                @if(isset($ratingStats) && $ratingStats)
+                <div class="info-box" style="border-left-color: #ffc107;">
+                    <h6>Average Rating</h6>
+                    @if($ratingStats['type'] === 'yes_no')
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fs-4 fw-bold text-success">{{ $ratingStats['percentage'] }}%</span>
+                            <span class="text-muted">found helpful</span>
+                        </div>
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                <i class="ti ti-thumb-up text-success"></i> {{ $ratingStats['yes_count'] }} Yes
+                                &nbsp;|&nbsp;
+                                <i class="ti ti-thumb-down text-danger"></i> {{ $ratingStats['no_count'] }} No
+                            </small>
+                        </div>
+                    @elseif($ratingStats['type'] === 'star')
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fs-4 fw-bold" style="color: #ffc107;">{{ $ratingStats['average'] }}</span>
+                            <div>
+                                @for($i = 1; $i <= 5; $i++)
+                                    @if($i <= round($ratingStats['average']))
+                                        <i class="ti ti-star-filled" style="color: #ffc107;"></i>
+                                    @else
+                                        <i class="ti ti-star" style="color: #ddd;"></i>
+                                    @endif
+                                @endfor
+                            </div>
+                        </div>
+                    @elseif($ratingStats['type'] === 'emoji')
+                        @php
+                            $emojis = ['😡', '😟', '😐', '😊', '😁'];
+                            $avgIndex = max(0, min(4, round($ratingStats['average']) - 1));
+                        @endphp
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fs-4 fw-bold">{{ $ratingStats['average'] }}</span>
+                            <span class="fs-3">{{ $emojis[$avgIndex] }}</span>
+                        </div>
+                    @elseif($ratingStats['type'] === 'numeric')
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fs-4 fw-bold text-primary">{{ $ratingStats['average'] }}</span>
+                            <span class="text-muted">/ 10</span>
+                        </div>
+                        <div class="progress mt-2" style="height: 8px;">
+                            <div class="progress-bar bg-primary" style="width: {{ ($ratingStats['average'] / 10) * 100 }}%;"></div>
+                        </div>
+                    @elseif($ratingStats['type'] === 'comment_only')
+                        <p class="mb-0">{{ $ratingStats['total'] }} comments received</p>
+                    @endif
+                    <small class="text-muted d-block mt-1">{{ $ratingStats['total'] }} total responses</small>
+                </div>
+                @else
+                <div class="info-box" style="border-left-color: #6c757d;">
+                    <h6>Average Rating</h6>
+                    <p class="text-muted mb-0">No ratings yet</p>
+                </div>
+                @endif
                 <!-- Status -->
                 <div class="info-box">
                     <h6>Status</h6>
@@ -330,63 +394,7 @@
                     <p>{{ $changelog->updated_at->format('M d, Y h:i A') }}</p>
                 </div>
 
-                <!-- Average Rating -->
-                @if(isset($ratingStats) && $ratingStats)
-                <div class="info-box" style="border-left-color: #ffc107;">
-                    <h6>Average Rating</h6>
-                    @if($ratingStats['type'] === 'yes_no')
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="fs-4 fw-bold text-success">{{ $ratingStats['percentage'] }}%</span>
-                            <span class="text-muted">found helpful</span>
-                        </div>
-                        <div class="mt-2">
-                            <small class="text-muted">
-                                <i class="ti ti-thumb-up text-success"></i> {{ $ratingStats['yes_count'] }} Yes
-                                &nbsp;|&nbsp;
-                                <i class="ti ti-thumb-down text-danger"></i> {{ $ratingStats['no_count'] }} No
-                            </small>
-                        </div>
-                    @elseif($ratingStats['type'] === 'star')
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="fs-4 fw-bold" style="color: #ffc107;">{{ $ratingStats['average'] }}</span>
-                            <div>
-                                @for($i = 1; $i <= 5; $i++)
-                                    @if($i <= round($ratingStats['average']))
-                                        <i class="ti ti-star-filled" style="color: #ffc107;"></i>
-                                    @else
-                                        <i class="ti ti-star" style="color: #ddd;"></i>
-                                    @endif
-                                @endfor
-                            </div>
-                        </div>
-                    @elseif($ratingStats['type'] === 'emoji')
-                        @php
-                            $emojis = ['😡', '😟', '😐', '😊', '😁'];
-                            $avgIndex = max(0, min(4, round($ratingStats['average']) - 1));
-                        @endphp
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="fs-4 fw-bold">{{ $ratingStats['average'] }}</span>
-                            <span class="fs-3">{{ $emojis[$avgIndex] }}</span>
-                        </div>
-                    @elseif($ratingStats['type'] === 'numeric')
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="fs-4 fw-bold text-primary">{{ $ratingStats['average'] }}</span>
-                            <span class="text-muted">/ 10</span>
-                        </div>
-                        <div class="progress mt-2" style="height: 8px;">
-                            <div class="progress-bar bg-primary" style="width: {{ ($ratingStats['average'] / 10) * 100 }}%;"></div>
-                        </div>
-                    @elseif($ratingStats['type'] === 'comment_only')
-                        <p class="mb-0">{{ $ratingStats['total'] }} comments received</p>
-                    @endif
-                    <small class="text-muted d-block mt-1">{{ $ratingStats['total'] }} total responses</small>
-                </div>
-                @else
-                <div class="info-box" style="border-left-color: #6c757d;">
-                    <h6>Average Rating</h6>
-                    <p class="text-muted mb-0">No ratings yet</p>
-                </div>
-                @endif
+                
             </div>
         </div>
 
