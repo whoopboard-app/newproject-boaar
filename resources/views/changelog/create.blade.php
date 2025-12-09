@@ -77,7 +77,23 @@
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 @endif
-
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card top-area">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ti ti-list me-2"></i>Changelog
+                    <p class="text-muted fs-14 mb-0">Add changelog entries</p>
+                </h5>
+                <div class="d-flex justify-content-between align-items-center">
+                <a href="{{ route('changelog.index') }}" class="btn btn-secondary me-1">
+                    <i class="ti ti-arrow-left me-1"></i>Back to List
+                </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="row">
     <div class="col-12">
         <div class="card">
@@ -85,11 +101,7 @@
                 <h5 class="card-title mb-0">
                     <i class="ti ti-list me-2"></i>{{ $changelog ? 'Edit Changelog' : 'Add Changelog' }}
                 </h5>
-                <div class="d-flex justify-content-between align-items-center">
-                <a href="{{ route('changelog.index') }}" class="btn btn-secondary me-1">
-                    <i class="ti ti-arrow-left me-1"></i>Back to List
-                </a>
-                </div>
+                
             </div>
             <div class="card-body">
                 <form action="{{ $changelog ? route('changelog.update', $changelog) : route('changelog.store') }}" method="POST" enctype="multipart/form-data" id="changelogForm">
