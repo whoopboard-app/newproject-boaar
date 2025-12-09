@@ -4,7 +4,9 @@
 
 @section('content')
 <h4 class="text-dark fs-20 text-center mb-4">Sign In</h4>
-
+<div class="col-12 text-center">
+    <p class="text-muted">Don't have an account? <a href="{{ route('register') }}" class="text-primary fw-semibold ms-1">Create new account</a></p>
+</div>
 <!-- Session Status -->
 @if (session('status'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -29,9 +31,15 @@
 
     <!-- Password -->
     <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
+        <label for="password" class="form-label">Password
+            @if (Route::has('password.request'))
+            <a href="{{ route('password.request') }}" class="text-muted">Forgot password?
+            </a>
+    @endif
+        </label>
         <div class="input-group input-group-merge">
             <input type="password" id="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="Enter your password" required autocomplete="current-password">
+            <a href="javascript:void(0);"><i class="ti ti-eye"></i></a>
             @error('password')
                 <div class="invalid-feedback">
                     {{ $message }}
@@ -49,23 +57,16 @@
     </div>
 
     <div class="mb-0 text-center d-grid">
-        <button class="btn btn-primary" type="submit">Log In</button>
+        <button class="btn btn-primary" type="submit">Sign In</button>
     </div>
 
-    @if (Route::has('password.request'))
-        <div class="mt-3 text-center">
-            <a href="{{ route('password.request') }}" class="text-muted">
-                <i class="ti ti-lock"></i> Forgot your password?
-            </a>
-        </div>
-    @endif
+    
 </form>
 @endsection
-
 @section('extra-content')
-<div class="row mt-3">
-    <div class="col-12 text-center">
-        <p class="text-muted">Don't have an account? <a href="{{ route('register') }}" class="text-primary fw-semibold ms-1">Create new account</a></p>
-    </div>
-</div>
+<style>
+    .auth-logo {
+        display: none !important;
+    } 
+    </style>
 @endsection
