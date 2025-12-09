@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'team.permission' => \App\Http\Middleware\CheckTeamPermission::class,
             'team.subdomain' => \App\Http\Middleware\DetectTeamSubdomain::class,
+            'backoffice.auth' => \App\Http\Middleware\BackofficeAuthenticated::class,
         ]);
 
         // Exclude public survey API routes from CSRF verification
