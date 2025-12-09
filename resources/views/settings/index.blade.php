@@ -3,6 +3,23 @@
 @section('title', 'App Settings')
 
 @section('content')
+<style>
+    .ti {
+        color: #1379F0;
+    }
+
+    small {
+        font-size: 13px;
+        color: #676A72;
+    }
+    .card-body p {
+        color: #676A72;
+    }
+
+    .card .card-title {
+        color: #2C2D30;
+    }
+</style>
 <div class="row">
     <div class="col-12">
         <div class="page-title-box">
@@ -14,376 +31,254 @@
 
 <div class="row">
     <!-- My Profile Card -->
-    <div class="col-lg-3 col-md-6 mb-3 d-flex">
-        <div class="card h-100 w-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="avatar-lg">
-                        <span class="avatar-title rounded-circle bg-primary-subtle">
-                            <i class="ti ti-user fs-2 text-primary"></i>
-                        </span>
+    <div class="col-lg-4 col-md-6 mb-3 d-flex">
+        <a href="{{ route('profile.edit') }}">
+            <div class="card h-100 w-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="avatar-lg">
+                            <i class="ti ti-user fs-2"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title mb-2">Personal Info</h5>
+                    <p class="text-muted fs-14 mb-3">
+                        We're open to partnerships, guest posts, promo bannersand more.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <small>Last updated: {{ now()->diffForHumans() }}</small>
                     </div>
                 </div>
-                <h5 class="card-title mb-2">My Profile</h5>
-                <p class="text-muted fs-14 mb-3">
-                    Update your personal information, change password, and manage your account preferences.
-                </p>
-                <div class="d-flex gap-2">
-                    <a href="{{ route('profile.edit') }}" class="btn btn-sm btn-primary">
-                        <i class="ti ti-eye me-1"></i>View
-                    </a>
-                    <a href="{{ route('profile.edit') }}" class="btn btn-sm btn-outline-primary">
-                        <i class="ti ti-edit me-1"></i>Edit
-                    </a>
-                </div>
             </div>
-            <div class="card-footer border-top">
-                <div class="d-flex align-items-center text-muted">
-                    <i class="ti ti-clock me-2"></i>
-                    <small>Last updated: {{ now()->diffForHumans() }}</small>
-                </div>
-            </div>
-        </div>
+        </a>
     </div>
 
     <!-- Invite Team Member Card -->
-    <div class="col-lg-3 col-md-6 mb-3 d-flex">
-        <div class="card h-100 w-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="avatar-lg">
-                        <span class="avatar-title rounded-circle bg-success-subtle">
-                            <i class="ti ti-user-plus fs-2 text-success"></i>
-                        </span>
+    <div class="col-lg-4 col-md-6 mb-3 d-flex">
+        <a href="{{ route('team.manage') }}">
+            <div class="card h-100 w-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="avatar-lg">
+                            <i class="ti ti-user-plus fs-2"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title mb-2">Invite Team Member</h5>
+                    <p class="text-muted fs-14 mb-3">
+                        Send invitations to new team members, manage roles, and track pending invitations. </p>
+                    <div class="d-flex gap-2">
+                        <small>5 active members, 3 pending</small>
                     </div>
                 </div>
-                <h5 class="card-title mb-2">Invite Team Member</h5>
-                <p class="text-muted fs-14 mb-3">
-                    Send invitations to new team members, manage roles, and track pending invitations.
-                </p>
-                <div class="d-flex gap-2">
-                    <a href="{{ route('team.manage') }}" class="btn btn-sm btn-success">
-                        <i class="ti ti-eye me-1"></i>View
-                    </a>
-                    <a href="{{ route('team.manage') }}" class="btn btn-sm btn-outline-success">
-                        <i class="ti ti-user-plus me-1"></i>Invite
-                    </a>
-                </div>
             </div>
-            <div class="card-footer border-top">
-                <div class="d-flex align-items-center text-muted">
-                    <i class="ti ti-users me-2"></i>
-                    <small>5 active members, 3 pending</small>
-                </div>
-            </div>
-        </div>
+        </a>
     </div>
 
     <!-- Categories Card -->
-    <div class="col-lg-3 col-md-6 mb-3 d-flex">
-        <div class="card h-100 w-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="avatar-lg">
-                        <span class="avatar-title rounded-circle bg-warning-subtle">
-                            <i class="ti ti-tags fs-2 text-warning"></i>
-                        </span>
+    <div class="col-lg-4 col-md-6 mb-3 d-flex">
+        <a href="{{ route('categories.manage') }}">
+            <div class="card h-100 w-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="avatar-lg">
+                            <i class="ti ti-tags fs-2"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title mb-2">Change Log categories</h5>
+                    <p class="text-muted fs-14 mb-3">
+                        Manage changelog categories, add new categories, and customize category colors. </p>
+                    <div class="d-flex gap-2">
+                        <small>12 active categories</small>
                     </div>
                 </div>
-                <h5 class="card-title mb-2">Categories</h5>
-                <p class="text-muted fs-14 mb-3">
-                    Manage changelog categories, add new categories, and customize category colors.
-                </p>
-                <div class="d-flex gap-2">
-                    <a href="{{ route('categories.manage') }}" class="btn btn-sm btn-warning">
-                        <i class="ti ti-eye me-1"></i>View
-                    </a>
-                    <a href="{{ route('categories.manage') }}" class="btn btn-sm btn-outline-warning">
-                        <i class="ti ti-plus me-1"></i>Add New
-                    </a>
-                </div>
             </div>
-            <div class="card-footer border-top">
-                <div class="d-flex align-items-center text-muted">
-                    <i class="ti ti-tag me-2"></i>
-                    <small>12 active categories</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- General Settings Card -->
-    <div class="col-lg-3 col-md-6 mb-3 d-flex">
-        <div class="card h-100 w-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="avatar-lg">
-                        <span class="avatar-title rounded-circle bg-info-subtle">
-                            <i class="ti ti-settings fs-2 text-info"></i>
-                        </span>
-                    </div>
-                </div>
-                <h5 class="card-title mb-2">General Settings</h5>
-                <p class="text-muted fs-14 mb-3">
-                    Configure application name, logo, website URL, unique URL and other general settings.
-                </p>
-                <div class="d-flex gap-2">
-                    <a href="{{ route('settings.general') }}" class="btn btn-sm btn-info">
-                        <i class="ti ti-eye me-1"></i>View
-                    </a>
-                    <a href="{{ route('settings.general') }}" class="btn btn-sm btn-outline-info">
-                        <i class="ti ti-settings me-1"></i>Configure
-                    </a>
-                </div>
-            </div>
-            <div class="card-footer border-top">
-                <div class="d-flex align-items-center text-muted">
-                    <i class="ti ti-check-circle me-2"></i>
-                    <small>All settings configured</small>
-                </div>
-            </div>
-        </div>
+        </a>
     </div>
 </div>
 
 <!-- Additional Settings Row -->
 <div class="row mt-3">
-
-    <!-- Notifications Settings Card -->
-    <div class="col-lg-3 col-md-6 mb-3 d-flex">
-        <div class="card h-100 w-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="avatar-lg">
-                        <span class="avatar-title rounded-circle bg-danger-subtle">
-                            <i class="ti ti-bell fs-2 text-danger"></i>
-                        </span>
+    <!-- General Settings Card -->
+    <div class="col-lg-4 col-md-6 mb-3 d-flex">
+        <a href="{{ route('settings.general') }}">
+            <div class="card h-100 w-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="avatar-lg">
+                            <i class="ti ti-settings fs-2"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title mb-2">General Settings</h5>
+                    <p class="text-muted fs-14 mb-3">
+                        Configure application name, logo, website URL, unique URL and other general settings.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <small>All settings configured</small>
                     </div>
                 </div>
-                <h5 class="card-title mb-2">Notifications</h5>
-                <p class="text-muted fs-14 mb-3">
-                    Manage email notifications, push notifications, and notification preferences.
-                </p>
-                <div class="d-flex gap-2">
-                    <a href="#" class="btn btn-sm btn-danger">
-                        <i class="ti ti-eye me-1"></i>View
-                    </a>
-                    <a href="#" class="btn btn-sm btn-outline-danger">
-                        <i class="ti ti-bell me-1"></i>Manage
-                    </a>
+            </div>
+        </a>
+    </div>
+
+    <!-- Notifications Settings Card -->
+    <div class="col-lg-4 col-md-6 mb-3 d-flex">
+        <a href="#">
+            <div class="card h-100 w-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="avatar-lg">
+                            <i class="ti ti-bell fs-2"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title mb-2">Notifications</h5>
+                    <p class="text-muted fs-14 mb-3">
+                        Manage email notifications, push notifications, and notification preferences.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <small>Email notifications enabled</small>
+                    </div>
                 </div>
             </div>
-            <div class="card-footer border-top">
-                <div class="d-flex align-items-center text-muted">
-                    <i class="ti ti-mail me-2"></i>
-                    <small>Email notifications enabled</small>
-                </div>
-            </div>
-        </div>
+        </a>
     </div>
 
     <!-- Security Settings Card -->
-    <div class="col-lg-3 col-md-6 mb-3 d-flex">
-        <div class="card h-100 w-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="avatar-lg">
-                        <span class="avatar-title rounded-circle bg-secondary-subtle">
-                            <i class="ti ti-shield-lock fs-2 text-secondary"></i>
-                        </span>
+    <div class="col-lg-4 col-md-6 mb-3 d-flex">
+        <a href="#">
+            <div class="card h-100 w-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="avatar-lg">
+                            <i class="ti ti-shield-lock fs-2"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title mb-2">Security</h5>
+                    <p class="text-muted fs-14 mb-3">
+                        Manage password, two-factor authentication, active sessions, and security logs.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <small>2FA not enabled</small>
                     </div>
                 </div>
-                <h5 class="card-title mb-2">Security</h5>
-                <p class="text-muted fs-14 mb-3">
-                    Manage password, two-factor authentication, active sessions, and security logs.
-                </p>
-                <div class="d-flex gap-2">
-                    <a href="#" class="btn btn-sm btn-secondary">
-                        <i class="ti ti-eye me-1"></i>View
-                    </a>
-                    <a href="#" class="btn btn-sm btn-outline-secondary">
-                        <i class="ti ti-lock me-1"></i>Configure
-                    </a>
-                </div>
             </div>
-            <div class="card-footer border-top">
-                <div class="d-flex align-items-center text-muted">
-                    <i class="ti ti-check me-2"></i>
-                    <small>2FA not enabled</small>
-                </div>
-            </div>
-        </div>
+        </a>
     </div>
-
+</div>
+<div class="row mt-3">
     <!-- RoadMap Card -->
-    <div class="col-lg-3 col-md-6 mb-3 d-flex">
-        <div class="card h-100 w-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="avatar-lg">
-                        <span class="avatar-title rounded-circle bg-primary-subtle">
-                            <i class="ti ti-route fs-2 text-primary"></i>
-                        </span>
+    <div class="col-lg-4 col-md-6 mb-3 d-flex">
+        <a href="{{ route('roadmap.index') }}">
+            <div class="card h-100 w-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="avatar-lg">
+                            <i class="ti ti-route fs-2"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title mb-2">RoadMap</h5>
+                    <p class="text-muted fs-14 mb-3">
+                        Manage roadmap statuses, customize colors, and define your product development workflow.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <small>Manage status workflow</small>
                     </div>
                 </div>
-                <h5 class="card-title mb-2">RoadMap</h5>
-                <p class="text-muted fs-14 mb-3">
-                    Manage roadmap statuses, customize colors, and define your product development workflow.
-                </p>
-                <div class="d-flex gap-2">
-                    <a href="{{ route('roadmap.index') }}" class="btn btn-sm btn-primary">
-                        <i class="ti ti-eye me-1"></i>View
-                    </a>
-                    <a href="{{ route('roadmap.index') }}" class="btn btn-sm btn-outline-primary">
-                        <i class="ti ti-settings me-1"></i>Manage
-                    </a>
-                </div>
             </div>
-            <div class="card-footer border-top">
-                <div class="d-flex align-items-center text-muted">
-                    <i class="ti ti-list-check me-2"></i>
-                    <small>Manage status workflow</small>
-                </div>
-            </div>
-        </div>
+        </a>
     </div>
 
     <!-- Feedback Category Card -->
-    <div class="col-lg-3 col-md-6 mb-3 d-flex">
-        <div class="card h-100 w-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="avatar-lg">
-                        <span class="avatar-title rounded-circle bg-info-subtle">
-                            <i class="ti ti-message-2 fs-2 text-info"></i>
-                        </span>
+    <div class="col-lg-4 col-md-6 mb-3 d-flex">
+        <a href="{{ route('feedback-category.index') }}">
+            <div class="card h-100 w-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="avatar-lg">
+                            <i class="ti ti-message-2 fs-2"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title mb-2">Feedback Category</h5>
+                    <p class="text-muted fs-14 mb-3">
+                        Manage feedback categories with auto-generated colors and organize user feedback efficiently.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <small>Organize feedback types</small>
                     </div>
                 </div>
-                <h5 class="card-title mb-2">Feedback Category</h5>
-                <p class="text-muted fs-14 mb-3">
-                    Manage feedback categories with auto-generated colors and organize user feedback efficiently.
-                </p>
-                <div class="d-flex gap-2">
-                    <a href="{{ route('feedback-category.index') }}" class="btn btn-sm btn-info">
-                        <i class="ti ti-eye me-1"></i>View
-                    </a>
-                    <a href="{{ route('feedback-category.index') }}" class="btn btn-sm btn-outline-info">
-                        <i class="ti ti-settings me-1"></i>Manage
-                    </a>
-                </div>
             </div>
-            <div class="card-footer border-top">
-                <div class="d-flex align-items-center text-muted">
-                    <i class="ti ti-category me-2"></i>
-                    <small>Organize feedback types</small>
-                </div>
-            </div>
-        </div>
+        </a>
     </div>
 
+
+
+    <!-- App Configuration Card -->
+    <div class="col-lg-4 col-md-6 mb-3 d-flex">
+        <a href="{{ route('configuration.index') }}">
+            <div class="card h-100 w-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="avatar-lg">
+                            <i class="ti ti-adjustments-horizontal fs-2"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title mb-2">App Configuration</h5>
+                    <p class="text-muted fs-14 mb-3">
+                        Configure module settings for Feedback, Changelog, Testimonials, Email Templates, and Knowledge Board.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <small>Module-level configurations</small>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
 </div>
 
 <!-- Third Settings Row -->
 <div class="row mt-3">
-
-    <!-- App Configuration Card -->
-    <div class="col-lg-3 col-md-6 mb-3 d-flex">
-        <div class="card h-100 w-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="avatar-lg">
-                        <span class="avatar-title rounded-circle bg-purple-subtle" style="background-color: rgba(111, 66, 193, 0.18) !important;">
-                            <i class="ti ti-adjustments-horizontal fs-2" style="color: #6f42c1;"></i>
-                        </span>
-                    </div>
-                </div>
-                <h5 class="card-title mb-2">App Configuration</h5>
-                <p class="text-muted fs-14 mb-3">
-                    Configure module settings for Feedback, Changelog, Testimonials, Email Templates, and Knowledge Board.
-                </p>
-                <div class="d-flex gap-2">
-                    <a href="{{ route('configuration.index') }}" class="btn btn-sm" style="background-color: #6f42c1; color: white;">
-                        <i class="ti ti-eye me-1"></i>View
-                    </a>
-                    <a href="{{ route('configuration.index') }}" class="btn btn-sm btn-outline-secondary" style="border-color: #6f42c1; color: #6f42c1;">
-                        <i class="ti ti-settings me-1"></i>Configure
-                    </a>
-                </div>
-            </div>
-            <div class="card-footer border-top">
-                <div class="d-flex align-items-center text-muted">
-                    <i class="ti ti-apps me-2"></i>
-                    <small>Module-level configurations</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Rating Settings Card -->
-    <div class="col-lg-3 col-md-6 mb-3 d-flex">
-        <div class="card h-100 w-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="avatar-lg">
-                        <span class="avatar-title rounded-circle" style="background-color: rgba(253, 126, 20, 0.18) !important;">
-                            <i class="ti ti-star fs-2" style="color: #fd7e14;"></i>
-                        </span>
+    <div class="col-lg-4 col-md-6 mb-3 d-flex">
+        <a href="{{ route('settings.rating') }}">
+            <div class="card h-100 w-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="avatar-lg">
+                            <i class="ti ti-star fs-2"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title mb-2">Rating Settings</h5>
+                    <p class="text-muted fs-14 mb-3">
+                        Configure article rating options, choose rating type, and select where ratings appear.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <small>User feedback ratings</small>
                     </div>
                 </div>
-                <h5 class="card-title mb-2">Rating Settings</h5>
-                <p class="text-muted fs-14 mb-3">
-                    Configure article rating options, choose rating type, and select where ratings appear.
-                </p>
-                <div class="d-flex gap-2">
-                    <a href="{{ route('settings.rating') }}" class="btn btn-sm" style="background-color: #fd7e14; color: white;">
-                        <i class="ti ti-eye me-1"></i>View
-                    </a>
-                    <a href="{{ route('settings.rating') }}" class="btn btn-sm btn-outline-secondary" style="border-color: #fd7e14; color: #fd7e14;">
-                        <i class="ti ti-settings me-1"></i>Configure
-                    </a>
-                </div>
             </div>
-            <div class="card-footer border-top">
-                <div class="d-flex align-items-center text-muted">
-                    <i class="ti ti-thumb-up me-2"></i>
-                    <small>User feedback ratings</small>
-                </div>
-            </div>
-        </div>
+        </a>
     </div>
 
     <!-- Themes (Public) Card -->
-    <div class="col-lg-3 col-md-6 mb-3 d-flex">
-        <div class="card h-100 w-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="avatar-lg">
-                        <span class="avatar-title rounded-circle" style="background-color: rgba(17, 147, 154, 0.18) !important;">
-                            <i class="ti ti-palette fs-2" style="color: #11939A;"></i>
-                        </span>
+    <div class="col-lg-4 col-md-6 mb-3 d-flex">
+        <a href="{{ route('settings.themes') }}">
+            <div class="card h-100 w-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="avatar-lg">
+                            <i class="ti ti-palette fs-2"></i>
+                        </div>
+                    </div>
+                    <h5 class="card-title mb-2">Themes (Public)</h5>
+                    <p class="text-muted fs-14 mb-3">
+                        Customize Knowledge Board appearance, header/footer colors, intro text, and SEO settings.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <small>Customize public pages</small>
                     </div>
                 </div>
-                <h5 class="card-title mb-2">Themes (Public)</h5>
-                <p class="text-muted fs-14 mb-3">
-                    Customize Knowledge Board appearance, header/footer colors, intro text, and SEO settings.
-                </p>
-                <div class="d-flex gap-2">
-                    <a href="{{ route('settings.themes') }}" class="btn btn-sm" style="background-color: #11939A; color: white;">
-                        <i class="ti ti-eye me-1"></i>View
-                    </a>
-                    <a href="{{ route('settings.themes') }}" class="btn btn-sm btn-outline-secondary" style="border-color: #11939A; color: #11939A;">
-                        <i class="ti ti-palette me-1"></i>Customize
-                    </a>
-                </div>
             </div>
-            <div class="card-footer border-top">
-                <div class="d-flex align-items-center text-muted">
-                    <i class="ti ti-brush me-2"></i>
-                    <small>Customize public pages</small>
-                </div>
-            </div>
-        </div>
+        </a>
     </div>
+</div>
 
 </div>
 @endsection
