@@ -16,17 +16,10 @@ class BackofficeAuthenticated
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Check if user is authenticated
-        if (!Auth::check()) {
+        // Check if admin user is authenticated using the admin guard
+        if (!Auth::guard('admin')->check()) {
             return redirect()->route('backoffice.email')
                 ->withErrors(['email' => 'Please log in to access the backoffice.']);
-        }
-
-        // Check if user is a super admin
-        if (!Auth::user()->is_super_admin) {
-            Auth::logout();
-            return redirect()->route('backoffice.email')
-                ->withErrors(['email' => 'You do not have access to the backoffice.']);
         }
 
         // Check if backoffice session is authenticated (code was verified)

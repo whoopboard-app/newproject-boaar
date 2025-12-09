@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Backoffice;
 
 use App\Http\Controllers\Controller;
 use App\Mail\BackofficeAccessCodeMail;
+use App\Models\AdminUser;
 use App\Models\BackofficeAccessCode;
-use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,12 +15,20 @@ use Illuminate\View\View;
 class BackofficeAuthController extends Controller
 {
     /**
+     * Get the admin guard.
+     */
+    protected function guard()
+    {
+        return Auth::guard('admin');
+    }
+
+    /**
      * Screen 1: Show the email form to request access code.
      */
     public function showEmailForm(): View|RedirectResponse
     {
         // If already authenticated in backoffice, redirect to dashboard
-        if (session('backoffice_authenticated')) {
+        if (session('backoffice_authenticated') && $this->guard()->check()) {
             return redirect()->route('backoffice.dashboard');
         }
 
@@ -38,10 +46,10 @@ class BackofficeAuthController extends Controller
 
         $email = $request->input('email');
 
-        // Check if user exists and is a super admin
-        $user = User::where('email', $email)->first();
+        // Check if admin user exists
+        $adminUser = AdminUser::where('email', $email)->first();
 
-        if (!$user || !$user->is_super_admin) {
+        if (!$adminUser) {
             return back()
                 ->withInput()
                 ->withErrors(['email' => 'Not a validated user. You do not have access to the backoffice.']);
@@ -66,7 +74,7 @@ class BackofficeAuthController extends Controller
     public function showLoginForm(): View|RedirectResponse
     {
         // If already authenticated in backoffice, redirect to dashboard
-        if (session('backoffice_authenticated')) {
+        if (session('backoffice_authenticated') && $this->guard()->check()) {
             return redirect()->route('backoffice.dashboard');
         }
 
@@ -105,19 +113,11 @@ class BackofficeAuthController extends Controller
                 ->withErrors(['code' => 'Invalid or expired verification code.']);
         }
 
-        // Attempt to authenticate the user
-        if (!Auth::attempt(['email' => $email, 'password' => $password])) {
+        // Attempt to authenticate the admin user
+        if (!$this->guard()->attempt(['email' => $email, 'password' => $password])) {
             return back()
                 ->withInput()
                 ->withErrors(['password' => 'Invalid password.']);
-        }
-
-        // Check if user is still a super admin
-        $user = Auth::user();
-        if (!$user->is_super_admin) {
-            Auth::logout();
-            return redirect()->route('backoffice.email')
-                ->withErrors(['email' => 'You do not have access to the backoffice.']);
         }
 
         // Mark the code as used
@@ -142,8 +142,8 @@ class BackofficeAuthController extends Controller
         session()->forget('backoffice_authenticated');
         session()->forget('backoffice_pending_email');
 
-        // Logout user
-        Auth::guard('web')->logout();
+        // Logout admin user
+        $this->guard()->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

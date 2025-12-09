@@ -19,7 +19,7 @@
                 </h5>
 
 
-                
+
 
                 <p class="text-muted fs-14 mb-0">
                     Welcome to your dashboard. This is built with the INSPINIA admin template integrated into Laravel.
