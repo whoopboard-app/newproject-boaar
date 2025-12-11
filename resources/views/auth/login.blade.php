@@ -3,9 +3,9 @@
 @section('title', 'Login')
 
 @section('content')
-<h4 class="text-dark fs-20 text-center mb-4">Sign In</h4>
+<h4 class="text-dark fs-18 text-center mb-1" style="color: #0b0809 !important;`">Sign In</h4>
 <div class="col-12 text-center">
-    <p class="text-muted">Don't have an account? <a href="{{ route('register') }}" class="text-primary fw-semibold ms-1">Create new account</a></p>
+    <p class="sub-title-txt">Don't have an account? <a href="{{ route('register') }}" class="text-primary fw-semibold ms-1">Create new account</a></p>
 </div>
 <!-- Session Status -->
 @if (session('status'))
@@ -15,7 +15,7 @@
     </div>
 @endif
 
-<form method="POST" action="{{ route('login') }}">
+<form class="login-form" method="POST" action="{{ route('login') }}">
     @csrf
 
     <!-- Email Address -->
@@ -39,7 +39,7 @@
         </label>
         <div class="input-group input-group-merge">
             <input type="password" id="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="Enter your password" required autocomplete="current-password">
-            <a href="javascript:void(0);"><i class="ti ti-eye"></i></a>
+            <a class="view-pwd-icon" href="javascript:void(0);"><i class="ti ti-eye"></i></a>
             @error('password')
                 <div class="invalid-feedback">
                     {{ $message }}

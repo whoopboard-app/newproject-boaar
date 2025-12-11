@@ -5,11 +5,24 @@
 @section('content')
 <div class="row">
     <div class="col-12">
-        <div class="card">
+        <div class="card top-area border-0 configuration-card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="font-weight-semibold mb-0">Module Configuration</h4>
+                <h5 class="card-title mb-0">
+                    <i class="ti ti-list me-2"></i>Module Configuration
+                </h5>
+                <div class="d-flex justify-content-between align-items-center">
+                <a href="{{ Route::has('settings.index') ? route('settings.index') : '#' }}" class="btn btn-secondary me-1">
+                    <i class="ti ti-arrow-left me-1"></i>Back to App Settings
+                </a>
+                </div>
             </div>
-            <div class="card-body">
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 configuration-card">
+            <div class="card-body p-0">
                 @if(session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <i class="ti ti-check-circle me-2"></i>{{ session('success') }}
@@ -22,7 +35,7 @@
                 @endphp
 
                 <!-- Tabs Navigation -->
-                <ul class="nav nav-tabs nav-bordered mb-3" role="tablist">
+                <ul class="nav nav-tabs nav-bordered mb-3 custom-tab-design" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link {{ $activeTab === 'changelog' ? 'active' : '' }}" id="changelog-tab" data-bs-toggle="tab" data-bs-target="#changelog" type="button" role="tab">
                             <i class="ti ti-timeline me-1"></i> Change Log
@@ -69,10 +82,10 @@
                     <div class="tab-pane fade {{ $activeTab === 'feedback' ? 'show active' : '' }}" id="feedback" role="tabpanel">
                         <div class="row">
                             <div class="col-12">
-                                <h5 class="mb-3">
+                                <!-- <h5 class="mb-3">
                                     <i class="ti ti-settings me-2"></i>Feedback Settings
-                                </h5>
-                                <p class="text-muted mb-4">Configure how users interact with feedback items, including voting rules and authentication requirements.</p>
+                                </h5> -->
+                                <p class="mb-4">Configure how users interact with feedback items, including voting rules and authentication requirements.</p>
 
                                 <form action="{{ route('configuration.feedback-settings.update') }}" method="POST">
                                     @csrf
@@ -81,7 +94,7 @@
                                     <div class="card mb-4">
                                         <div class="card-header">
                                             <h6 class="mb-0">
-                                                <i class="ti ti-user-check me-2"></i>Voting & Authentication
+                                                Voting & Authentication
                                             </h6>
                                         </div>
                                         <div class="card-body">
@@ -129,7 +142,7 @@
                                     <div class="card mb-4">
                                         <div class="card-header">
                                             <h6 class="mb-0">
-                                                <i class="ti ti-shield-check me-2"></i>Fraud Prevention
+                                                Fraud Prevention
                                             </h6>
                                         </div>
                                         <div class="card-body">
@@ -172,9 +185,9 @@
                                         </div>
                                     </div>
 
-                                    <div class="d-flex justify-content-end">
+                                    <div class="d-flex">
                                         <button type="submit" class="btn btn-primary">
-                                            <i class="ti ti-check me-2"></i>Save Feedback Settings
+                                            Save Feedback Settings
                                         </button>
                                     </div>
                                 </form>

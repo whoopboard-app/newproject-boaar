@@ -16825,6 +16825,89 @@ span.badge.bg-success.alt-primary-success {
     display: inline-block;
     margin: 0 10px 0 0;
 }
+p.sub-title-txt {
+    color: #1b1718;
+    font-size: 14px;
+    font-weight: 500;
+}
+form.login-form {
+    margin-top: 40px;
+}
+.account-pages .form-label {
+    margin-bottom: 3px;
+    font-weight: 400;
+    font-size: 14px;
+    color: #0b0809;
+}
+.view-pwd-icon {
+    position: absolute;
+    right: 0;
+    top: 5px;
+    right: 10px;
+    color: #71717b;
+    font-size: 18px;
+}
+.login-form input#password {
+    padding-right: 45px;
+}
+.login-form  label.form-check-label[for="remember_me"] {
+    color: #0b0809;
+    font-weight: 500;
+    font-size: 14px;
+}
+body.authentication-bg .footer {
+    padding: 15px !important;
+    margin: 0 !important;
+}
+body.authentication-bg {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    flex-direction: column;
+}
+html, body{height: 100%}
+.account-pages, .account-pages .container {
+    height: 100%;
+}
+.authentication-box {
+    max-width: 370px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    margin: auto;
+}
+.configuration-card .nav-tabs span.badge, .card .nav-tabs .nav-item .ti {
+    display: none;
+}
+.configuration-card ul.nav.nav-tabs.custom-tab-design {
+    display: flex;
+    justify-content: center;
+}
+.configuration-card{box-shadow: none;}
+.configuration-card .nav-tabs .nav-link {
+    color: #27314B;
+    font-size: 14px;
+    font-weight: 400;
+}
+.configuration-card .nav-tabs .nav-link.active {
+    color: #111B37;
+    font-weight: 500;
+}
+.configuration-card .nav-tabs.nav-bordered .nav-item .nav-link.active {
+    border-bottom: 1px solid #111B37;
+}
+.configuration-card .nav-tabs .tab-content .tab-pane p {
+    color: #27314B;
+    font-size: 14px;
+    line-height: 22px;
+}
+.configuration-card .card-header h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111B37;
+    line-height: 16px;
+}
 /*# sourceMappingURL=app.min.css.map */
  
 
