@@ -28,8 +28,7 @@
 
     <div class="account-pages pt-2 pt-sm-5 pb-4 pb-sm-5 position-relative">
         <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-xxl-4 col-lg-5">
+                <div class="authentication-box">
                     <div class="card overflow-hidden">
                         <div class="card-body p-4">
                             <!-- Logo -->
@@ -47,9 +46,7 @@
 
                     @yield('extra-content')
 
-                </div> <!-- end col -->
-            </div>
-            <!-- end row -->
+                </div> 
         </div>
         <!-- end container -->
     </div>
