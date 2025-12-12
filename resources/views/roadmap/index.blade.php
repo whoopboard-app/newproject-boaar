@@ -163,29 +163,36 @@
 
 @section('content')
 <div class="row">
-    <div class="col-12">
-        <div class="page-title-box d-flex align-items-center justify-content-between">
-            <div>
-                <h2 class="mb-0">Roadmap Statuses</h2>
-                <p class="text-muted fs-14 mb-0">Manage your roadmap status workflow</p>
-            </div>
-            <a href="{{ route('settings.index') }}" class="btn btn-secondary">
-                <i class="ti ti-arrow-left me-1"></i> Back to Settings
+    <div class="col-lg-12">
+        <div class="card top-area">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ti ti-list me-2"></i>Roadmap Statuses
+                    <p class="text-muted fs-14 mb-0">Manage your roadmap status workflow</p>
+                </h5>
+                <div class="d-flex justify-content-between align-items-center">
+                <a href="{{ route('settings.index') }}" class="btn btn-secondary me-1">
+                    <i class="ti ti-arrow-left me-1"></i>Back to Listing
+                </a>
+                 <a href="{{ route('settings.index') }}" onclick="openWorkflowSelector()" class="btn btn-primary">
+                <i class="ti ti-plus me-1"></i> Add Workflow
             </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <div class="row">
     <div class="col-lg-12">
-        <div class="card">
+        <div class="card roadmap-status-card">
             <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-4">
+                <!-- <div class="d-flex justify-content-between align-items-center mb-4">
                     <h5 class="card-title mb-0">Workflow Management</h5>
                     <button type="button" class="btn btn-primary" onclick="openWorkflowSelector()">
                         <i class="ti ti-plus me-1"></i> Add Workflow
                     </button>
-                </div>
+                </div> -->
 
                 @if(session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -196,15 +203,18 @@
 
                 <!-- Roadmap Workflow Section -->
                 <div class="workflow-section mb-5">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="mb-0"><i class="ti ti-route me-2"></i>Roadmap Workflow</h6>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0 p-3">Roadmap Workflow</h6>
                         @if($roadmapWorkflowStatuses->count() > 0)
-                            <div class="d-flex gap-2">
-                                <button type="button" class="btn btn-sm btn-info" onclick="openReorderModal('roadmap workflow')">
-                                    <i class="ti ti-arrows-sort me-1"></i> Reorder
+                            <div class="d-flex gap-2 p-3">
+                                
+                                <button type="button" class="btn btn-sm btn-dark" onclick="editWorkflow('roadmap workflow')">
+                                    <!-- <i class="ti ti-edit me-1"></i> -->
+                                    Edit Workflow
                                 </button>
-                                <button type="button" class="btn btn-sm btn-primary" onclick="editWorkflow('roadmap workflow')">
-                                    <i class="ti ti-edit me-1"></i> Edit Statuses
+                                <button type="button" class="btn btn-sm btn-secondary" onclick="openReorderModal('roadmap workflow')">
+                                    <!-- <i class="ti ti-arrows-sort me-1"></i> -->
+                                     Reorder
                                 </button>
                             </div>
                         @endif
@@ -214,7 +224,6 @@
                         <table class="table table-hover align-middle">
                             <thead>
                                 <tr>
-                                    <th style="width: 50px;">#</th>
                                     <th>Status Name</th>
                                     <th style="width: 150px;">Color</th>
                                     <th style="width: 120px;">Status</th>
@@ -223,7 +232,6 @@
                             <tbody id="roadmap-workflow-list">
                                 @forelse($roadmapWorkflowStatuses as $index => $status)
                                     <tr data-id="{{ $status->id }}" data-name="{{ $status->name }}" data-workflow="roadmap workflow">
-                                        <td>{{ $index + 1 }}</td>
                                         <td><strong>{{ $status->name }}</strong></td>
                                         <td>
                                             <span class="badge" style="background-color: {{ $status->color }}; color: white; padding: 8px 16px;">
@@ -252,16 +260,19 @@
 
                 <!-- Feedback Workflow Section -->
                 <div class="workflow-section">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="mb-0"><i class="ti ti-message-2 me-2"></i>Feedback Workflow</h6>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0 p-3"><i class="ti ti-message-2 me-2"></i>Feedback Workflow</h6>
                         @if($feedbackWorkflowStatuses->count() > 0)
-                            <div class="d-flex gap-2">
-                                <button type="button" class="btn btn-sm btn-info" onclick="openReorderModal('feedback workflow')">
-                                    <i class="ti ti-arrows-sort me-1"></i> Reorder
+                            <div class="d-flex gap-2 p-3">
+                                <button type="button" class="btn btn-sm btn-dark" onclick="editWorkflow('feedback workflow')">
+                                    <!-- <i class="ti ti-edit me-1"></i>  -->
+                                    Edit Workflow
                                 </button>
-                                <button type="button" class="btn btn-sm btn-primary" onclick="editWorkflow('feedback workflow')">
-                                    <i class="ti ti-edit me-1"></i> Edit Statuses
+                                <button type="button" class="btn btn-sm btn-secondary" onclick="openReorderModal('feedback workflow')">
+                                    <!-- <i class="ti ti-arrows-sort me-1"></i>  -->
+                                    Reorder
                                 </button>
+                                
                             </div>
                         @endif
                     </div>
@@ -270,7 +281,6 @@
                         <table class="table table-hover align-middle">
                             <thead>
                                 <tr>
-                                    <th style="width: 50px;">#</th>
                                     <th>Status Name</th>
                                     <th style="width: 150px;">Color</th>
                                     <th style="width: 120px;">Status</th>
@@ -279,7 +289,6 @@
                             <tbody id="feedback-workflow-list">
                                 @forelse($feedbackWorkflowStatuses as $index => $status)
                                     <tr data-id="{{ $status->id }}" data-name="{{ $status->name }}" data-workflow="feedback workflow">
-                                        <td>{{ $index + 1 }}</td>
                                         <td><strong>{{ $status->name }}</strong></td>
                                         <td>
                                             <span class="badge" style="background-color: {{ $status->color }}; color: white; padding: 8px 16px;">

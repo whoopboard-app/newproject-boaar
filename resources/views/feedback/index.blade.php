@@ -17,26 +17,6 @@
 @endpush
 
 @section('content')
-<div class="row">
-    <div class="col-12">
-        <div class="page-title-box d-flex justify-content-between align-items-center">
-            <div>
-                <h4 class="page-title">Feedback Management</h4>
-                <p class="text-muted fs-14 mb-0">Manage user feedback and ideas</p>
-            </div>
-            <div class="d-flex gap-2">
-                @if(Auth::user()->canManageFeedback())
-                <a href="{{ route('feedback.kanban') }}" class="btn btn-info" target="_blank">
-                    <i class="ti ti-layout-kanban me-1"></i>View Feedback in Kanboard
-                </a>
-                <a href="{{ route('feedback.create') }}" class="btn btn-primary">
-                    <i class="ti ti-plus me-1"></i>Add New Feedback
-                </a>
-                @endif
-            </div>
-        </div>
-    </div>
-</div>
 
 @if(Auth::user()->isReadOnly())
     <div class="alert alert-info alert-dismissible fade show" role="alert">
@@ -58,7 +38,28 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 @endif
-
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card top-area">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ti ti-list me-2"></i>Feedback Management
+                    <p class="text-muted fs-14 mb-0">Manage user feedback and ideas</p>
+                </h5>
+                <div class="d-flex justify-content-between align-items-center">
+                    @if(Auth::user()->canManageFeedback())
+                    <a href="{{ route('feedback.kanban') }}" class="btn btn-secondary me-1">
+                        Back to Listing
+                    </a>
+                    <a href="{{ route('feedback.create') }}" class="btn btn-primary">
+                    Add New Feedback
+                </a>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="row">
     <div class="col-12">
         <div class="card">
@@ -188,12 +189,12 @@
                     </div>
                 @else
                     <div class="text-center py-5">
-                        <i class="ti ti-message-off fs-1 text-muted mb-3"></i>
+                        <img src="{{asset('assets/images/Concord.png')}}" />
                         <h5 class="text-muted">No Feedback Found</h5>
                         @if(Auth::user()->canManageFeedback())
                         <p class="text-muted mb-4">Start by adding your first feedback idea!</p>
                         <a href="{{ route('feedback.create') }}" class="btn btn-primary">
-                            <i class="ti ti-plus me-1"></i>Add New Feedback
+                            Add New Feedback
                         </a>
                         @else
                         <p class="text-muted mb-4">There are no feedback entries to display.</p>

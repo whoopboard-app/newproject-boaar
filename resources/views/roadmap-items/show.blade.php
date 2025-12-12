@@ -3,28 +3,31 @@
 @section('title', 'View Roadmap Item')
 
 @section('content')
+
 <div class="row">
-    <div class="col-12">
-        <div class="page-title-box d-flex align-items-center justify-content-between">
-            <div>
-                <h2 class="mb-0">Roadmap Item Details</h2>
-                <p class="text-muted fs-14 mb-0">View roadmap item details and comments</p>
-            </div>
-            <div class="d-flex gap-2">
-                <a href="{{ route('roadmap-items.index') }}" class="btn btn-secondary">
-                    <i class="ti ti-arrow-left me-1"></i> Back to List
-                </a>
-                <a href="{{ route('roadmap-items.kanban') }}" class="btn btn-info">
-                    <i class="ti ti-layout-kanban me-1"></i> Kanban View
-                </a>
-                <a href="{{ route('roadmap-items.edit', $roadmapItem) }}" class="btn btn-warning">
-                    <i class="ti ti-edit me-1"></i> Edit
-                </a>
+    <div class="col-lg-12">
+        <div class="card top-area">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ti ti-list me-2"></i>Roadmap Item Details
+                    <p class="text-muted fs-14 mb-0">View roadmap item details and comments</p>
+                </h5>
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="{{ route('roadmap-items.index') }}" class="btn btn-secondary me-1">
+                        <i class="ti ti-arrow-left me-1"></i> Back to List
+                    </a>  
+                    <a href="{{ route('roadmap-items.kanban') }}" class="btn btn-primary me-1">
+                        <i class="ti ti-arrow-left me-1"></i> Kanban View
+                    </a> 
+                    
+                    <a href="{{ route('roadmap-items.edit', $roadmapItem) }}" class="btn btn-warning me-1">
+                        <i class="ti ti-edit me-1"></i> Edit
+                    </a> 
+                </div>
             </div>
         </div>
     </div>
 </div>
-
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         <i class="ti ti-circle-check me-2"></i>{{ session('success') }}
