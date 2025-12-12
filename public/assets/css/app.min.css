@@ -16830,6 +16830,9 @@ p.sub-title-txt {
     font-size: 14px;
     font-weight: 500;
 }
+p.sub-title-txt a {
+    color: #1b1718;
+}
 form.login-form {
     margin-top: 40px;
 }
@@ -16876,6 +16879,18 @@ html, body{height: 100%}
     align-items: center;
     height: 100%;
     margin: auto;
+}
+.authentication-box .card {
+    width: 100%;
+}
+.account-pages .login-form .form-label {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+a.frgt-pwd-text {
+    color: #2b7fff;
+    font-weight: 500;
 }
 .configuration-card .nav-tabs span.badge, .card .nav-tabs .nav-item .ti {
     display: none;
