@@ -3,9 +3,9 @@
 @section('title', 'Login')
 
 @section('content')
-<h4 class="text-dark fs-18 text-center mb-1" style="color: #0b0809 !important;`">Sign In</h4>
+<h4 class="text-dark fs-18 text-center mb-1" style="color: #0b0809 !important;`">Sign in</h4>
 <div class="col-12 text-center">
-    <p class="sub-title-txt">Don't have an account? <a href="{{ route('register') }}" class="text-primary fw-semibold ms-1">Create new account</a></p>
+    <p class="sub-title-txt">Need an account? <a href="{{ route('register') }}" class="ms-1">Sign up</a></p>
 </div>
 <!-- Session Status -->
 @if (session('status'))
@@ -20,7 +20,7 @@
 
     <!-- Email Address -->
     <div class="mb-3">
-        <label for="email" class="form-label">Email Address</label>
+        <label for="email" class="form-label">Email</label>
         <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username" placeholder="Enter your email">
         @error('email')
             <div class="invalid-feedback">
@@ -33,7 +33,7 @@
     <div class="mb-3">
         <label for="password" class="form-label">Password
             @if (Route::has('password.request'))
-            <a href="{{ route('password.request') }}" class="text-muted">Forgot password?
+            <a href="{{ route('password.request') }}" class="frgt-pwd-text">Forgot password?
             </a>
     @endif
         </label>
@@ -63,10 +63,19 @@
     
 </form>
 @endsection
-@section('extra-content')
-<style>
-    .auth-logo {
-        display: none !important;
-    } 
-    </style>
-@endsection
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        $('.view-pwd-icon').click(function() {
+            var input = $(this).parent().find('input');
+            if (input.attr('type') === 'password') {
+                input.attr('type', 'text');
+                $(this).find('i').removeClass('ti-eye').addClass('ti-eye-off');
+            } else {
+                input.attr('type', 'password');
+                $(this).find('i').removeClass('ti-eye-off').addClass('ti-eye');
+            }
+        });
+    });
+</script>
+@endpush

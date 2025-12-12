@@ -21,6 +21,18 @@
 
     <!-- Icons css -->
     <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css">
+    <style>
+        .authentication-bg {
+            background-image: url('./assets/images/logo-new.png');
+            background-size: cover;
+            background-position: center;
+        } 
+        body.authentication-bg .footer {
+            padding: 15px !important;
+            margin: 0 !important;
+            background: no-repeat;
+        }
+    </style>
 
     @stack('styles')
 </head>
@@ -31,14 +43,7 @@
                 <div class="authentication-box">
                     <div class="card overflow-hidden">
                         <div class="card-body p-4">
-                            <!-- Logo -->
-                            <div class="text-center mb-4">
-                                <a href="/" class="d-inline-block auth-logo">
-                                    <img src="{{ asset('assets/images/logo.png') }}" alt="logo" height="28">
-                                </a>
-                            </div>
-
-                            @yield('content')
+                                                        @yield('content')
 
                         </div> <!-- end card-body -->
                     </div>
