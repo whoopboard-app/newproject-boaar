@@ -14,7 +14,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     @if(Auth::user()->canAccessAppSettings())
                     <a href="{{ route('settings.index') }}" class="btn btn-secondary me-1">
-                        Back to Listing
+                        Back to Settings
                     </a>
                     @endif
                 </div>

@@ -404,7 +404,7 @@
                 </h5>
                 <div class="d-flex justify-content-between align-items-center">
                 <a href="{{ route('settings.index') }}" class="btn btn-secondary me-1">
-                    <i class="ti ti-arrow-left me-1"></i>Back to Listing
+                    <i class="ti ti-arrow-left me-1"></i>Back to Settings
                 </a>
                  <a href="{{ route('settings.index') }}" onclick="openWorkflowSelector()" class="btn btn-primary">
                 <i class="ti ti-plus me-1"></i> Add Workflow
@@ -439,7 +439,7 @@
                         <h6 class="mb-0 p-3">Roadmap Workflow</h6>
                         @if($roadmapWorkflowStatuses->count() > 0)
                             <div class="d-flex gap-2 p-3">
-                                
+
                                 <button type="button" class="btn btn-sm btn-dark" onclick="editWorkflow('roadmap workflow')">
                                     <!-- <i class="ti ti-edit me-1"></i> -->
                                     Edit Workflow
@@ -504,7 +504,7 @@
                                     <!-- <i class="ti ti-arrows-sort me-1"></i>  -->
                                     Reorder
                                 </button>
-                                
+
                             </div>
                         @endif
                     </div>
