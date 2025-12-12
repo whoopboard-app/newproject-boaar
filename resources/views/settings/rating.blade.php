@@ -4,19 +4,22 @@
 
 @section('content')
 <div class="row">
-    <div class="col-12">
-        <div class="page-title-box d-flex align-items-center justify-content-between">
-            <div>
-                <h2 class="mb-0">Rating Settings</h2>
-                <p class="text-muted fs-14 mb-0">Configure how users can rate your articles and content</p>
+    <div class="col-lg-12">
+        <div class="card top-area">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ti ti-list me-2"></i>Rating Settings
+                    <p class="text-muted fs-14 mb-0">Configure how users can rate your articles and content</p>
+                </h5>
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="{{ route('settings.index') }}" class="btn btn-secondary">
+                        <i class="ti ti-arrow-left me-1"></i> Back to Settings
+                    </a>                    
+                </div>
             </div>
-            <a href="{{ route('settings.index') }}" class="btn btn-secondary">
-                <i class="ti ti-arrow-left me-1"></i> Back to Settings
-            </a>
         </div>
     </div>
 </div>
-
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         <i class="ti ti-circle-check me-2"></i>{{ session('success') }}

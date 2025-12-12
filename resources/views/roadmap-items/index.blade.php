@@ -4,19 +4,21 @@
 
 @section('content')
 <div class="row">
-    <div class="col-12">
-        <div class="page-title-box d-flex align-items-center justify-content-between">
-            <div>
-                <h2 class="mb-0">Roadmap Items</h2>
-                <p class="text-muted fs-14 mb-0">Manage your roadmap items</p>
-            </div>
-            <div class="d-flex gap-2">
-                <a href="{{ route('roadmap-items.kanban') }}" class="btn btn-info">
-                    <i class="ti ti-layout-kanban me-1"></i> Kanban View
-                </a>
-                <a href="{{ route('roadmap-items.create') }}" class="btn btn-primary">
-                    <i class="ti ti-plus me-1"></i> Add Roadmap Item
-                </a>
+    <div class="col-lg-12">
+        <div class="card top-area">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ti ti-list me-2"></i>Roadmap Items
+                    <p class="text-muted fs-14 mb-0">Manage your roadmap items</p>
+                </h5>
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="{{ route('roadmap-items.kanban') }}" class="btn btn-secondary me-1">
+                        <i class="ti ti-arrow-left me-1"></i> Back to Listing
+                    </a>      
+                    <a href="{{ route('roadmap-items.create') }}" class="btn btn-primary">
+                        <i class="ti ti-arrow-left me-1"></i> Add Roadmap Item
+                    </a>              
+                </div>
             </div>
         </div>
     </div>

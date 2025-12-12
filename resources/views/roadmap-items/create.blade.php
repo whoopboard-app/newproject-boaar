@@ -9,19 +9,22 @@
 
 @section('content')
 <div class="row">
-    <div class="col-12">
-        <div class="page-title-box d-flex align-items-center justify-content-between">
-            <div>
-                <h2 class="mb-0">{{ isset($roadmapItem) ? 'Edit Roadmap Item' : 'Create Roadmap Item' }}</h2>
-                <p class="text-muted fs-14 mb-0">{{ isset($roadmapItem) ? 'Update' : 'Add new' }} roadmap item details</p>
+    <div class="col-lg-12">
+        <div class="card top-area">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ti ti-list me-2"></i>{{ isset($roadmapItem) ? 'Edit Roadmap Item' : 'Create Roadmap Item' }}
+                    <p class="text-muted fs-14 mb-0">{{ isset($roadmapItem) ? 'Update' : 'Add new' }} roadmap item details</p>
+                </h5>
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="{{ route('roadmap-items.index') }}" class="btn btn-secondary me-1">
+                        <i class="ti ti-arrow-left me-1"></i> Back to Listing
+                    </a>            
+                </div>
             </div>
-            <a href="{{ route('roadmap-items.index') }}" class="btn btn-secondary">
-                <i class="ti ti-arrow-left me-1"></i> Back to List
-            </a>
         </div>
     </div>
 </div>
-
 <div class="row">
     <div class="col-lg-8 mx-auto">
         <div class="card">

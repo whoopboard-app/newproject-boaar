@@ -16923,6 +16923,52 @@ a.frgt-pwd-text {
     color: #111B37;
     line-height: 16px;
 }
+.add-c-btn.btn.btn-primary{
+    padding: 9px 10px;
+}
+.roadmap-status-card .workflow-section{
+box-shadow: rgb(237, 237, 237) 0px 2px 2px 0px;
+border: 1px solid #e7e9eb;
+border-radius: 8px;
+}
+.workflow-section table.table {
+    border-top: 1px solid #e7e9eb;
+    margin: 0;
+}
+.workflow-section table.table td + td, .workflow-section table.table th + th {
+    border-left: 1px solid #e7e9eb;
+}
+.workflow-section table.table th{
+    background: #F9F9F9;color: #4B5675;
+    font-size: 13px;
+    line-height: 14px;
+    font-weight: 400;
+}
+.workflow-section table.table td:first-child {
+    font-weight: 500 !important;
+    font-size: 14px;
+    color: #111B37;
+    line-height: 14px;
+}
+.workflow-section table.table td span.badge {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 4px 5px !important;
+}
+.workflow-section h6 {
+    color: #111B37;
+    font-size: 16px;
+    line-height: 16px;
+    font-weight: 600;
+}
+.roadmap-status-card .card-body {
+    padding: 0;
+}
+
+.roadmap-status-card.card {
+    box-shadow: none;
+    border: 0 none;
+}
 /*# sourceMappingURL=app.min.css.map */
  
 
