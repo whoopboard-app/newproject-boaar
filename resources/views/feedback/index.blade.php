@@ -4,6 +4,28 @@
 
 @push('styles')
 <style>
+    table#feedbackTable tr {
+        border-radius: 10px !important;
+        border-bottom-width: 0 !important;
+    }
+    table {
+        border-collapse: separate;
+    }
+    table#feedbackTable td:nth-child(1) {
+        width: 80%;
+    }
+
+    table#feedbackTable td:nth-child(2) {
+        width: 20%;
+    }
+
+    .changelog-cover {
+        width: 60px;
+        height: 34px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+
     .tag-badge {
         display: inline-block;
         padding: 2px 8px;
@@ -15,7 +37,6 @@
     }
 </style>
 @endpush
-
 @section('content')
 
 @if(Auth::user()->isReadOnly())
@@ -84,78 +105,39 @@
                     <!-- Table -->
                     <div class="table-responsive">
                         <table class="table table-hover table-striped align-middle" id="feedbackTable">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Idea</th>
-                                    <th>Submitter</th>
-                                    <th>Category</th>
-                                    <th>Status</th>
-                                    <th>Visibility</th>
-                                    <th>Source</th>
-                                    <th>Tags</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
                             <tbody>
                                 @foreach($feedbacks as $feedback)
                                     <tr>
-                                        <td>{{ $feedback->id }}</td>
-                                        <td>
-                                            <div>
-                                                <h6 class="mb-1">{{ \Illuminate\Support\Str::limit($feedback->idea, 50) }}</h6>
-                                                @if($feedback->value_description)
-                                                    <small class="text-muted">{{ Str::limit($feedback->value_description, 60) }}</small>
-                                                @endif
-                                            </div>
-                                        </td>
                                         <td>
                                             <div>
                                                 <strong>{{ $feedback->name }}</strong>
-                                                <br>
-                                                <small class="text-muted">{{ $feedback->email }}</small>
+                                                
                                             </div>
-                                        </td>
-                                        <td>
-                                            @if($feedback->category)
-                                                <span class="badge" style="background-color: {{ $feedback->category->color }};">
+                                             <div class="spacer">
+                                        <span class="span-tags">Feedback Email :</span> <span class="tag-value">{{ $feedback->email }}</span>
+                                    </div>  
+                                            <div class="spacer">
+                                                 <span class="span-tags">Visibility :</span>
+                                                @if($feedback->is_public)
+                                                 <span class="badge bg-success alt-primary-success">Public</span>
+                                            @else
+                                                <span class="badge bg-secondary">Private</span>
+                                            @endif
+                                    </div>
+                                            <div class="spacer">
+                                        <span class="span-tags">Category :</span> <span class="tag-value">@if($feedback->category)
+                                                <span class="tag-value">
                                                     {{ $feedback->category->name }}
                                                 </span>
                                             @else
                                                 <span class="text-muted">-</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($feedback->roadmap)
-                                                <span class="badge" style="background-color: {{ $feedback->roadmap->color }};">
-                                                    {{ $feedback->roadmap->name }}
-                                                </span>
-                                            @else
-                                                <span class="text-muted">-</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($feedback->is_public)
-                                                <span class="badge bg-success">Public</span>
-                                            @else
-                                                <span class="badge bg-secondary">Private</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <small class="badge bg-info">{{ $feedback->source }}</small>
-                                        </td>
-                                        <td>
-                                            @if($feedback->tags && count($feedback->tags) > 0)
-                                                @foreach(array_slice($feedback->tags, 0, 2) as $tag)
-                                                    <span class="tag-badge">{{ $tag }}</span>
-                                                @endforeach
-                                                @if(count($feedback->tags) > 2)
-                                                    <span class="tag-badge">+{{ count($feedback->tags) - 2 }}</span>
-                                                @endif
-                                            @else
-                                                <span class="text-muted">-</span>
-                                            @endif
-                                        </td>
+                                            @endif </span>
+                                    </div>
+                                          <div class="spacer">
+                                        <span class="span-tags">Source :</span> <span class="tag-value">{{ $feedback->source }} </span>
+                                    </div>  
+                                       
+</td>
                                         <td>
                                             <div class="btn-group" role="group">
                                                 <a href="{{ route('feedback.show', $feedback) }}" class="btn btn-sm btn-soft-info" title="View">

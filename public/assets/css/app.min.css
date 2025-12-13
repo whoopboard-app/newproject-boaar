@@ -16776,26 +16776,39 @@ body .choices__list--multiple .choices__item button.choices__button {
     font-weight: 400;
     margin-top: 5px;
 }
-#changelogTable tr {
+#changelogTable tr,
+#feedbackTable tr
+ {
     background: transparent !important;
     border: 1px solid #f1f1f1;
     display: table;
     width: 100%;
     margin-bottom: 10px;
 }
-#changelogTable>tbody>tr:nth-of-type(odd)>* {
+#changelogTable>tbody>tr:nth-of-type(odd)>* ,
+#feedbackTable>tbody>tr:nth-of-type(odd)>* 
+{
     --ins-table-bg-type: transparent;
 }
-#changelogTable .btn-group a, #changelogTable .btn-group .btn-soft-danger {
+#changelogTable .btn-group a,
+ #changelogTable .btn-group .btn-soft-danger,
+#feedbackTable .btn-group a,
+#feedbackTable .btn-group .btn-soft-danger
+  {
     background: none !important;
     border: 0 none;
     color: #78829D;
     font-size: 16px;
 }
-#changelogTable .btn-group a:hover, #changelogTable .btn-group .btn-soft-danger:hover {
+#changelogTable .btn-group a:hover, 
+#changelogTable .btn-group .btn-soft-danger:hover,
+#feedbackTable .btn-group a:hover, 
+#feedbackTable .btn-group .btn-soft-danger:hover
+{
     color: rgbaoklch(62.3% 0.214 259.815);
 }
-#changelogTable tr h6 {
+#changelogTable tr h6 ,
+#feedbackTable tr h6{
     font-size: 16px;
     color: #000;
     line-height: 22px;

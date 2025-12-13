@@ -3,6 +3,41 @@
 @section('title', 'Team Management')
 
 @section('content')
+@push('styles')
+<style>
+#teamTable tr
+ {
+    background: transparent !important;
+    border: 1px solid #f1f1f1;
+    display: table;
+    width: 100%;
+    margin-bottom: 10px;
+}
+#teamTable>tbody>tr:nth-of-type(odd)>* 
+{
+    --ins-table-bg-type: transparent;
+}
+#teamTable .btn-group a,
+ #teamTable .btn-group .btn-soft-danger
+  {
+    background: none !important;
+    border: 0 none;
+    color: #78829D;
+    font-size: 16px;
+}
+#teamTable .btn-group a:hover, 
+#teamTable .btn-group .btn-soft-danger:hover
+{
+    color: rgbaoklch(62.3% 0.214 259.815);
+}
+#teamTable tr h6{
+    font-size: 16px;
+    color: #000;
+    line-height: 22px;
+    font-weight: 500;
+}
+</style>
+@endpush
 <div class="row">
     <div class="col-lg-12">
         <div class="card top-area">
@@ -106,16 +141,7 @@
             <div class="card-body">
                 @if($members->count() > 0)
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Role</th>
-                                    <th>Joined</th>
-                                    <th class="text-end" style="width: 150px;">Actions</th>
-                                </tr>
-                            </thead>
+                        <table id="teamTable" class="table table-hover align-middle mb-0">
                             <tbody>
                                 @foreach($members as $member)
                                     <tr>
@@ -130,9 +156,11 @@
                                                     <span class="badge bg-warning ms-2">Owner</span>
                                                 @endif
                                             </div>
-                                        </td>
-                                        <td>{{ $member->email }}</td>
-                                        <td>
+                                        <div class="spacer">
+                                            <span class="span-tags">Email :</span> <span class="tag-value">{{ $member->email }} </span>
+                                        </div>   
+                                         <div class="spacer">
+                                            <span class="span-tags">Role :</span>
                                             @if($team->isOwner($member))
                                                 <span class="badge bg-warning">Owner</span>
                                             @else
@@ -149,8 +177,11 @@
                                                     </select>
                                                 </form>
                                             @endif
+                                        </div>
+                                        <div class="spacer">
+                                            <span class="span-tags">Joined :</span> <span class="tag-value">{{ $member->pivot->created_at->format('M j, Y') }}</span>
+                                        </div> 
                                         </td>
-                                        <td>{{ $member->pivot->created_at->format('M j, Y') }}</td>
                                         <td class="text-end">
                                             @if(!$team->isOwner($member) && $member->id !== Auth::id())
                                                 @if(Auth::user()->roleInTeam() === 'owner' || Auth::user()->roleInTeam() === 'admin')
