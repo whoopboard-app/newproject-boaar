@@ -8,15 +8,16 @@
     /* Match Choices.js height and styling with Bootstrap form-control */
     .choices__inner {
         min-height: 39.51px !important;
-        height: 39.51px !important;
+        height: 35.6px !important;
         padding: 0.375rem 0.75rem !important;
         background-color: #fff !important;
         border: 1px solid #dee2e6 !important;
         border-radius: 0.25rem !important;
-        font-size: 1rem !important;
+        font-size: .813rem !important;
         line-height: 1.5 !important;
         display: flex !important;
         align-items: center !important;
+        color: #4c4c5c !important;
     }
 .choices {
     margin-bottom: 0px;

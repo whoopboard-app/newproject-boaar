@@ -91,6 +91,9 @@
     .color-picker-wrapper {
         position: relative;
     }
+    .h-55 {
+        height: 55px;
+    }
 
     .color-picker-label {
         display: block;
@@ -435,7 +438,7 @@
 
                 <!-- Roadmap Workflow Section -->
                 <div class="workflow-section mb-5">
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex h-55 justify-content-between align-items-center">
                         <h6 class="mb-0 p-3">Roadmap Workflow</h6>
                         @if($roadmapWorkflowStatuses->count() > 0)
                             <div class="d-flex gap-2 p-3">
@@ -492,7 +495,7 @@
 
                 <!-- Feedback Workflow Section -->
                 <div class="workflow-section">
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-between align-items-center h-55">
                         <h6 class="mb-0 p-3"><i class="ti ti-message-2 me-2"></i>Feedback Workflow</h6>
                         @if($feedbackWorkflowStatuses->count() > 0)
                             <div class="d-flex gap-2 p-3">
