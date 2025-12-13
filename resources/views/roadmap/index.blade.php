@@ -406,9 +406,15 @@
                 <a href="{{ route('settings.index') }}" class="btn btn-secondary me-1">
                     <i class="ti ti-arrow-left me-1"></i>Back to Settings
                 </a>
-                 <a href="{{ route('settings.index') }}" onclick="openWorkflowSelector()" class="btn btn-primary">
-                <i class="ti ti-plus me-1"></i> Add Workflow
-            </a>
+                @if($roadmapWorkflowStatuses->count() == 0 || $feedbackWorkflowStatuses->count() == 0)
+                    <button type="button" onclick="openWorkflowSelector()" class="btn btn-primary">
+                        <i class="ti ti-plus me-1"></i> Add Workflow
+                    </button>
+                @else
+                    <button type="button" class="btn btn-primary" disabled title="Both workflows have been created">
+                        <i class="ti ti-plus me-1"></i> Add Workflow
+                    </button>
+                @endif
                 </div>
             </div>
         </div>
@@ -439,13 +445,13 @@
                         <h6 class="mb-0 p-3">Roadmap Workflow</h6>
                         @if($roadmapWorkflowStatuses->count() > 0)
                             <div class="d-flex gap-2 p-3">
-
                                 <button type="button" class="btn btn-sm btn-dark" onclick="editWorkflow('roadmap workflow')">
-                                    <!-- <i class="ti ti-edit me-1"></i> -->
                                     Edit Workflow
                                 </button>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteWorkflow('roadmap workflow')">
+                                    Delete
+                                </button>
                                 <button type="button" class="btn btn-sm btn-secondary" onclick="openReorderModal('roadmap workflow')">
-                                    <!-- <i class="ti ti-arrows-sort me-1"></i> -->
                                      Reorder
                                 </button>
                             </div>
@@ -497,14 +503,14 @@
                         @if($feedbackWorkflowStatuses->count() > 0)
                             <div class="d-flex gap-2 p-3">
                                 <button type="button" class="btn btn-sm btn-dark" onclick="editWorkflow('feedback workflow')">
-                                    <!-- <i class="ti ti-edit me-1"></i>  -->
                                     Edit Workflow
                                 </button>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteWorkflow('feedback workflow')">
+                                    Delete
+                                </button>
                                 <button type="button" class="btn btn-sm btn-secondary" onclick="openReorderModal('feedback workflow')">
-                                    <!-- <i class="ti ti-arrows-sort me-1"></i>  -->
                                     Reorder
                                 </button>
-
                             </div>
                         @endif
                     </div>
@@ -1133,6 +1139,39 @@ function deleteStatus(id) {
     .catch(error => {
         console.error('Error:', error);
         alert('Failed to delete status');
+    });
+}
+
+// Delete entire workflow
+function deleteWorkflow(workflowType) {
+    const workflowName = workflowType === 'roadmap workflow' ? 'Roadmap Workflow' : 'Feedback Workflow';
+
+    confirmDelete({
+        title: 'Delete ' + workflowName,
+        message: `Are you sure you want to delete the entire "${workflowName}"? This will remove all statuses in this workflow. This action cannot be undone.`,
+        confirmText: 'Delete Workflow',
+        onConfirm: function() {
+            fetch('/roadmaps/workflow', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ workflow_type: workflowType })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Failed to delete workflow: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to delete workflow');
+            });
+        }
     });
 }
 </script>

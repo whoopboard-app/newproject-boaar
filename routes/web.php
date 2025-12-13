@@ -168,10 +168,11 @@ Route::middleware('auth')->group(function () {
     // Roadmap Management
     Route::get('/roadmaps', [RoadmapController::class, 'index'])->name('roadmap.index');
     Route::post('/roadmaps', [RoadmapController::class, 'store'])->name('roadmap.store');
-    Route::put('/roadmaps/{roadmap}', [RoadmapController::class, 'update'])->name('roadmap.update');
-    Route::delete('/roadmaps/{roadmap}', [RoadmapController::class, 'destroy'])->name('roadmap.destroy');
     Route::post('/roadmaps/reorder', [RoadmapController::class, 'reorder'])->name('roadmap.reorder');
     Route::post('/roadmaps/bulk-update', [RoadmapController::class, 'bulkUpdate'])->name('roadmap.bulkUpdate');
+    Route::delete('/roadmaps/workflow', [RoadmapController::class, 'destroyWorkflow'])->name('roadmap.destroyWorkflow');
+    Route::put('/roadmaps/{roadmap}', [RoadmapController::class, 'update'])->name('roadmap.update');
+    Route::delete('/roadmaps/{roadmap}', [RoadmapController::class, 'destroy'])->name('roadmap.destroy');
 
     // Feedback Category Management
     Route::get('/feedback-category', [FeedbackCategoryController::class, 'index'])->name('feedback-category.index');

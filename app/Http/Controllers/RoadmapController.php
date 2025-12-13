@@ -81,6 +81,24 @@ class RoadmapController extends Controller
     }
 
     /**
+     * Remove all statuses for a specific workflow type.
+     */
+    public function destroyWorkflow(Request $request)
+    {
+        $validated = $request->validate([
+            'workflow_type' => 'required|in:roadmap workflow,feedback workflow',
+        ]);
+
+        $deleted = Roadmap::where('workflow_type', $validated['workflow_type'])->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Workflow deleted successfully!',
+            'deleted_count' => $deleted,
+        ]);
+    }
+
+    /**
      * Update the sort order of statuses.
      */
     public function reorder(Request $request)

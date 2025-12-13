@@ -172,21 +172,4 @@
         </div>
     </div>
 </div>
-
-@if($knowledgeBoards->count() == 0)
-    <div class="card">
-        <div class="card-body text-center py-5">
-            <div class="avatar-lg mx-auto mb-3">
-                <span class="avatar-title rounded-circle bg-light">
-                    <i class="ti ti-book-off fs-1 text-muted"></i>
-                </span>
-            </div>
-            <h5 class="text-muted">No Knowledge Boards Found</h5>
-            <p class="text-muted mb-3">Create a Knowledge Board first to customize its theme.</p>
-            <a href="{{ route('knowledge-board.create') }}" class="btn btn-primary">
-                <i class="ti ti-plus me-1"></i>Create Knowledge Board
-            </a>
-        </div>
-    </div>
-@endif
 @endsection

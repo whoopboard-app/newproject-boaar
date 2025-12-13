@@ -26,6 +26,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'role',
         'avatar',
         'timezone',
+        'profile_image',
+        'about_me',
     ];
 
     /**
@@ -214,5 +216,17 @@ class User extends Authenticatable implements MustVerifyEmail
         // Generate avatar with initials
         $initials = strtoupper(substr($this->name, 0, 2));
         return "https://ui-avatars.com/api/?name=" . urlencode($this->name) . "&background=random";
+    }
+
+    /**
+     * Get profile image URL or generate initials avatar.
+     */
+    public function getProfileImageUrlAttribute()
+    {
+        if ($this->profile_image) {
+            return asset('storage/' . $this->profile_image);
+        }
+
+        return "https://ui-avatars.com/api/?name=" . urlencode($this->name) . "&background=6366f1&color=fff&size=128";
     }
 }
