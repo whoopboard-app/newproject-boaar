@@ -8,34 +8,55 @@
 <style>
     .choices__inner {
         min-height: 39.51px !important;
-        height: 39.51px !important;
         padding: 0.375rem 0.75rem !important;
         background-color: #fff !important;
-        border: 1px solid #dee2e6 !important;
+        border: 1px solid #B9B9B9 !important;
         border-radius: 0.25rem !important;
-        font-size: 1rem !important;
+        font-size: .813rem !important;
         line-height: 1.5 !important;
-        display: flex !important;
-        align-items: center !important;
+        color: #4c4c5c !important;
     }
+
 
     .choices__list--single {
-        padding: 0 !important;
-        display: flex !important;
-        align-items: center !important;
+        display: flex;
+        align-items: center;
+        padding: 0;
     }
 
-    .choices[data-type*=select-one] .choices__inner {
-        padding-bottom: 0.375rem !important;
-        padding-top: 0.375rem !important;
+    .choices__item {
+        padding: 0;
+        margin: 0;
     }
 
     .choices__list--dropdown .choices__item--selectable {
         padding: 0.5rem 1rem !important;
+        color: #333 !important;
+    }
+    .choices__list--multiple .choices__item {
+        border-radius: 3px !important;
+        margin-bottom: 7px;
+        padding-bottom: 0px;
     }
 
-    .choices__item--selectable {
-        line-height: 1.5 !important;
+    .tagify {
+        min-height: 39.51px !important;
+        padding: 0.375rem 0.75rem !important;
+        border: 1px solid #dee2e6 !important;
+        border-radius: 0.25rem !important;
+    }
+
+    .tagify__input {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .tagify__tag {
+        margin: 2px !important;
+    }
+
+    .filepond--root {
+        margin-bottom: 0;
     }
 </style>
 @endpush
@@ -43,15 +64,31 @@
 @section('content')
 <div class="row">
     <div class="col-lg-12">
+        <div class="card top-area">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ti ti-list me-2"></i>Feedback Management
+                    <p class="text-muted fs-14 mb-0">Add Feedback entries</p>
+                </h5>
+                <div class="d-flex justify-content-between align-items-center">
+                @if(Auth::user()->canManageFeedback())
+                    <a href="{{ Route::has('feedback.index') ? route('feedback.index') : '#' }}" class="btn btn-secondary me-1">
+                        Back to Listing
+                    </a>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
         <div class="card">
              <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0">
                     <i class="ti ti-list me-2"></i>{{ isset($feedback) ? 'Edit Feedback' : 'Add New Feedback' }}
                 </h5>
-                <!-- <p class="text-muted fs-14 mb-0">{{ isset($feedback) ? 'Update feedback details' : 'Submit a new feedback idea' }}</p> -->
-                <a href="{{ isset($feedback) ? route('feedback.show', $feedback) : route('feedback.index') }}" class="btn btn-secondary">
-                <i class="ti ti-arrow-left me-1"></i> Back
-            </a>
+
             </div>
             <div class="card-body">
                 <form method="POST" action="{{ isset($feedback) ? route('feedback.update', $feedback) : route('feedback.store') }}" enctype="multipart/form-data">
@@ -200,23 +237,12 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="is_public" class="form-label">Feedback Visibility to Public <span class="text-danger">*</span></label>
-                                <select class="form-select @error('is_public') is-invalid @enderror" id="is_public" name="is_public" data-choices required>
-                                    <option value="1" {{ old('is_public', isset($feedback) ? $feedback->is_public : '1') == '1' ? 'selected' : '' }}>Yes</option>
-                                    <option value="0" {{ old('is_public', isset($feedback) ? $feedback->is_public : '1') == '0' ? 'selected' : '' }}>No</option>
-                                </select>
-                                @error('is_public')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
+                       
                     </div>
 
                     <!-- Persona and Source in same row -->
                     <div class="row">
-                        <div class="col-md-6">
+                         <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="persona_id" class="form-label">Select Persona</label>
                                 <select class="form-select @error('persona_id') is-invalid @enderror" id="persona_id" name="persona_id" data-choices>
@@ -233,7 +259,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="source" class="form-label">Source of Idea <span class="text-danger">*</span></label>
                                 <select class="form-select @error('source') is-invalid @enderror" id="source" name="source" data-choices required>
@@ -245,6 +271,21 @@
                                     @endforeach
                                 </select>
                                 @error('source')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        
+                    
+<div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="is_public" class="form-label">Feedback Visibility to Public <span class="text-danger">*</span></label>
+                                <select class="form-select @error('is_public') is-invalid @enderror" id="is_public" name="is_public" data-choices required>
+                                    <option value="1" {{ old('is_public', isset($feedback) ? $feedback->is_public : '1') == '1' ? 'selected' : '' }}>Yes</option>
+                                    <option value="0" {{ old('is_public', isset($feedback) ? $feedback->is_public : '1') == '0' ? 'selected' : '' }}>No</option>
+                                </select>
+                                @error('is_public')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
