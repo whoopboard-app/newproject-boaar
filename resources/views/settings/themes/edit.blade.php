@@ -152,28 +152,36 @@
         background-color: #11939A;
         border-color: #11939A;
     }
+    .card .card-title .text-muted .ti {
+        display: block;
+    }
+    p.text-muted {
+        display: flex;
+    }
 </style>
 @endpush
 
 @section('content')
+
 <div class="row">
-    <div class="col-12">
-        <div class="page-title-box d-flex justify-content-between align-items-center">
-            <div>
-                <h4 class="page-title">{{ $isDefault ? 'Default Theme' : 'Custom Theme' }}</h4>
-                <p class="text-muted fs-14 mb-0">
-                    <a href="{{ route('settings.themes') }}" class="text-muted">Themes</a>
+    <div class="col-lg-12">
+        <div class="card top-area">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ti ti-list me-2"></i>{{ $isDefault ? 'Default Theme' : 'Custom Theme' }}
+                    <p class="text-muted fs-14 mb-0"> <a href="{{ route('settings.themes') }}" class="text-muted">Themes</a>
                     <i class="ti ti-chevron-right mx-1"></i>
-                    {{ $isDefault ? 'Default' : 'Custom' }}
-                </p>
-            </div>
-            <a href="{{ route('settings.themes') }}" class="btn btn-secondary">
+                    {{ $isDefault ? 'Default' : 'Custom' }}</p>
+                </h5>
+                <div class="d-flex justify-content-between align-items-center">
+                     <a href="{{ route('settings.themes') }}" class="btn btn-secondary">
                 <i class="ti ti-arrow-left me-1"></i>Back to Themes
             </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         <i class="ti ti-circle-check me-2"></i>{{ session('success') }}
@@ -547,6 +555,38 @@
     <!-- Preview Column -->
     <div class="col-lg-5">
         <div class="preview-container">
+             @if(!$isDefault)
+                <!-- Quick Actions -->
+                <div class="card">
+                    <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="ti ti-eye me-2"></i>Quick Color Presets
+                    </h5>
+                </div>
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap gap-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary preset-btn" data-header="#11939A" data-footer="#11939A" data-text="#FFFFFF">
+                                <span style="display: inline-block; width: 12px; height: 12px; background: #11939A; border-radius: 2px; margin-right: 5px;"></span>Teal
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary preset-btn" data-header="#3B82F6" data-footer="#3B82F6" data-text="#FFFFFF">
+                                <span style="display: inline-block; width: 12px; height: 12px; background: #3B82F6; border-radius: 2px; margin-right: 5px;"></span>Blue
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary preset-btn" data-header="#10B981" data-footer="#10B981" data-text="#FFFFFF">
+                                <span style="display: inline-block; width: 12px; height: 12px; background: #10B981; border-radius: 2px; margin-right: 5px;"></span>Green
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary preset-btn" data-header="#8B5CF6" data-footer="#8B5CF6" data-text="#FFFFFF">
+                                <span style="display: inline-block; width: 12px; height: 12px; background: #8B5CF6; border-radius: 2px; margin-right: 5px;"></span>Purple
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary preset-btn" data-header="#000000" data-footer="#000000" data-text="#FFFFFF">
+                                <span style="display: inline-block; width: 12px; height: 12px; background: #000000; border-radius: 2px; margin-right: 5px;"></span>Black
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary preset-btn" data-header="#EF4444" data-footer="#EF4444" data-text="#FFFFFF">
+                                <span style="display: inline-block; width: 12px; height: 12px; background: #EF4444; border-radius: 2px; margin-right: 5px;"></span>Red
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            @endif
             <div class="card">
                 <div class="card-header">
                     <h5 class="card-title mb-0">
@@ -598,34 +638,7 @@
                 </div>
             </div>
 
-            @if(!$isDefault)
-                <!-- Quick Actions -->
-                <div class="card mt-3">
-                    <div class="card-body">
-                        <h6 class="mb-3">Quick Color Presets</h6>
-                        <div class="d-flex flex-wrap gap-2">
-                            <button type="button" class="btn btn-sm btn-outline-secondary preset-btn" data-header="#11939A" data-footer="#11939A" data-text="#FFFFFF">
-                                <span style="display: inline-block; width: 12px; height: 12px; background: #11939A; border-radius: 2px; margin-right: 5px;"></span>Teal
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary preset-btn" data-header="#3B82F6" data-footer="#3B82F6" data-text="#FFFFFF">
-                                <span style="display: inline-block; width: 12px; height: 12px; background: #3B82F6; border-radius: 2px; margin-right: 5px;"></span>Blue
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary preset-btn" data-header="#10B981" data-footer="#10B981" data-text="#FFFFFF">
-                                <span style="display: inline-block; width: 12px; height: 12px; background: #10B981; border-radius: 2px; margin-right: 5px;"></span>Green
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary preset-btn" data-header="#8B5CF6" data-footer="#8B5CF6" data-text="#FFFFFF">
-                                <span style="display: inline-block; width: 12px; height: 12px; background: #8B5CF6; border-radius: 2px; margin-right: 5px;"></span>Purple
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary preset-btn" data-header="#000000" data-footer="#000000" data-text="#FFFFFF">
-                                <span style="display: inline-block; width: 12px; height: 12px; background: #000000; border-radius: 2px; margin-right: 5px;"></span>Black
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary preset-btn" data-header="#EF4444" data-footer="#EF4444" data-text="#FFFFFF">
-                                <span style="display: inline-block; width: 12px; height: 12px; background: #EF4444; border-radius: 2px; margin-right: 5px;"></span>Red
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            @endif
+           
         </div>
     </div>
 </div>
