@@ -30,7 +30,8 @@ return new class extends Migration
         ];
 
         foreach ($tables as $table) {
-            if (DB::getSchemaBuilder()->hasTable($table)) {
+            // Check if table exists AND has user_id column
+            if (DB::getSchemaBuilder()->hasTable($table) && DB::getSchemaBuilder()->hasColumn($table, 'user_id')) {
                 // Only update records that don't have a user_id yet
                 DB::table($table)
                     ->whereNull('user_id')

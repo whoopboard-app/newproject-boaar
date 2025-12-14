@@ -4,6 +4,90 @@
 
 @push('styles')
 <style>
+    /* Status Card Styles */
+    .status-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        transition: all 0.2s ease;
+        position: relative;
+    }
+
+    .status-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        border-color: #d1d5db;
+    }
+
+    .status-card.fixed-status {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-left: 4px solid #6366f1;
+    }
+
+    .status-card.custom-status {
+        border-left: 4px solid #10b981;
+    }
+
+    .status-card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .status-type-badge {
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 4px 8px;
+        border-radius: 4px;
+        background: #e0e7ff;
+        color: #4338ca;
+    }
+
+    .status-type-badge.custom {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-card-body {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .status-input-group {
+        flex: 1;
+    }
+
+    .status-input-group label {
+        display: block;
+        font-size: 11px;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+    }
+
+    .status-input-group input {
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 14px;
+        width: 100%;
+        transition: all 0.2s;
+    }
+
+    .status-input-group input:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        outline: none;
+    }
+
+    /* Color Picker Styles */
     .color-picker-wrapper {
         position: relative;
     }
@@ -11,36 +95,61 @@
         height: 55px;
     }
 
+    .color-picker-label {
+        display: block;
+        font-size: 11px;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+    }
+
     .color-display {
-        width: 40px;
-        height: 40px;
-        border-radius: 6px;
-        border: 2px solid #dee2e6;
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        border: 3px solid #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         cursor: pointer;
-        transition: transform 0.2s;
+        transition: all 0.2s;
     }
 
     .color-display:hover {
-        transform: scale(1.1);
-        border-color: #0d6efd;
+        transform: scale(1.08);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
 
     .color-palette {
         display: none;
         position: absolute;
-        top: 50px;
-        left: 0;
+        top: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
         background: white;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        padding: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
         z-index: 1000;
-        width: 240px;
+        width: 260px;
     }
 
     .color-palette.active {
         display: block;
+        animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    .color-palette-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 12px;
     }
 
     .color-palette-grid {
@@ -50,29 +159,45 @@
     }
 
     .color-option {
-        width: 36px;
-        height: 36px;
-        border-radius: 6px;
-        border: 2px solid transparent;
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        border: 3px solid transparent;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.15s;
     }
 
     .color-option:hover {
-        transform: scale(1.15);
-        border-color: #0d6efd;
+        transform: scale(1.12);
+        border-color: rgba(0, 0, 0, 0.2);
     }
 
     .color-option.selected {
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 3px rgba(13,110,253,.25);
+        border-color: #1f2937;
+        box-shadow: 0 0 0 2px #fff, 0 0 0 4px #6366f1;
+    }
+
+    /* Toggle Switch Styles */
+    .toggle-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .toggle-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
     }
 
     .toggle-switch {
         position: relative;
         display: inline-block;
-        width: 50px;
-        height: 24px;
+        width: 52px;
+        height: 28px;
     }
 
     .toggle-switch input {
@@ -88,78 +213,185 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: #ccc;
-        border-radius: 24px;
-        transition: .4s;
+        background-color: #d1d5db;
+        border-radius: 28px;
+        transition: .3s;
     }
 
     .toggle-slider:before {
         position: absolute;
         content: "";
-        height: 18px;
-        width: 18px;
+        height: 22px;
+        width: 22px;
         left: 3px;
         bottom: 3px;
         background-color: white;
         border-radius: 50%;
-        transition: .4s;
+        transition: .3s;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
     input:checked + .toggle-slider {
-        background-color: #198754;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     }
 
     input:checked + .toggle-slider:before {
-        transform: translateX(26px);
+        transform: translateX(24px);
+    }
+
+    input:disabled + .toggle-slider {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    /* Delete Button */
+    .delete-status-btn {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #dc2626;
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .delete-status-btn:hover {
+        background: #fee2e2;
+        border-color: #f87171;
+        transform: scale(1.05);
+    }
+
+    /* Add Status Button */
+    .add-status-btn {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        border: 2px dashed #86efac;
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin: 16px 0;
+    }
+
+    .add-status-btn:hover {
+        background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+        border-color: #4ade80;
+        transform: translateY(-2px);
+    }
+
+    .add-status-btn i {
+        font-size: 20px;
+        color: #16a34a;
+    }
+
+    .add-status-btn span {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #15803d;
+        margin-top: 4px;
+    }
+
+    /* Section Divider */
+    .status-section-divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 20px 0;
+    }
+
+    .status-section-divider::before,
+    .status-section-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #e5e7eb, transparent);
+    }
+
+    .status-section-divider span {
+        font-size: 11px;
+        font-weight: 600;
+        color: #9ca3af;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
 
     /* Reorder Modal Styles */
     .reorder-status-item {
         background: #fff;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        padding: 12px 15px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 14px 16px;
         margin-bottom: 10px;
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 14px;
         transition: all 0.2s;
     }
 
     .reorder-status-item:hover {
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
     .reorder-status-item.dragging {
         opacity: 0.5;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     }
 
     .reorder-status-item.disabled {
-        background: #f8f9fa;
+        background: #f9fafb;
         opacity: 0.7;
     }
 
     .reorder-drag-handle {
         cursor: move;
-        color: #6c757d;
+        color: #9ca3af;
         font-size: 20px;
+        padding: 4px;
     }
 
     .reorder-drag-handle:hover {
-        color: #495057;
+        color: #6b7280;
     }
 
     .reorder-drag-handle.disabled {
         cursor: not-allowed;
-        color: #dee2e6;
+        color: #e5e7eb;
     }
 
     .reorder-status-badge {
-        padding: 6px 12px;
-        border-radius: 6px;
+        padding: 8px 16px;
+        border-radius: 8px;
         color: white;
         font-size: 14px;
+        font-weight: 500;
         flex: 1;
+    }
+
+    /* Modal Enhancements */
+    #addStatusModal .modal-header {
+        border-bottom: 1px solid #f3f4f6;
+        padding: 20px 24px;
+    }
+
+    #addStatusModal .modal-title {
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    #addStatusModal .modal-body {
+        padding: 24px;
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+
+    #addStatusModal .modal-footer {
+        border-top: 1px solid #f3f4f6;
+        padding: 16px 24px;
     }
 </style>
 @endpush
@@ -175,11 +407,17 @@
                 </h5>
                 <div class="d-flex justify-content-between align-items-center">
                 <a href="{{ route('settings.index') }}" class="btn btn-secondary me-1">
-                    <i class="ti ti-arrow-left me-1"></i>Back to Listing
+                    <i class="ti ti-arrow-left me-1"></i>Back to Settings
                 </a>
-                 <a href="{{ route('settings.index') }}" onclick="openWorkflowSelector()" class="btn btn-primary">
-                <i class="ti ti-plus me-1"></i> Add Workflow
-            </a>
+                @if($roadmapWorkflowStatuses->count() == 0 || $feedbackWorkflowStatuses->count() == 0)
+                    <button type="button" onclick="openWorkflowSelector()" class="btn btn-primary">
+                        <i class="ti ti-plus me-1"></i> Add Workflow
+                    </button>
+                @else
+                    <button type="button" class="btn btn-primary" disabled title="Both workflows have been created">
+                        <i class="ti ti-plus me-1"></i> Add Workflow
+                    </button>
+                @endif
                 </div>
             </div>
         </div>
@@ -210,13 +448,13 @@
                         <h6 class="mb-0 p-3">Roadmap Workflow</h6>
                         @if($roadmapWorkflowStatuses->count() > 0)
                             <div class="d-flex gap-2 p-3">
-                                
                                 <button type="button" class="btn btn-sm btn-dark" onclick="editWorkflow('roadmap workflow')">
-                                    <!-- <i class="ti ti-edit me-1"></i> -->
                                     Edit Workflow
                                 </button>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteWorkflow('roadmap workflow')">
+                                    Delete
+                                </button>
                                 <button type="button" class="btn btn-sm btn-secondary" onclick="openReorderModal('roadmap workflow')">
-                                    <!-- <i class="ti ti-arrows-sort me-1"></i> -->
                                      Reorder
                                 </button>
                             </div>
@@ -268,14 +506,14 @@
                         @if($feedbackWorkflowStatuses->count() > 0)
                             <div class="d-flex gap-2 p-3">
                                 <button type="button" class="btn btn-sm btn-dark" onclick="editWorkflow('feedback workflow')">
-                                    <!-- <i class="ti ti-edit me-1"></i>  -->
                                     Edit Workflow
                                 </button>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteWorkflow('feedback workflow')">
+                                    Delete
+                                </button>
                                 <button type="button" class="btn btn-sm btn-secondary" onclick="openReorderModal('feedback workflow')">
-                                    <!-- <i class="ti ti-arrows-sort me-1"></i>  -->
                                     Reorder
                                 </button>
-                                
                             </div>
                         @endif
                     </div>
@@ -367,7 +605,10 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Manage Statuses</h5>
+                <div>
+                    <h5 class="modal-title mb-1"><i class="ti ti-list-check me-2"></i>Manage Workflow Statuses</h5>
+                    <p class="text-muted mb-0 fs-13">Configure the statuses for your workflow pipeline</p>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form id="manageStatusesForm">
@@ -375,13 +616,22 @@
                 <div class="modal-body">
                     <div id="modalStatusList">
                         <!-- Open Status (Always First) -->
-                        <div class="modal-status-row" data-type="open">
-                            <div class="d-flex align-items-center gap-3 mb-3 p-3 border rounded">
-                                <input type="text" class="form-control" value="Open" maxlength="40" data-field="open-name" required style="max-width: 200px;">
+                        <div class="status-card fixed-status" data-type="open">
+                            <div class="status-card-header">
+                                <span class="status-type-badge">Starting Status</span>
+                                <small class="text-muted">Items begin here</small>
+                            </div>
+                            <div class="status-card-body">
+                                <div class="status-input-group">
+                                    <label>Status Name</label>
+                                    <input type="text" value="Open" maxlength="40" data-field="open-name" required placeholder="e.g., Open, New, Pending">
+                                </div>
 
                                 <div class="color-picker-wrapper">
+                                    <span class="color-picker-label">Color</span>
                                     <div class="color-display" style="background-color: #22C55E;" data-field="open-color" onclick="toggleModalColorPalette(this)"></div>
                                     <div class="color-palette">
+                                        <div class="color-palette-title">Choose a color</div>
                                         <div class="color-palette-grid">
                                             @foreach(['#EF4444', '#F97316', '#F59E0B', '#EAB308', '#84CC16', '#22C55E', '#10B981', '#14B8A6', '#06B6D4', '#0EA5E9', '#3B82F6', '#6366F1', '#8B5CF6', '#A855F7', '#D946EF', '#EC4899', '#F43F5E', '#64748B', '#6B7280', '#78716C'] as $color)
                                                 <div class="color-option" style="background-color: {{ $color }};" onclick="selectColorInModal('{{ $color }}', this)"></div>
@@ -390,32 +640,50 @@
                                     </div>
                                 </div>
 
-                                <label class="toggle-switch">
-                                    <input type="checkbox" checked disabled>
-                                    <span class="toggle-slider"></span>
-                                </label>
-                                <small class="text-muted" style="width: 60px;">Active</small>
+                                <div class="toggle-group">
+                                    <span class="toggle-label">Active</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked disabled>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
                             </div>
+                        </div>
+
+                        <div class="status-section-divider">
+                            <span>Custom Statuses</span>
                         </div>
 
                         <!-- Custom Statuses Container -->
                         <div id="customStatusesContainer"></div>
 
                         <!-- Add Status Button -->
-                        <div class="text-center my-3">
-                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addCustomStatus()">
-                                <i class="ti ti-plus me-1"></i> Add Status
-                            </button>
+                        <div class="add-status-btn" onclick="addCustomStatus()">
+                            <i class="ti ti-plus"></i>
+                            <span>Add Custom Status</span>
+                        </div>
+
+                        <div class="status-section-divider">
+                            <span>End Status</span>
                         </div>
 
                         <!-- Closed Status (Always Last) -->
-                        <div class="modal-status-row" data-type="closed">
-                            <div class="d-flex align-items-center gap-3 mb-3 p-3 border rounded">
-                                <input type="text" class="form-control" value="Closed" maxlength="40" data-field="closed-name" required style="max-width: 200px;">
+                        <div class="status-card fixed-status" data-type="closed">
+                            <div class="status-card-header">
+                                <span class="status-type-badge">Ending Status</span>
+                                <small class="text-muted">Items complete here</small>
+                            </div>
+                            <div class="status-card-body">
+                                <div class="status-input-group">
+                                    <label>Status Name</label>
+                                    <input type="text" value="Closed" maxlength="40" data-field="closed-name" required placeholder="e.g., Closed, Done, Complete">
+                                </div>
 
                                 <div class="color-picker-wrapper">
+                                    <span class="color-picker-label">Color</span>
                                     <div class="color-display" style="background-color: #6B7280;" data-field="closed-color" onclick="toggleModalColorPalette(this)"></div>
                                     <div class="color-palette">
+                                        <div class="color-palette-title">Choose a color</div>
                                         <div class="color-palette-grid">
                                             @foreach(['#EF4444', '#F97316', '#F59E0B', '#EAB308', '#84CC16', '#22C55E', '#10B981', '#14B8A6', '#06B6D4', '#0EA5E9', '#3B82F6', '#6366F1', '#8B5CF6', '#A855F7', '#D946EF', '#EC4899', '#F43F5E', '#64748B', '#6B7280', '#78716C'] as $color)
                                                 <div class="color-option" style="background-color: {{ $color }};" onclick="selectColorInModal('{{ $color }}', this)"></div>
@@ -424,18 +692,24 @@
                                     </div>
                                 </div>
 
-                                <label class="toggle-switch">
-                                    <input type="checkbox" checked disabled>
-                                    <span class="toggle-slider"></span>
-                                </label>
-                                <small class="text-muted" style="width: 60px;">Active</small>
+                                <div class="toggle-group">
+                                    <span class="toggle-label">Active</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked disabled>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="saveAllStatuses()">Save Changes</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        <i class="ti ti-x me-1"></i> Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="saveAllStatuses()">
+                        <i class="ti ti-check me-1"></i> Save Changes
+                    </button>
                 </div>
             </form>
         </div>
@@ -510,80 +784,125 @@ function editWorkflow(workflowType) {
     loadWorkflowStatuses(workflowType);
 }
 
+// Store IDs for open and closed statuses
+let openStatusId = null;
+let closedStatusId = null;
+
 // Load statuses for a specific workflow
 function loadWorkflowStatuses(workflowType) {
     // Clear custom statuses container
     document.getElementById('customStatusesContainer').innerHTML = '';
     customStatusCounter = 0;
+    openStatusId = null;
+    closedStatusId = null;
 
-    // Load existing statuses from the table
-    fetch('/roadmap')
-        .then(response => response.text())
-        .then(html => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
+    // Reset to defaults
+    document.querySelector('[data-field="open-name"]').value = 'Open';
+    document.querySelector('[data-field="open-color"]').style.backgroundColor = '#22C55E';
+    document.querySelector('[data-field="closed-name"]').value = 'Closed';
+    document.querySelector('[data-field="closed-color"]').style.backgroundColor = '#6B7280';
 
-            // Select appropriate table based on workflow type
-            const listId = workflowType === 'roadmap workflow' ? 'roadmap-workflow-list' : 'feedback-workflow-list';
-            const statusRows = doc.querySelectorAll(`#${listId} tr[data-id]`);
+    // Load existing statuses from the current page's table (no fetch needed)
+    const listId = workflowType === 'roadmap workflow' ? 'roadmap-workflow-list' : 'feedback-workflow-list';
+    const statusRows = document.querySelectorAll(`#${listId} tr[data-id]`);
 
-            statusRows.forEach(row => {
-                const name = row.dataset.name;
-                const id = row.dataset.id;
+    // Convert to array and process by sort order (first is Open, last is Closed)
+    const rows = Array.from(statusRows);
 
-                // Extract color from badge element
-                const colorBadge = row.querySelector('.badge[style]');
-                const colorStyle = colorBadge ? colorBadge.style.backgroundColor : '#3B82F6';
+    rows.forEach((row, index) => {
+        const name = row.dataset.name;
+        const id = row.dataset.id;
 
-                // Extract active status from badge
-                const statusBadge = row.querySelectorAll('.badge')[1]; // Second badge is the status badge
-                const isActive = statusBadge ? statusBadge.classList.contains('bg-success') : true;
+        // Extract color from badge element
+        const colorBadge = row.querySelector('.badge[style]');
+        const colorStyle = colorBadge ? colorBadge.style.backgroundColor : '#3B82F6';
 
-                if (name === 'Open') {
-                    // Update Open status fields
-                    document.querySelector('[data-field="open-name"]').value = name;
-                    document.querySelector('[data-field="open-color"]').style.backgroundColor = colorStyle;
-                } else if (name === 'Closed') {
-                    // Update Closed status fields
-                    document.querySelector('[data-field="closed-name"]').value = name;
-                    document.querySelector('[data-field="closed-color"]').style.backgroundColor = colorStyle;
-                } else {
-                    // Add custom status
-                    addCustomStatus(id, name, colorStyle, isActive);
-                }
-            });
+        // Extract active status from badge
+        const statusBadge = row.querySelectorAll('.badge')[1]; // Second badge is the status badge
+        const isActive = statusBadge ? statusBadge.classList.contains('bg-success') : true;
 
-            const modal = new bootstrap.Modal(document.getElementById('addStatusModal'));
-            modal.show();
-        });
+        if (index === 0) {
+            // First status is always "Open" type
+            openStatusId = id;
+            document.querySelector('[data-field="open-name"]').value = name;
+            document.querySelector('[data-field="open-color"]').style.backgroundColor = colorStyle;
+        } else if (index === rows.length - 1) {
+            // Last status is always "Closed" type
+            closedStatusId = id;
+            document.querySelector('[data-field="closed-name"]').value = name;
+            document.querySelector('[data-field="closed-color"]').style.backgroundColor = colorStyle;
+        } else {
+            // Middle statuses are custom
+            addCustomStatus(id, name, colorStyle, isActive);
+        }
+    });
+
+    const modal = new bootstrap.Modal(document.getElementById('addStatusModal'));
+    modal.show();
+}
+
+// Color palette for auto-assignment
+const statusColors = ['#3B82F6', '#8B5CF6', '#EC4899', '#F97316', '#14B8A6', '#EAB308', '#06B6D4', '#A855F7', '#F43F5E', '#84CC16', '#0EA5E9', '#D946EF', '#10B981', '#6366F1', '#F59E0B'];
+
+// Get next auto-assigned color
+function getNextAutoColor() {
+    const existingColors = [];
+    document.querySelectorAll('.custom-status-row .color-display').forEach(el => {
+        existingColors.push(rgbToHex(el.style.backgroundColor));
+    });
+
+    // Find first color not already used
+    for (const color of statusColors) {
+        if (!existingColors.includes(color)) {
+            return color;
+        }
+    }
+    // If all colors used, return random one
+    return statusColors[Math.floor(Math.random() * statusColors.length)];
 }
 
 // Add custom status row in modal
-function addCustomStatus(id = null, name = '', color = '#3B82F6', isActive = true) {
+function addCustomStatus(id = null, name = '', color = null, isActive = true) {
     customStatusCounter++;
     const uniqueId = id || `new-${customStatusCounter}`;
 
+    // Auto-assign color if not provided
+    const statusColor = color || getNextAutoColor();
+    const previewId = `preview-${uniqueId}`;
+
     const statusHtml = `
-        <div class="custom-status-row mb-3" data-id="${uniqueId}">
-            <div class="d-flex align-items-center gap-3 p-3 border rounded">
-                <input type="text" class="form-control" value="${name}" placeholder="Status name" maxlength="40" required style="max-width: 200px;">
+        <div class="status-card custom-status custom-status-row" data-id="${uniqueId}">
+            <div class="status-card-header">
+                <span class="status-type-badge custom">Custom Status</span>
+                <small class="text-muted">Intermediate step</small>
+            </div>
+            <div class="status-card-body">
+                <div class="status-input-group">
+                    <label>Status Name</label>
+                    <input type="text" value="${name}" placeholder="e.g., In Progress, Review, Testing" maxlength="40" required>
+                </div>
 
                 <div class="color-picker-wrapper">
-                    <div class="color-display" style="background-color: ${color};" onclick="toggleModalColorPalette(this)"></div>
+                    <span class="color-picker-label">Color</span>
+                    <div class="color-display" style="background-color: ${statusColor};" onclick="toggleModalColorPalette(this)"></div>
                     <div class="color-palette">
+                        <div class="color-palette-title">Choose a color</div>
                         <div class="color-palette-grid">
                             ${generateColorOptions()}
                         </div>
                     </div>
                 </div>
 
-                <label class="toggle-switch">
-                    <input type="checkbox" ${isActive ? 'checked' : ''}>
-                    <span class="toggle-slider"></span>
-                </label>
+                <div class="toggle-group">
+                    <span class="toggle-label">Active</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" ${isActive ? 'checked' : ''}>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
 
-                <button type="button" class="btn btn-sm btn-danger" onclick="removeCustomStatus(this)">
-                    <i class="ti ti-trash"></i>
+                <button type="button" class="delete-status-btn" onclick="removeCustomStatus(this)" title="Remove status">
+                    <i class="ti ti-trash fs-18"></i>
                 </button>
             </div>
         </div>
@@ -652,16 +971,22 @@ async function saveAllStatuses() {
         }
     });
 
-    // Prepare all statuses
+    // Prepare all statuses (include IDs if they exist for updates)
+    const openStatus = { name: openName, color: openColor, is_active: true, workflow_type: currentWorkflowType, type: 'open' };
+    if (openStatusId) openStatus.id = openStatusId;
+
+    const closedStatus = { name: closedName, color: closedColor, is_active: true, workflow_type: currentWorkflowType, type: 'closed' };
+    if (closedStatusId) closedStatus.id = closedStatusId;
+
     const allStatuses = [
-        { name: openName, color: openColor, is_active: true, workflow_type: currentWorkflowType, type: 'open' },
+        openStatus,
         ...customStatuses,
-        { name: closedName, color: closedColor, is_active: true, workflow_type: currentWorkflowType, type: 'closed' }
+        closedStatus
     ];
 
     try {
         // Delete all existing statuses and recreate
-        const response = await fetch('/roadmap/bulk-update', {
+        const response = await fetch('/roadmaps/bulk-update', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -754,7 +1079,7 @@ function saveReorder() {
         });
     });
 
-    fetch('/roadmap/reorder', {
+    fetch('/roadmaps/reorder', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -817,6 +1142,39 @@ function deleteStatus(id) {
     .catch(error => {
         console.error('Error:', error);
         alert('Failed to delete status');
+    });
+}
+
+// Delete entire workflow
+function deleteWorkflow(workflowType) {
+    const workflowName = workflowType === 'roadmap workflow' ? 'Roadmap Workflow' : 'Feedback Workflow';
+
+    confirmDelete({
+        title: 'Delete ' + workflowName,
+        message: `Are you sure you want to delete the entire "${workflowName}"? This will remove all statuses in this workflow. This action cannot be undone.`,
+        confirmText: 'Delete Workflow',
+        onConfirm: function() {
+            fetch('/roadmaps/workflow', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ workflow_type: workflowType })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Failed to delete workflow: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to delete workflow');
+            });
+        }
     });
 }
 </script>

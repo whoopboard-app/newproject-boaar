@@ -25,6 +25,9 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            'profile_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+            'about_me' => ['nullable', 'string', 'max:1000'],
+            'remove_profile_image' => ['nullable', 'boolean'],
         ];
     }
 }

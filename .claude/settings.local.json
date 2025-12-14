@@ -38,7 +38,11 @@
       "Bash(/c/wamp64/bin/php/php8.1.0/php.exe:*)",
       "Bash(\"C:\\wamp64\\bin\\php\\php8.1.0\\php.exe\" artisan make:migration create_changelog_category_table)",
       "Bash(\"C:\\wamp64\\bin\\php\\php8.1.0\\php.exe\" artisan route:clear)",
-      "Bash(\"C:\\wamp64\\bin\\php\\php8.1.0\\php.exe\" artisan make:migration add_extended_fields_to_personas_table)"
+      "Bash(\"C:\\wamp64\\bin\\php\\php8.1.0\\php.exe\" artisan make:migration add_extended_fields_to_personas_table)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "Bash(php /Applications/MAMP/htdocs/newproject-boaar/artisan make:migration:*)"
     ],
     "deny": [],
     "ask": []

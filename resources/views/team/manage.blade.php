@@ -47,9 +47,9 @@
                     <p class="text-muted fs-14 mb-0">Manage your team members and invitations</p>
                 </h5>
                 <div class="d-flex justify-content-between align-items-center">
-                    <a href="{{ route('dashboard') }}" class="btn btn-secondary me-1">
-                        <i class="ti ti-arrow-left me-1"></i> Back to Dashboard
-                    </a>            
+                    <a href="{{ route('settings.index') }}" class="btn btn-secondary me-1">
+                        <i class="ti ti-arrow-left me-1"></i> Back to Settings
+                    </a>
                 </div>
             </div>
         </div>
