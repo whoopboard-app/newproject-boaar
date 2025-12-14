@@ -536,15 +536,16 @@
                     <!-- Profile Image Dropdown -->
                     <div class="dropdown topbar-head-dropdown ms-1 header-item">
                         <button type="button" class="btn btn-icon btn-topbar rounded-circle p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="avatar-title rounded-circle bg-primary text-white" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 14px;">
-                                {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
-                            </span>
+                            <img src="{{ Auth::user()->profile_image_url }}" alt="{{ Auth::user()->name }}" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
                             <!-- User Info Header -->
-                            <div class="dropdown-header pb-2">
-                                <h6 class="mb-0">{{ Auth::user()->name }}</h6>
-                                <small class="text-muted">{{ ucfirst(str_replace('_', ' ', Auth::user()->roleInTeam() ?? 'Member')) }}</small>
+                            <div class="dropdown-header pb-2 d-flex align-items-center">
+                                <img src="{{ Auth::user()->profile_image_url }}" alt="{{ Auth::user()->name }}" class="rounded-circle me-2" width="40" height="40" style="object-fit: cover;">
+                                <div>
+                                    <h6 class="mb-0">{{ Auth::user()->name }}</h6>
+                                    <small class="text-muted">{{ ucfirst(str_replace('_', ' ', Auth::user()->roleInTeam() ?? 'Member')) }}</small>
+                                </div>
                             </div>
                             <div class="dropdown-divider"></div>
                             <!-- Profile Menu Items -->
@@ -611,6 +612,58 @@
     </div>
     <!-- END wrapper -->
 
+    <!-- Global Delete Confirmation Modal -->
+    <div class="modal fade" id="globalDeleteModal" tabindex="-1" aria-labelledby="globalDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <div class="d-flex align-items-center">
+                        <div class="delete-icon-wrapper me-3">
+                            <i class="ti ti-trash text-danger fs-24"></i>
+                        </div>
+                        <h5 class="modal-title" id="globalDeleteModalLabel">Confirm Delete</h5>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pt-2">
+                    <p class="text-muted mb-0" id="globalDeleteModalMessage">Are you sure you want to delete this item? This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="globalDeleteModalConfirm">
+                        <i class="ti ti-trash me-1"></i> Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        #globalDeleteModal .delete-icon-wrapper {
+            width: 48px;
+            height: 48px;
+            background: #fef2f2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #globalDeleteModal .modal-content {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+        #globalDeleteModal .modal-header {
+            padding: 20px 24px 10px;
+        }
+        #globalDeleteModal .modal-body {
+            padding: 10px 24px 20px;
+        }
+        #globalDeleteModal .modal-footer {
+            padding: 0 24px 20px;
+        }
+    </style>
+
     <!-- Vendor js -->
     <script src="{{ asset('assets/js/vendor.min.js') }}"></script>
 
@@ -624,6 +677,44 @@
         });
         },500);
     });
+
+    // Global Delete Confirmation Function
+    // Usage: confirmDelete({ title: 'Delete Item', message: 'Are you sure?', onConfirm: () => { /* your delete logic */ } })
+    window.confirmDelete = function(options) {
+        const defaults = {
+            title: 'Confirm Delete',
+            message: 'Are you sure you want to delete this item? This action cannot be undone.',
+            confirmText: 'Delete',
+            onConfirm: null
+        };
+
+        const settings = { ...defaults, ...options };
+
+        // Update modal content
+        document.getElementById('globalDeleteModalLabel').textContent = settings.title;
+        document.getElementById('globalDeleteModalMessage').textContent = settings.message;
+        document.getElementById('globalDeleteModalConfirm').innerHTML = '<i class="ti ti-trash me-1"></i> ' + settings.confirmText;
+
+        // Get modal instance
+        const modalElement = document.getElementById('globalDeleteModal');
+        const modal = new bootstrap.Modal(modalElement);
+
+        // Remove any existing event listeners
+        const confirmBtn = document.getElementById('globalDeleteModalConfirm');
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+        // Add new event listener
+        newConfirmBtn.addEventListener('click', function() {
+            if (typeof settings.onConfirm === 'function') {
+                settings.onConfirm();
+            }
+            modal.hide();
+        });
+
+        // Show modal
+        modal.show();
+    };
 </script>
     @stack('scripts')
 </body>

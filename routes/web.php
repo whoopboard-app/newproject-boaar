@@ -21,7 +21,31 @@ use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\TestimonialTemplateController;
 use App\Http\Controllers\SubdomainPublicController;
 use App\Http\Controllers\SurveyController;
+use App\Http\Controllers\Backoffice\BackofficeAuthController;
+use App\Http\Controllers\Backoffice\BackofficeDashboardController;
+use App\Http\Controllers\Backoffice\BackofficeClientController;
 use Illuminate\Support\Facades\Route;
+
+// =============================================================================
+// Backoffice Admin Portal Routes
+// =============================================================================
+Route::prefix('backoffice')->name('backoffice.')->group(function () {
+    // Guest routes (not logged into backoffice)
+    Route::get('/', [BackofficeAuthController::class, 'showEmailForm'])->name('email');
+    Route::post('/send-code', [BackofficeAuthController::class, 'sendCode'])->name('send-code');
+    Route::get('/login', [BackofficeAuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [BackofficeAuthController::class, 'login'])->name('authenticate');
+
+    // Protected routes (logged into backoffice)
+    Route::middleware('backoffice.auth')->group(function () {
+        Route::get('/dashboard', [BackofficeDashboardController::class, 'index'])->name('dashboard');
+        Route::post('/logout', [BackofficeAuthController::class, 'logout'])->name('logout');
+
+        // Clients Management
+        Route::get('/clients', [BackofficeClientController::class, 'index'])->name('clients.index');
+        Route::get('/clients/{client}', [BackofficeClientController::class, 'show'])->name('clients.show');
+    });
+});
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -144,10 +168,11 @@ Route::middleware('auth')->group(function () {
     // Roadmap Management
     Route::get('/roadmaps', [RoadmapController::class, 'index'])->name('roadmap.index');
     Route::post('/roadmaps', [RoadmapController::class, 'store'])->name('roadmap.store');
-    Route::put('/roadmaps/{roadmap}', [RoadmapController::class, 'update'])->name('roadmap.update');
-    Route::delete('/roadmaps/{roadmap}', [RoadmapController::class, 'destroy'])->name('roadmap.destroy');
     Route::post('/roadmaps/reorder', [RoadmapController::class, 'reorder'])->name('roadmap.reorder');
     Route::post('/roadmaps/bulk-update', [RoadmapController::class, 'bulkUpdate'])->name('roadmap.bulkUpdate');
+    Route::delete('/roadmaps/workflow', [RoadmapController::class, 'destroyWorkflow'])->name('roadmap.destroyWorkflow');
+    Route::put('/roadmaps/{roadmap}', [RoadmapController::class, 'update'])->name('roadmap.update');
+    Route::delete('/roadmaps/{roadmap}', [RoadmapController::class, 'destroy'])->name('roadmap.destroy');
 
     // Feedback Category Management
     Route::get('/feedback-category', [FeedbackCategoryController::class, 'index'])->name('feedback-category.index');
