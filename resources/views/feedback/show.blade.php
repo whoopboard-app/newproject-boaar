@@ -4,21 +4,23 @@
 
 @section('content')
 <div class="row">
-    <div class="col-12">
-        <div class="page-title-box d-flex align-items-center justify-content-between">
-            <div>
-                <h2 class="mb-0">Feedback Details</h2>
-                <p class="text-muted fs-14 mb-0">View feedback details and comments</p>
-            </div>
-            <div class="d-flex gap-2">
-                <a href="{{ route('feedback.index') }}" class="btn btn-secondary">
-                    <i class="ti ti-arrow-left me-1"></i> Back to List
-                </a>
-                @if(Auth::user()->canManageFeedback())
-                <a href="{{ route('feedback.edit', $feedback) }}" class="btn btn-warning">
-                    <i class="ti ti-edit me-1"></i> Edit
-                </a>
-                @endif
+    <div class="col-lg-12">
+        <div class="card top-area">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ti ti-list me-2"></i>Feedback Details
+                    <p class="text-muted fs-14 mb-0">View feedback details and comments</p>
+                </h5>
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="{{ route('feedback.index') }}" class="btn btn-secondary me-1">
+                        <i class="ti ti-arrow-left me-1"></i> Back to Listing
+                    </a>
+                    @if(Auth::user()->canManageFeedback())
+                    <a href="{{ route('feedback.edit', $feedback) }}" class="btn btn-dark">
+                        <i class="ti ti-edit me-1"></i> Edit
+                    </a>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
@@ -210,38 +212,52 @@
         <div class="card">
             <div class="card-header">
                 <h5 class="card-title mb-0">
-                    <i class="ti ti-info-circle me-2"></i>Additional Information
+                    <i class="ti ti-info-circle me-2"></i>Feedback Meta Data
                 </h5>
             </div>
             <div class="card-body">
                 <!-- Persona -->
                 <div class="mb-3">
-                    <h6 class="text-muted mb-2">Persona</h6>
-                    @if($feedback->persona)
-                        <p class="mb-0">{{ $feedback->persona->name }}</p>
-                    @else
-                        <span class="text-muted">Not assigned</span>
-                    @endif
+                    <div class="info-box" style="border-left-color: #6c757d;">
+                        <h6>Persona</h6>
+                        @if($feedback->persona)
+                            <p class="text-muted mb-0">{{ $feedback->persona->name }}</p>
+                        @else
+                            <span class="text-muted mb-0">Not assigned</span>
+                        @endif
+                    </div>
                 </div>
 
                 <!-- Source -->
                 <div class="mb-3">
-                    <h6 class="text-muted mb-2">Source of Idea</h6>
-                    <span class="badge bg-info">{{ $feedback->source }}</span>
+                    <div class="info-box">
+                        <h6>Source of Idea</h6>
+                        <p>
+                            <span class="badge bg-info">{{ $feedback->source }}</span>
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Created Date -->
                 <div class="mb-3">
-                    <h6 class="text-muted mb-2">Created</h6>
-                    <p class="mb-0">{{ $feedback->created_at->format('M d, Y h:i A') }}</p>
-                    <small class="text-muted">{{ $feedback->created_at->diffForHumans() }}</small>
+                    <div class="info-box">
+                        <h6>Created</h6>
+                        <p>
+                            <span class="text-muted mb-0">{{ $feedback->created_at->format('M d, Y h:i A') }}</span>
+                        </p>
+                        <small class="text-muted">{{ $feedback->created_at->diffForHumans() }}</small>
+                    </div>
                 </div>
 
                 <!-- Updated Date -->
-                <div class="mb-0">
-                    <h6 class="text-muted mb-2">Last Updated</h6>
-                    <p class="mb-0">{{ $feedback->updated_at->format('M d, Y h:i A') }}</p>
-                    <small class="text-muted">{{ $feedback->updated_at->diffForHumans() }}</small>
+                 <div class="mb-0">
+                    <div class="info-box">
+                        <h6>Last Updated</h6>
+                        <p>
+                            <span class="text-muted mb-0">{{ $feedback->updated_at->format('M d, Y h:i A') }}</span>
+                        </p>
+                        <small class="text-muted">{{ $feedback->updated_at->diffForHumans() }}</small>
+                    </div>
                 </div>
             </div>
         </div>
@@ -253,7 +269,7 @@
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2">
-                    <a href="{{ route('feedback.edit', $feedback) }}" class="btn btn-warning">
+                    <a href="{{ route('feedback.edit', $feedback) }}" class="btn btn-primary">
                         <i class="ti ti-edit me-1"></i> Edit Feedback
                     </a>
                     <form method="POST" action="{{ route('feedback.destroy', $feedback) }}" onsubmit="return confirm('Are you sure you want to delete this feedback?');">
