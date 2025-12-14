@@ -19,13 +19,6 @@
         width: 20%;
     }
 
-    .changelog-cover {
-        width: 60px;
-        height: 34px;
-        object-fit: cover;
-        border-radius: 4px;
-    }
-
     .tag-badge {
         display: inline-block;
         padding: 2px 8px;
