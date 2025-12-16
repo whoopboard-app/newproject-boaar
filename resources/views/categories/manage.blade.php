@@ -6,6 +6,9 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
 <style>
     /* Match Choices.js height and styling with Bootstrap form-control */
+    .choices {
+        margin-bottom: 0px !important;
+    }
     .choices__inner {
         min-height: 39.51px !important;
         height: 39.51px !important;
@@ -33,9 +36,10 @@
     .choices__list--dropdown .choices__item--selectable {
         padding: 0.5rem 1rem !important;
     }
-
+    
     .choices__item--selectable {
         line-height: 1.5 !important;
+        font-size: .813rem !important;
     }
 </style>
 @endpush
@@ -82,7 +86,7 @@
                 <form method="POST" action="{{ route('categories.store') }}">
                     @csrf
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-5">
                             <div class="mb-3">
                                 <label for="category_name" class="form-label">Category Name <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('category_name') is-invalid @enderror" id="category_name" name="category_name" placeholder="Enter category name" value="{{ old('category_name') }}" required>
@@ -105,8 +109,9 @@
                                 <div class="form-text">Category visibility status</div>
                             </div>
                         </div>
-                        <div class="col-md-2 d-flex align-items-end">
+                        <div class="col-md-3">
                             <div class="mb-3 w-100">
+                                <label for="status" style="visibility: hidden !important;" class="form-label">Status <span class="text-danger">*</span></label>
                                 <button type="submit" class="btn btn-primary w-100">
                                     <i class="ti ti-plus me-1"></i>Add Category
                                 </button>

@@ -16728,7 +16728,7 @@ display: none;
 }
 body .choices__inner, body .tagify {
     border-radius: 0.5rem !important;
-    height: 35.6px;
+    height: 35.6px !important;
     min-height: 100% !important;
 }
 body .tagify .tagify__tag {
@@ -16739,6 +16739,9 @@ body .choices__list--multiple .choices__item {
     background-color: oklch(0.92 0 0) !important;
     border: 1px solid oklch(0.92 0 0) !important;
     color: #000;
+}
+.choices__item--selectable {
+    font-size: .813rem !important;
 }
 body .choices__list--multiple .choices__item button.choices__button {
     background: none;
@@ -16834,6 +16837,14 @@ span.badge.bg-success.alt-primary-success {
     border-radius: 8px;
     font-weight: 500;
 }
+span.badge.bg-secondary {
+    background: #1c84c8 !important;
+    color: #fff;
+    font-size: 11px;
+    padding: 8px;
+    border-radius: 8px;
+    font-weight: 500;
+}
 .spacer {
     display: inline-block;
     margin: 0 10px 0 0;
@@ -16905,32 +16916,43 @@ a.frgt-pwd-text {
     color: #2b7fff;
     font-weight: 500;
 }
-.configuration-card .nav-tabs span.badge, .card .nav-tabs .nav-item .ti {
+.configuration-card .nav-tabs span.badge, .card .nav-tabs .nav-item .ti ,
+.testimonial-card .nav-tabs span.badge, .testimonial-card .nav-tabs .nav-item .ti 
+{
     display: none;
 }
-.configuration-card ul.nav.nav-tabs.custom-tab-design {
+.configuration-card ul.nav.nav-tabs.custom-tab-design ,
+.testimonial-card ul.nav.nav-tabs.custom-tab-design 
+{
     display: flex;
     justify-content: center;
 }
 .configuration-card{box-shadow: none;}
-.configuration-card .nav-tabs .nav-link {
+.testimonial-card{box-shadow: none;}
+.configuration-card .nav-tabs .nav-link,
+.testimonial-card .nav-tabs .nav-link
+ {
     color: #27314B;
     font-size: 14px;
     font-weight: 400;
 }
-.configuration-card .nav-tabs .nav-link.active {
+.configuration-card .nav-tabs .nav-link.active,
+.testimonial-card .nav-tabs .nav-link.active {
     color: #111B37;
     font-weight: 500;
 }
-.configuration-card .nav-tabs.nav-bordered .nav-item .nav-link.active {
+.configuration-card .nav-tabs.nav-bordered .nav-item .nav-link.active ,
+.testimonial-card .nav-tabs.nav-bordered .nav-item .nav-link.active{
     border-bottom: 1px solid #111B37;
 }
-.configuration-card .nav-tabs .tab-content .tab-pane p {
+.configuration-card .nav-tabs .tab-content .tab-pane p ,
+.testimonial-card .nav-tabs .tab-content .tab-pane p{
     color: #27314B;
     font-size: 14px;
     line-height: 22px;
 }
-.configuration-card .card-header h6 {
+.configuration-card .card-header h6,
+.testimonial-card .card-header h6 {
     font-size: 1rem;
     font-weight: 600;
     color: #111B37;

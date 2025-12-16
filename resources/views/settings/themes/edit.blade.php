@@ -7,6 +7,20 @@
     .color-picker-wrapper {
         position: relative;
     }
+    .preset-btn { 
+        margin: 0px !important;
+        padding: 0px !important;
+            display: inline-block !important;
+    }
+    .preset-btn span{
+        display: inline-block;
+         width: 30px; 
+         height: 30px;
+          border-radius: 30px !important; 
+          cursor: pointer;
+           border-radius: 2px;
+            margin-right: 5px;
+    }
     .color-picker-wrapper input[type="color"] {
         width: 50px;
         height: 38px;
@@ -149,8 +163,8 @@
         font-size: 18px;
     }
     .menu-item .form-check-input:checked {
-        background-color: #11939A;
-        border-color: #11939A;
+        background-color: oklch(62.3% 0.214 259.815);
+        border-color: oklch(62.3% 0.214 259.815);
     }
     .card .card-title .text-muted .ti {
         display: block;
@@ -564,24 +578,24 @@
                     </h5>
                 </div>
                     <div class="card-body">
-                        <div class="d-flex flex-wrap gap-2">
+                        <div class="d-flex">
                             <button type="button" class="btn btn-sm btn-outline-secondary preset-btn" data-header="#11939A" data-footer="#11939A" data-text="#FFFFFF">
-                                <span style="display: inline-block; width: 12px; height: 12px; background: #11939A; border-radius: 2px; margin-right: 5px;"></span>Teal
+                                <span style="background: #11939A;"></span>Teal
                             </button>
                             <button type="button" class="btn btn-sm btn-outline-secondary preset-btn" data-header="#3B82F6" data-footer="#3B82F6" data-text="#FFFFFF">
-                                <span style="display: inline-block; width: 12px; height: 12px; background: #3B82F6; border-radius: 2px; margin-right: 5px;"></span>Blue
+                                <span style="background: #3B82F6;"></span>Blue
                             </button>
                             <button type="button" class="btn btn-sm btn-outline-secondary preset-btn" data-header="#10B981" data-footer="#10B981" data-text="#FFFFFF">
-                                <span style="display: inline-block; width: 12px; height: 12px; background: #10B981; border-radius: 2px; margin-right: 5px;"></span>Green
+                                <span style="background: #10B981;"></span>Green
                             </button>
                             <button type="button" class="btn btn-sm btn-outline-secondary preset-btn" data-header="#8B5CF6" data-footer="#8B5CF6" data-text="#FFFFFF">
-                                <span style="display: inline-block; width: 12px; height: 12px; background: #8B5CF6; border-radius: 2px; margin-right: 5px;"></span>Purple
+                                <span style="background: #8B5CF6;"></span>Purple
                             </button>
                             <button type="button" class="btn btn-sm btn-outline-secondary preset-btn" data-header="#000000" data-footer="#000000" data-text="#FFFFFF">
-                                <span style="display: inline-block; width: 12px; height: 12px; background: #000000; border-radius: 2px; margin-right: 5px;"></span>Black
+                                <span style="background: #000000;"></span>Black
                             </button>
                             <button type="button" class="btn btn-sm btn-outline-secondary preset-btn" data-header="#EF4444" data-footer="#EF4444" data-text="#FFFFFF">
-                                <span style="display: inline-block; width: 12px; height: 12px; background: #EF4444; border-radius: 2px; margin-right: 5px;"></span>Red
+                                <span style="background: #EF4444;"></span>Red
                             </button>
                         </div>
                     </div>

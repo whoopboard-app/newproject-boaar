@@ -109,22 +109,7 @@
                             <span class="badge bg-secondary me-1">{{ $tag }}</span>
                         @endforeach
                     </div>
-                @endif
-
-                <!-- Submitter Info -->
-                <div class="mb-4">
-                    <h6 class="text-muted mb-2">Submitter Information</h6>
-                    <p class="mb-1"><strong>Name:</strong> {{ $feedback->name }}</p>
-                    <p class="mb-1"><strong>Email:</strong> {{ $feedback->email }}</p>
-                    <p class="mb-0">
-                        <strong>Login Access:</strong>
-                        @if($feedback->login_access_enabled)
-                            <span class="badge bg-success">Enabled</span>
-                        @else
-                            <span class="badge bg-secondary">Disabled</span>
-                        @endif
-                    </p>
-                </div>
+                @endif                
             </div>
         </div>
 
@@ -216,6 +201,24 @@
                 </h5>
             </div>
             <div class="card-body">
+
+
+
+
+            <!-- Submitter Info -->
+                <div class="mb-4">
+                    <h6 class="text-muted mb-2">Submitter Information</h6>
+                    <p class="mb-1"><strong>Name:</strong> {{ $feedback->name }}</p>
+                    <p class="mb-1"><strong>Email:</strong> {{ $feedback->email }}</p>
+                    <p class="mb-0">
+                        <strong>Login Access:</strong>
+                        @if($feedback->login_access_enabled)
+                            <span class="badge bg-success">Enabled</span>
+                        @else
+                            <span class="badge bg-secondary">Disabled</span>
+                        @endif
+                    </p>
+                </div>
                 <!-- Persona -->
                 <div class="mb-3">
                     <div class="info-box" style="border-left-color: #6c757d;">
