@@ -11,25 +11,45 @@
         border: 1px solid #dee2e6 !important;
         border-radius: 0.25rem !important;
     }
+    .nav-tabs .nav-link {
+        color: #6c757d;
+    }
+    .nav-tabs .nav-link.active {
+        color: #495057;
+        font-weight: 600;
+    }
+    .fs-48 {
+        font-size: 48px;
+    }
+    .card-header h6 {
+        font-size: 1rem;
+        font-weight: 600;
+    }
 </style>
 @endpush
 
 @section('content')
 <div class="row">
-    <div class="col-12">
-        <div class="page-title-box d-flex align-items-center justify-content-between">
-            <div>
-                <h2 class="mb-0">Testimonials</h2>
-                <p class="text-muted fs-14 mb-0">Manage your testimonials and templates</p>
+    <div class="col-lg-12">
+        <div class="card top-area">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="ti ti-list me-2"></i>Testimonials
+                    <p class="text-muted fs-14 mb-0">Manage your testimonials and templates</p>
+                </h5>
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="{{ route('testimonials.create') }}" class="btn btn-primary">
+                                <i class="ti ti-plus me-1"></i> Add Testimonial
+                            </a>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
 <!-- Tabs -->
 <div class="row">
-    <div class="col-12">
-        <ul class="nav nav-tabs mb-3" role="tablist">
+    <div class="col-12 testimonial-card">
+        <ul class="nav nav-tabs nav-bordered mb-3 custom-tab-design" role="tablist">
             <li class="nav-item" role="presentation">
                 <a class="nav-link {{ $activeTab === 'testimonials' ? 'active' : '' }}" href="{{ route('testimonials.index', ['tab' => 'testimonials']) }}">
                     <i class="ti ti-messages me-1"></i> All Testimonials
@@ -54,9 +74,7 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">All Testimonials</h5>
                         <div>
-                            <a href="{{ route('testimonials.create') }}" class="btn btn-primary">
-                                <i class="ti ti-plus me-1"></i> Add Testimonial
-                            </a>
+                            
                             <button class="btn btn-secondary" disabled>
                                 <i class="ti ti-upload me-1"></i> Import Testimonials
                             </button>
@@ -187,7 +205,7 @@
                             {{ $testimonials->links() }}
                         @else
                             <div class="text-center py-5">
-                                <i class="ti ti-messages" style="font-size: 4rem; color: #ddd;"></i>
+                                <img src="{{asset('assets/images/Concord.png')}}" />
                                 <p class="text-muted mt-3">No testimonials yet. Add your first testimonial!</p>
                                 <a href="{{ route('testimonials.create') }}" class="btn btn-primary">
                                     <i class="ti ti-plus me-1"></i> Add Testimonial
