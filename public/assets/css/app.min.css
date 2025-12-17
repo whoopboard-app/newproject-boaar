@@ -16703,7 +16703,7 @@ button.btn.btn-secondary:hover {
     font-weight: 500;
     line-height: 12px;
 }
-.card .info-box span.badge, .card .info-box .tag-badge {
+.card .info-box span.badge, .card .info-box .tag-badge{
     background: #E1FCE9 !important;
     font-size: 11px;
     padding: 8px 26px;
@@ -17003,6 +17003,43 @@ border-radius: 8px;
 .roadmap-status-card.card {
     box-shadow: none;
     border: 0 none;
+}
+.submitter-info-box {
+    border: 1px solid #00000033;
+    border-radius: 10px;
+    padding: 23px 25px;
+    background: #F4F4F44D;
+}
+.submitter-info-box h6 {
+    color: #000000;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 12px;
+}
+.submitter-info-box p small {
+    display: block;
+    font-size: 12px;
+    color: #393B40;
+    line-height: 12px;
+    font-weight: 500;
+}
+.submitter-info-box p span {
+    display: block;
+    font-size: 14px;
+    color: #27314B;
+    line-height: 22px;
+    font-weight: 400;
+}
+.submitter-info-box span.badge{
+    background: #E1FCE9 !important;
+    font-size: 11px !important;
+    padding: 8px 26px !important;
+    color: #0B5C22 !important;
+    border-radius: 4px !important;
+    margin-top: 5px !important;
+    display: inline-block;
+    font-weight: 700 !important;
+    line-height: 12px !important;
 }
 /*# sourceMappingURL=app.min.css.map */
  
