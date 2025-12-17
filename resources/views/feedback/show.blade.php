@@ -1,6 +1,41 @@
 @extends('layouts.inspinia')
 
 @section('title', 'View Feedback')
+@push('styles')
+<style>
+    .comment-tagline, .comment-tagline small {
+        font-size: 14px !important;
+        font-weight: 500;
+        color: #2C2D30 !important;
+    }
+    .deleted-comment small {
+        font-size: 14px !important;
+        font-weight: 600;
+        color: #00000099 !important;
+    }
+    .comment-area {
+        border: 2px solid #E6E8F0;
+        border-radius: 20px;
+        padding: 20px;
+        gap: 15px;
+    }
+.comment-area p {
+    color: #00000099;
+}
+.deleted-comment .btn-soft-danger{
+    background: none !important;
+}
+.user-info h6{
+    font-weight: 600;
+            font-size: 18px !important;
+color: #000000 !important;
+    margin-top: 3px;
+}
+.ti-trash {
+    font-size: 16px !important;
+}
+</style>
+@endpush
 
 @section('content')
 <div class="row">
@@ -134,7 +169,7 @@
                     <div class="mb-3">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="is_internal" name="is_internal" value="1">
-                            <label class="form-check-label" for="is_internal">
+                            <label class="form-check-label comment-tagline" for="is_internal">
                                 <i class="ti ti-lock me-1"></i> Add as private comment <small class="text-muted">(only visible to admin)</small>
                             </label>
                         </div>
@@ -148,38 +183,40 @@
 
                 <!-- Comments List -->
                 @forelse($feedback->comments as $comment)
-                    <div class="d-flex mb-3 {{ $comment->is_internal ? 'bg-light rounded p-2' : '' }}">
-                        <div class="flex-shrink-0">
-                            <div class="avatar-sm">
-                                <span class="avatar-title rounded-circle {{ $comment->is_internal ? 'bg-warning' : 'bg-primary' }}">
-                                    <i class="ti {{ $comment->is_internal ? 'ti-lock' : 'ti-user' }} text-white"></i>
-                                </span>
-                            </div>
-                        </div>
+                    <div class="d-flex mb-3 comment-area {{ $comment->is_internal ? 'bg-light rounded p-2' : '' }}">
                         <div class="flex-grow-1 ms-3">
                             <div class="d-flex justify-content-between">
-                                <div>
+                                <div class="user-info d-flex justify-content-between">
+                                    <div class="avatar-sm me-2">
+                                        <span class="avatar-title rounded-circle {{ $comment->is_internal ? 'bg-warning' : 'bg-primary' }}">
+                                            <i class="ti {{ $comment->is_internal ? 'ti-lock' : 'ti-user' }} text-white"></i>
+                                        </span>
+                                    </div>
                                     <h6 class="mb-1">
                                         {{ $comment->user ? $comment->user->name : ($comment->commenter_name ?? 'Anonymous') }}
                                         @if($comment->is_internal)
                                             <span class="badge bg-warning text-dark ms-2"><i class="ti ti-lock me-1"></i>Private</span>
                                         @endif
                                     </h6>
-                                    <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
                                 </div>
-                                @auth
-                                    @if(auth()->id() === $comment->user_id || Auth::user()->canDelete())
-                                        <form method="POST" action="{{ route('feedback.comment.destroy', [$feedback, $comment]) }}" onsubmit="return confirm('Are you sure you want to delete this comment?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-soft-danger">
-                                                <i class="ti ti-trash"></i>
-                                            </button>
-                                        </form>
-                                    @endif
-                                @endauth
+                                
                             </div>
                             <p class="mb-0 mt-2">{{ $comment->comment }}</p>
+                            <div class="deleted-comment mb-0 mt-2 d-flex justify-content-between">
+                                    <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
+                                    @auth
+                                        @if(auth()->id() === $comment->user_id || Auth::user()->canDelete())
+                                            <form method="POST" action="{{ route('feedback.comment.destroy', [$feedback, $comment]) }}" onsubmit="return confirm('Are you sure you want to delete this comment?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-soft-danger">
+                                                    <i class="ti ti-trash"></i>
+                                                </button>
+                                            </form>
+                                        @endif
+                                    @endauth
+
+                                </div>
                         </div>
                     </div>
                 @empty
@@ -206,16 +243,16 @@
 
 
             <!-- Submitter Info -->
-                <div class="mb-4">
-                    <h6 class="text-muted mb-2">Submitter Information</h6>
-                    <p class="mb-1"><strong>Name:</strong> {{ $feedback->name }}</p>
-                    <p class="mb-1"><strong>Email:</strong> {{ $feedback->email }}</p>
+                <div class="mb-4 submitter-info-box">
+                    <h6 class="mb-3">Submitter Information</h6>
+                    <p class="mb-3"><small class="mb-1">Name:</small> <span>{{ $feedback->name }}</span></p>
+                    <p class="mb-3"><small class="mb-1">Email:</small> <span>{{ $feedback->email }}</span></p>
                     <p class="mb-0">
-                        <strong>Login Access:</strong>
+                        <small class="mb-1">Login Access:</small>
                         @if($feedback->login_access_enabled)
-                            <span class="badge bg-success">Enabled</span>
+                            <span class="badge bg-info">Enabled</span>
                         @else
-                            <span class="badge bg-secondary">Disabled</span>
+                            <span class="badge bg-info">Disabled</span>
                         @endif
                     </p>
                 </div>
@@ -246,7 +283,7 @@
                     <div class="info-box">
                         <h6>Created</h6>
                         <p>
-                            <span class="text-muted mb-0">{{ $feedback->created_at->format('M d, Y h:i A') }}</span>
+                            <span>{{ $feedback->created_at->format('M d, Y h:i A') }}</span>
                         </p>
                         <small class="text-muted">{{ $feedback->created_at->diffForHumans() }}</small>
                     </div>
@@ -257,7 +294,7 @@
                     <div class="info-box">
                         <h6>Last Updated</h6>
                         <p>
-                            <span class="text-muted mb-0">{{ $feedback->updated_at->format('M d, Y h:i A') }}</span>
+                            <span>{{ $feedback->updated_at->format('M d, Y h:i A') }}</span>
                         </p>
                         <small class="text-muted">{{ $feedback->updated_at->diffForHumans() }}</small>
                     </div>

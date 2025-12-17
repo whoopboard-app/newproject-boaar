@@ -17,6 +17,7 @@
 
     table#feedbackTable td:nth-child(2) {
         width: 20%;
+        text-align: right;
     }
 
     .tag-badge {
