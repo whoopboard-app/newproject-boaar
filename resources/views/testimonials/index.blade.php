@@ -25,6 +25,21 @@
         font-size: 1rem;
         font-weight: 600;
     }
+    table#tempalateTable tr {
+        border-radius: 10px !important;
+        border-bottom-width: 0 !important;
+    }
+    table {
+        border-collapse: separate;
+    }
+    table#tempalateTable td:nth-child(1) {
+        width: 80%;
+    }
+
+    table#tempalateTable td:nth-child(2) {
+        width: 20%;
+        text-align: right;
+    }
 </style>
 @endpush
 
@@ -38,6 +53,9 @@
                     <p class="text-muted fs-14 mb-0">Manage your testimonials and templates</p>
                 </h5>
                 <div class="d-flex justify-content-between align-items-center">
+                    <a href="{{ route('testimonial-templates.create') }}" class="btn btn-secondary  me-2">
+                            <i class="ti ti-plus me-1"></i> Add Template
+                        </a>
                     <a href="{{ route('testimonials.create') }}" class="btn btn-primary">
                                 <i class="ti ti-plus me-1"></i> Add Testimonial
                             </a>
@@ -331,53 +349,44 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Testimonial Templates</h5>
-                        <a href="{{ route('testimonial-templates.create') }}" class="btn btn-primary">
-                            <i class="ti ti-plus me-1"></i> Add Template
-                        </a>
                     </div>
                     <div class="card-body">
                         @if($templates->count() > 0)
                             <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Status</th>
-                                            <th>Template Name</th>
-                                            <th>Number of Submissions</th>
-                                            <th>Created</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
+                                <table id="tempalateTable" class="table table-hover">
                                     <tbody>
                                         @foreach($templates as $template)
                                             <tr>
                                                 <td>
-                                                    @if($template->status === 'active')
-                                                        <span class="badge bg-success">Active</span>
-                                                    @else
-                                                        <span class="badge bg-secondary">Inactive</span>
-                                                    @endif
+                                                    <div>
+                                                        <h6 class="mb-1">{{ $template->name }}</h6>
+                                                    </div>
+                                                    <div class="spacer">
+                                                        @if($template->status === 'active')
+                                                        <span class="badge bg-success alt-primary-success">Active</span>
+                                                        @else
+                                                        <span class="badge bg-info">Inactive</span>
+                                                        @endif
+                                                    </div>
+                                                    <div class="spacer">
+                                                        <span class="span-tags">Submissions :</span> <span class="badge bg-secondary">{{ $template->testimonials_count }} submissions</span>
+                                                    </div>
+                                                    <div class="spacer">
+                                                        <span class="span-tags">Created At :</span> <span class="tag-value">{{$template->created_at->format('M d, Y') }} </span>
+                                                    </div>
                                                 </td>
-                                                <td>
-                                                    <div class="fw-semibold">{{ $template->name }}</div>
-                                                    <small class="text-muted">{{ url('/testimonial/' . $template->unique_url) }}</small>
-                                                </td>
-                                                <td>
-                                                    <span class="badge bg-primary">{{ $template->testimonials_count }} submissions</span>
-                                                </td>
-                                                <td>{{ $template->created_at->format('M d, Y') }}</td>
                                                 <td>
                                                     <div class="btn-group btn-group-sm">
                                                         <a href="{{ route('testimonial-templates.show', $template) }}" class="btn btn-sm btn-outline-primary" title="View">
                                                             <i class="ti ti-eye"></i>
                                                         </a>
-                                                        <a href="{{ route('testimonial-templates.edit', $template) }}" class="btn btn-sm btn-outline-secondary" title="Edit">
+                                                        <a href="{{ route('testimonial-templates.edit', $template) }}" class="btn btn-sm btn-outline-primary" title="Edit">
                                                             <i class="ti ti-edit"></i>
                                                         </a>
                                                         <form action="{{ route('testimonial-templates.destroy', $template) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this template?');">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                                            <button type="submit" class="btn btn-sm btn-outline-primary" title="Delete">
                                                                 <i class="ti ti-trash"></i>
                                                             </button>
                                                         </form>
