@@ -7,63 +7,66 @@
 <link href="https://cdn.jsdelivr.net/npm/quill@2.0.0/dist/quill.snow.css" rel="stylesheet">
 <style>
     .wizard-steps {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 2rem;
-        position: relative;
-    }
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    position: relative;
+    background: #F0F1F6;
+    padding: 10px 6px;
+    border: 1px solid #E6E8F0;
+    border-radius: 6px;
+}
+.wizard-step.active {
+    background: #FFFFFF;
+    padding: 5px;
+    border-radius: 6px;
+}
 
-    .wizard-steps::before {
-        content: '';
-        position: absolute;
-        top: 20px;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background: #e9ecef;
-        z-index: 0;
-    }
-
-    .wizard-step {
-        flex: 1;
-        text-align: center;
-        position: relative;
-        z-index: 1;
-    }
-
-    .wizard-step-circle {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: white;
-        border: 2px solid #e9ecef;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 0.5rem;
-        font-weight: 600;
-        transition: all 0.3s;
-    }
+.wizard-step {
+    flex: 1;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    flex-direction: row-reverse;
+    margin: 0 5px;
+    justify-content: center;
+}
+.wizard-step-title {
+    font-size: 12px;
+    color: #4B5675;
+}
+.wizard-step-circle {
+    width: 26px;
+    height: 24px;
+    border-radius: 6px;
+    background: white;
+    border: 1px solid var(--Color-Grey-Grey-300, #DCDDDE);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    transition: all 0.3s;
+    font-size: 15px;
+    margin: 0 0px 0 5px;
+} 
+.wizard-steps::before{display: none;}
 
     .wizard-step.active .wizard-step-circle {
-        background: #5865F2;
+        background: #0BC33F;
         color: white;
-        border-color: #5865F2;
+        border-color: #0BC33F;
     }
 
     .wizard-step.completed .wizard-step-circle {
-        background: #28a745;
+        background: #0BC33F;
         color: white;
-        border-color: #28a745;
-    }
-
-    .wizard-step-title {
-        font-size: 0.875rem;
-        color: #6c757d;
+        border-color: #0BC33F;
     }
 
     .wizard-step.active .wizard-step-title {
-        color: #5865F2;
+        color: #111B37;
         font-weight: 600;
     }
 
